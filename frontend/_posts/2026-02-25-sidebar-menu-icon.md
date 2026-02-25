@@ -7,7 +7,7 @@ tags:
 ---
 Starting with UIX version [5.1.0](https://github.com/Lint-Free-Technology/uix/releases/tag/v5.1.0), you can now apply `--uix-icon` to icons that do not have a parent of `ha-icon`. These are often icons which have a set purpose in the Home Assistant interface and are not able to be changed, unless you have UIX.
 
-Generally modifying such icons is accomplish via using UIX in your [themes](https://uix.lf.technology/using/themes/).
+Generally modifying such icons is accomplished using UIX in your [themes](https://uix.lf.technology/using/themes/).
 
 The example below changes the sidebar hamburger menu icon to the Home Assistant icon.
 
