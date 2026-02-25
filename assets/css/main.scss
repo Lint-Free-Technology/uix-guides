@@ -7,7 +7,7 @@ $brand-color: {{ site.brand_color | default: '#ff5100' }};
 $header-text-color: {{ site.header_text_color | default: '#ffffff' }};
 $footer-text-color: lighten($header-text-color, 25%);
 $footer-background-color: {{ site.footer_background_color | default: '#ffffff' }};
-
+$base-font-family: {{ site.base_font_family | default: 'Arial, sans-serif' }};
 
 $content-width: {{ site.content_width | default: '920px' }};
 
