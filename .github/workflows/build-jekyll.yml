@@ -1,10 +1,6 @@
-name: Github Pages
+name: Build UIX Guides
 
 on:
-  push:
-    branches:
-      - main  # Deploy when pushing to main branch
-      - master  # Also support master branch
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
