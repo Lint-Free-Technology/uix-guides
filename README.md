@@ -10,15 +10,15 @@ A guides site for UI eXtension built with Jekyll using the [Yat theme](https://g
 - Bundler
 - Git
 
-   *GitHub action uses Ruby 3.4.8. If you use MacOS/Linux you can use rbenv to nanage your ruby installs. Repo has `.ruby-version` file set to 3.4.8*
+   *GitHub action uses Ruby 3.4.8. If you use MacOS/Linux you can use rbenv to manage your ruby installs. Repo has `.ruby-version` file set to 3.4.8*
 
 ### Local Development
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/Lint-Free-Technology/uix-guides-jekyll.git
-   cd uix-guides-jekyll
+   git clone https://github.com/Lint-Free-Technology/uix-guides.git
+   cd uix-guides
    ```
 
 2. Install dependencies:
