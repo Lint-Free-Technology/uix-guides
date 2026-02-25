@@ -3,7 +3,7 @@ title: Dialog changes in Home Assistant 2026.3
 tags:
   - dialogs
 ---
-There are major changes with dialogs with Home Assistant 2026.3. Changes include:
+There are major changes to dialogs in Home Assistant 2026.3. Changes include:
 
 - `ha-dialog` now a new element using webawesome `wa-dialog` component rather than mdc dialog. The final element used is the Browser's `<dialog>` which is display in the Browser's [Top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer).
 - the interim `ha-wa-dialog` is now `ha-dialog` as per above
