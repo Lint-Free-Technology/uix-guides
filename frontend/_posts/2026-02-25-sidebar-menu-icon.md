@@ -11,7 +11,7 @@ Generally modifying such icons is accomplished using UIX in your [themes](https:
 
 The example below changes the sidebar hamburger menu icon to the Home Assistant icon.
 
-Id you are new to Home Assistant themes in general check out the <https://www.home-assistant.io/integrations/frontend/>.
+If you are new to Home Assistant themes in general check out the <https://www.home-assistant.io/integrations/frontend/>.
 
 If you already have any of the theme keys in your theme as yaml version, e.g. `uix-sidebar-yaml`,then you will need to adjust to include the CSS rules in your base element selector `.:`.
 
