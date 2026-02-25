@@ -122,9 +122,10 @@ header_pages:
 
 # Page default value
 defaults:
-  home:
-    heading: "UI eXtension Guides"
-    subheading: ""
+  - scope:
+      type: "posts" # previously `post` in Jekyll 2.2.
+    values:
+      layout: "post"
 
 # Excerpt settings
 excerpt:
