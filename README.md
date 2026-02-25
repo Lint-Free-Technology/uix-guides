@@ -1,6 +1,6 @@
-# UIX Guides Jekyll
+# UIX Guides
 
-A documentation site built with Jekyll using the beautiful [Yat theme](https://github.com/jeffreytse/jekyll-theme-yat).
+A guides site for UI eXtension built with Jekyll using the [Yat theme](https://github.com/jeffreytse/jekyll-theme-yat).
 
 ## Setup
 
@@ -37,29 +37,21 @@ A documentation site built with Jekyll using the beautiful [Yat theme](https://g
 
 ### Deployment
 
-This site uses GitHub Actions for automatic deployment to GitHub Pages:
-
-- Pushes to `main` or `master` branch automatically trigger deployment
-- The workflow uses [jekyll-deploy-action](https://github.com/jeffreytse/jekyll-deploy-action)
+Manual deployment via action workflow. Te workflow uses [jekyll-deploy-action](https://github.com/jeffreytse/jekyll-deploy-action)
 
 ### Theme
 
 This site uses the [jekyll-theme-yat](https://github.com/jeffreytse/jekyll-theme-yat) theme via remote theme functionality, making it compatible with GitHub Pages.
 
-## Customization
-
-Edit `_config.yml` to customize:
-
-- Site title, description, and author
-- Theme colors and appearance
-- Navigation and features
-- Plugins and integrations
-
 ## Adding Content
 
-- Create new posts in `_posts/` directory
-- Add pages as `.md` files in the root or custom directories
+- Create new markdown `.md` posts in `_posts/` directory in directories of main project directory. These directories become categories.
+- Name markdown file `YYYY-MM-DD-<descriptive short name>.md`
+- Save any images to `assets/<category>/YYYY-MM-DD-<descriptive short name>.png` and use in post from this location.
 - Follow Jekyll front matter format
+  - `title:`
+  - `excerpt_image:` if required
+  - `tags:` list
 
 ## License
 
