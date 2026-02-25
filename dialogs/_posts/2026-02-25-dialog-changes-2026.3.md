@@ -5,7 +5,7 @@ tags:
 ---
 There are major changes to dialogs in Home Assistant 2026.3. Changes include:
 
-- `ha-dialog` now a new element using webawesome `wa-dialog` component rather than mdc dialog. The final element used is the Browser's `<dialog>` which is display in the Browser's [Top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer).
+- `ha-dialog` is now a new element that uses the Web Awesome `wa-dialog` component rather than the MDC dialog. The final element used is the browser's `<dialog>` element, which is displayed in the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer).
 - the interim `ha-wa-dialog` is now `ha-dialog` as per above
 - a number of dialogs are now using the newer `ha-adaptive-dialog` which either uses `ha-dialog` for larger views, or `ha-bottom-sheet` for smaller views like mobiles.
 - more-info dialog is now using `ha-adaptive-dialog`.
