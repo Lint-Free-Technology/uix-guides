@@ -3,25 +3,24 @@
 # This config file is meant for settings that affect your whole blog, values
 # which you are expected to set up once and rarely edit after that.
 
-title: UIX Guides
-email: your-email@domain.com
+title: UI eXtension Guides
+email: darryn@lf.technology
 author: Lint-Free-Technology
 
 # Copyright setting
-copyright: "Unpublished Work (cleft) 2017-{currentYear} {author}"
+copyright: "Content on this site is licensed under a Creative Commons Attribution 4.0 International license."
 
 description: >-
-  Documentation and guides for UIX (User Interface Experience).
-  A comprehensive resource for building better user interfaces.
+  Guides for UI eXtension (UIX).
 
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site
-favicon: "" # the favicon for your site
+favicon: "/assets/images/icon.png" # the favicon for your site
 
 # Yat date format
 # refer to https://shopify.github.io/liquid/filters/date/ if you want to customize this
 yat:
-  date_format: "%b %d, %Y"
+  date_format: "%d %b, %Y"
 
 # If you want more debug log, you can set true
 # debug: false
@@ -42,6 +41,45 @@ yat:
 # If you want to change site language, you can set lang option
 # lang: "en"  # default lang is en
 
+# Translate languges
+# langs refer to https://cloud.google.com/translate/docs/languages
+translate_langs:
+  - lang: en
+    img: https://cdn.countryflags.com/thumbs/united-states-of-america/flag-400.png
+    text: English
+
+  - lang: fr
+    img: https://cdn.countryflags.com/thumbs/france/flag-400.png
+    text: French
+
+  - lang: de
+    img: https://cdn.countryflags.com/thumbs/germany/flag-400.png
+    text: German
+
+  - lang: it
+    img: https://cdn.countryflags.com/thumbs/italy/flag-400.png
+    text: Italian
+
+  - lang: nl
+    img: https://cdn.countryflags.com/thumbs/netherlands/flag-400.png
+    text: Dutch
+
+  - lang: es
+    img: https://cdn.countryflags.com/thumbs/spain/flag-400.png
+    text: Spanish
+
+  - lang: zh-CN
+    img: https://cdn.countryflags.com/thumbs/china/flag-400.png
+    text: Chinese(Simple)
+
+  - lang: ja
+    img: https://cdn.countryflags.com/thumbs/japan/flag-400.png
+    text: Japanese
+#
+#   - lang: ru
+#     img: https://cdn.countryflags.com/thumbs/russia/flag-400.png
+#     text: Russian
+
 # You can choose a theme color
 # Default theme colors as below:
 # coolblack: #090a0b
@@ -51,7 +89,9 @@ yat:
 # theme_color: snowwhite
 #
 # Custom color as below:
-# theme_color: "#882250"
+theme_color: "#CE3226"
+header_text_color: "#FDFDFD"
+footer_background_color: "#000000de"
 
 # You can choose a brand color
 # Default brand colors as below:
@@ -62,17 +102,102 @@ yat:
 # brand_color: orangered
 #
 # Custom color as below:
-# brand_color: "#1a8e42"
+brand_color: "#d3473c"
 
 # Night/Dark mode
 # Default mode is "auto", "auto" is for auto nightshift
 # (19:00 - 07:00), "manual" is for manual toggle, and
 # "on/off" is for default on/off.
 #
-# night_mode: "auto"
+night_mode: "auto"
+
+# If you want to link only specific pages in your header, uncomment
+# this and add the path to the pages in order as they should show up
+header_pages:
+  - index.md
+  - archives.html
+  - categories.html
+  - tags.html
+  - about.md
+
+# Page default value
+defaults:
+  home:
+    heading: "UI eXtension Guides"
+    subheading: ""
+
+# Excerpt settings
+excerpt:
+  default_image: /assets/images/mixed.png # Default image when the image style is not none
+#   image_style: z          # Image layout style (It's value could be none, left, right, top, z, z-reverse)
+#   image_width: 38.2%      # Image default width
+#   image_height: 160px     # Image default height
+#   text_size: 350          # Words default size
+
+# Banner default settings
+# These banner settings are for global banner default, but you can also
+# config it by the front matter for one specific post
+# banner:
+#   video: null             # Video banner source
+#   loop: true              # Video loop
+#   volume: 0               # Video volume (100% is 1.0)
+#   start_at: 0             # Video start time
+#   image: null             # Image banner source
+#   opacity: 1.0            # Banner opacity (100% is 1.0)
+#   background: "rgba(0, 0, 0, 0.8)"  # Banner background (Could be a image)
+#   height: "640px"         # Banner default height
+#   min_height: null        # Banner minimum height
+#   heading_style: null     # Custom heading style (e.g. "font-weight: bold; text-decoration: underline")
+#   subheading_style: null  # Custom subheading style (e.g. color: gold)
 
 # Pagination setting
 # paginate: 5
+
+# Photo previewer settings (PhotoSwipe 5)
+# the options please refer to: https://photoswipe.com/options/
+# photo_previewer:
+#  gallery: "section.main"
+#  children: "a.photo-swipe"
+#  bgOpacity: 0.8
+#  padding:
+#    top: 20
+#    bottom: 40
+#    left: 100
+#    right: 100
+
+# Click to top settings
+# click_to_top:
+#   light:
+#     background_color: "white"
+#     color: "#454545"
+#   dark:
+#     background_color: "#34323d"
+#     color: "#bbb"
+
+# Disqus comments
+# disqus:
+#   shortname: "Your Disqus username"
+#   enable_recommendations: false
+#   enable_comments: true
+
+# Gitment comments
+# gitment:
+#   username: "Your GitHub username"
+#   repo: "The repo to store comments"
+#   client_id: "Your client ID"
+#   client_secret: "Your client secret"
+#   redirect_uri: "Your redirect url"   # If you use a custom domain name
+
+# Utterances comments
+# See https://utteranc.es/
+# set follow_site_theme true to make utterances' theme follow the site's
+
+# utterances:
+#   repo: "owner/repo"
+#   issue_term: "title"
+#   label: "utterances comment"
+#   theme: "github-light"
+#   follow_site_theme: true
 
 # Build settings
 markdown: kramdown
