@@ -3,7 +3,7 @@ title: Contributing to UI eXtension guides
 tags:
   - community
 ---
-Contribution to UI eXtension guides is most welcome. To view your edits locally you will need [ruby](https://www.ruby-lang.org/en/) as the site is built with Jekyll. If you don't have ruby then don't let that stop you from contributing. Simple follow the guide writing your post in markdown and any suggested edits will be made when you submit your pull request.
+Contribution to UI eXtension guides is most welcome. To view your edits locally you will need [ruby](https://www.ruby-lang.org/en/) as the site is built with Jekyll. If you don't have ruby then don't let that stop you from contributing. Simply follow the guide writing your post in markdown and any suggested edits will be made when you submit your pull request.
 
 ## Creating a post
 
