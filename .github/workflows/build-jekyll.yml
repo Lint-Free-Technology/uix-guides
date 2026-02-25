@@ -20,7 +20,7 @@ jobs:
             ${{ runner.os }}-gems-
 
       # Use GitHub Deploy Action to build and deploy to Github
-      - uses: jeffreytse/jekyll-deploy-action@v0.6.0
+      - uses: jeffreytse/jekyll-deploy-action@v0.7.0
         with:
           provider: 'github'
           token: ${{ secrets.GITHUB_TOKEN }} # It's your Personal Access Token(PAT)
@@ -29,5 +29,6 @@ jobs:
           jekyll_src: './'           # Default is root directory
           jekyll_cfg: '_config.yml'  # Default is _config.yml
           jekyll_baseurl: ''         # Default is empty (adjust if using a project page)
-          cname: ''                  # Default is to not use a cname
+          ruby_ver: '3.4.8'          # Default is 3.2.0
+          cname: 'uix-guides.lf.technology' # Default is to not use a cname
           actor: ''                  # Default is the GITHUB_ACTOR

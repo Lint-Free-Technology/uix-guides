@@ -6,11 +6,11 @@ A documentation site built with Jekyll using the beautiful [Yat theme](https://g
 
 ### Prerequisites
 
-- Ruby (3.4.x)
+- Ruby (3.4.8)
 - Bundler
 - Git
 
-   *GitHub action uses Ruby 3.2.0. If you use MacOS/Linux you can use rbenv to nanage your ruby installs. Repo has `.ruby-version` file set to 3.4.8*
+   *GitHub action uses Ruby 3.4.8. If you use MacOS/Linux you can use rbenv to nanage your ruby installs. Repo has `.ruby-version` file set to 3.4.8*
 
 ### Local Development
 
