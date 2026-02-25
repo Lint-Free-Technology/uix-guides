@@ -1,21 +1,30 @@
 ---
-layout: home
+layout: home-no-banner
 title: Home
 ---
 
-# Welcome to UIX Guides
+# Welcome to UI eXtension Guides
 
-This is a comprehensive documentation site for User Interface Experience (UIX) guides and best practices.
+Welcome to UI eXtension Guides! This site is your comprehensive resource for learning about and mastering UI eXtension (UIX), a powerful tool for customizing Home Assistant dashboards.
 
-## Getting Started
+## What is UIX?
 
-Browse our guides to learn more about building better user interfaces.
+UIX is a Home Assistant integration that allows you to apply custom CSS styling to to (almost) every UI element of Home Assistant
 
-## Features
+- Customize the appearance of any card
+- Apply themes and styling to match your design preferences
+- Create unique and personalized dashboard layouts
+- Override default styles with precision
 
-- Modern responsive design
-- Beautiful night/dark mode
-- Comprehensive documentation
-- Easy to navigate
+## Contributing
 
-Stay tuned for more content!
+If you would like to contribute a guide, or have a guide idea that you need assistance with, please submit a [UIX Q&A discussion](https://github.com/Lint-Free-Technology/uix/discussions) via Lint Free Technology GitHub.
+
+## Resources
+
+- [UIX website](https://uix.lf.technology)
+- [UIX on GitHub](https://github.com/Lint-Free-Technology/uix).
+
+---
+
+*This site is maintained by [Lint Free Technology](https://lf.technology) and the UIX community. All content on this site has been specifically contributed by contributors for inclusion in this site.*
