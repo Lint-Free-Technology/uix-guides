@@ -15,7 +15,7 @@ As dialog modding is only a relative newer feature of UIX, this may not affect y
 A start of the types of changes required are below. This list is not exhaustive as there will be many scenarios based on what you have modded:
 
 - for dialogs that were using `ha-wa-dialog` in the interim, you should be able to change your modifications to update all use of `ha-wa-dialog` to `ha-dialog`.
-- for dialogs that have migrated to `ha-adaptive-dialog`, you will need to account for this extra element in your yaml theme selectors PLUS additional theming for `ha-bottom-sheet`.
+- for dialogs that have migrated to `ha-adaptive-dialog`, you will need to account for this extra element in your yaml theme selectors plus additional theming for `ha-bottom-sheet`.
 
 This post will be updated as further examples arise in the 2026.3.0 beta period.
 
