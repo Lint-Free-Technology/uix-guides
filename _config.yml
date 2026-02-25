@@ -92,6 +92,7 @@ translate_langs:
 theme_color: "#CE3226"
 header_text_color: "#FDFDFD"
 footer_background_color: "#000000de"
+base_font_family: "Roboto, Arial, sans-serif"
 
 # You can choose a brand color
 # Default brand colors as below:
