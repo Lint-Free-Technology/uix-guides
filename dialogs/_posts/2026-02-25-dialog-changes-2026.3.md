@@ -10,7 +10,7 @@ There are major changes to dialogs in Home Assistant 2026.3. Changes include:
 - a number of dialogs are now using the newer `ha-adaptive-dialog` which either uses `ha-dialog` for larger views, or `ha-bottom-sheet` for smaller views like mobiles.
 - more-info dialog is now using `ha-adaptive-dialog`.
 
-As dialog modding is only a relative newer feature of UIX, this may not affect you directly. However for those who jumped in and modded out more-info, or other dialogs, you wil need to adapt your modifications, especially for more-info dialog.
+As dialog modding is only a relative newer feature of UIX, this may not affect you directly. However for those who jumped in and modded out more-info, or other dialogs, you will need to adapt your modifications, especially for more-info dialog.
 
 A start of the types of changes required are below. This list is not exhaustive as there will be many scenarios based on what you have modded:
 
