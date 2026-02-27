@@ -119,11 +119,11 @@ UIX Theme:
   uix-theme: UIX Theme
   uix-dialog-yaml: |
     .: |
-    ha-dialog {
-      --dialog-surface-margin-top: auto !important; /* vertically centered */
-      --ha-dialog-show-duration: 0;
-      --ha-dialog-hide-duration: 0;
-    }
+      ha-dialog {
+        --dialog-surface-margin-top: auto !important; /* vertically centered */
+        --ha-dialog-show-duration: 0;
+        --ha-dialog-hide-duration: 0;
+      }
     $ wa-dialog $: |
       @keyframes slide-in { from { transform:translateX(100%) } to {
       transform: translateX(0); } }
