@@ -1,5 +1,6 @@
 ---
 title: Styling dialogs with UI eXtension
+description: Styling dialogs including template and shadowRoot examples
 excerpt_image: /assets/dialogs/2026-02-27-styling-dialogs.png
 tags:
   - dialogs
