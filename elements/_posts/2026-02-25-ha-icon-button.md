@@ -35,4 +35,4 @@ uix:
     }
 ```
 
-![example](/assets/elements/2026-02-25-ha-icon-button.png)
+{% include admonition.html type="homeassistant" title="Home Assistant output" body="![example](/assets/elements/2026-02-25-ha-icon-button.png)" %}
