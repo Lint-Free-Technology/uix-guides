@@ -7,7 +7,7 @@ tags:
 ---
 Home Assistant uses a dialog manager through which most dialogs are shown. UIX patches through the `showDialog()` method to allow styling dialogs vis UIX theme.
 
-{% include admonition.html type="info" title="Other dialog guides" body="You can check out all dialog guides vis the [dialog category](http://localhost:4000/categories.html#h-dialogs)." %}
+{% include admonition.html type="info" title="Other dialog guides" body="You can check out all dialog guides vis the [dialog category](/categories.html#h-dialogs)." %}
 
 As there are many different types of dialogs, UIX guides will not be able to cover all dialogs so this guide will lead you through inspecting the DOM to discover more about the dialog you wish to style, and leading you through when to use a template to target the dialog specifically.
 
