@@ -13,3 +13,9 @@ span.site-brand > .site-brand-inner:visited {
   font-weight: 500;
   letter-spacing: normal;
 }
+
+html[data-theme="dark"]  {
+  .site-brand .site-favicon {
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
