@@ -6,8 +6,10 @@
   font-display: swap;
 }
 
-.site-brand-inner {
+span.site-brand > .site-brand-inner,
+span.site-brand > .site-brand-inner:visited {
   font-family: 'Beon-Regular', sans-serif;
-  font-size: 1.5rem !important;
-  letter-spacing: normal !important;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: normal;
 }
