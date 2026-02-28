@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Beon-Regular';
+  src: url('/assets/fonts/Beon-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.site-brand-inner {
+  font-family: 'Beon-Regular', sans-serif;
+  font-size: 1.5rem !important;
+  letter-spacing: normal !important;
+}
