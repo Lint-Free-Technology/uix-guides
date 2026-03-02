@@ -6,7 +6,7 @@ tags:
   - card
   - templates
 ---
-UI eXtension (UIX) templates are confined to a set of style rules, either the default style (sting or `.:` key) or child style. There is no concept of variable sharing across templates, nd it would be too inefficient for this to coded into UIX with lots of tracking an regeneration of template to the backend when variables change.
+UI eXtension (UIX) templates are confined to a set of style rules, either the default style (string or `.:` key) or child style. There is no concept of variable sharing across templates, and it would be too inefficient for this to be coded into UIX with lots of tracking and regeneration of template to the backend when variables change.
 
 Consider the following where you may wish to use a concept of `isDark` across multiple entities rows, but not all rows.
 
