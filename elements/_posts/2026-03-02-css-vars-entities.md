@@ -75,4 +75,4 @@ entities:
 
 {% endraw %}
 
-{% include admonition.html type="homeassistant" title="Style entities rows using custom CSS variables" body="![Styled dialog](/assets/elements/2026-03-02-css-vars-entities.png)" %}
+{% include admonition.html type="homeassistant" title="Style entities rows using custom CSS variables" body="![Styled entities rows](/assets/elements/2026-03-02-css-vars-entities.png)" %}
