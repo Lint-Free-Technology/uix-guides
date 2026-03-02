@@ -6,7 +6,7 @@ tags:
   - energy
   - badge
 ---
-Home Assistant 2026.3 introduces 3 new energy badge types used for in the inbuilt generated energy dashboard. These are `power-total`, `gas-total` and `water-total`. To style these on the inbuilt energy dashboard you need to use a UIX theme.
+Home Assistant 2026.3 introduces 3 new energy badge types used in the built-in energy dashboard. These are `power-total`, `gas-total` and `water-total`. To style these on the built-in energy dashboard you need to use a UIX theme.
 
 Home assistant badges use `ha-badge` in shadow Root. `ha-badge` uses many styling vars so most styling can be done on `:host`. See `.badge` [styles](https://github.com/home-assistant/frontend/blob/fbd0409837c1f2ad7b897df6cf2a4d7170f4bcec/src/components/ha-badge.ts#L45) in Frontend GitHub. The energy badges use `ha-svg-icon` directly as a slotted element so this is also easy to style with UIX (5.1.0+).
 
