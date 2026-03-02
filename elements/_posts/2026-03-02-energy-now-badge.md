@@ -8,9 +8,9 @@ tags:
 ---
 Home Assistant 2026.3 introduces 3 new energy badge types used in the built-in energy dashboard. These are `power-total`, `gas-total` and `water-total`. To style these on the built-in energy dashboard you need to use a UIX theme.
 
-Home assistant badges use `ha-badge` in shadow Root. `ha-badge` uses many styling vars so most styling can be done on `:host`. See `.badge` [styles](https://github.com/home-assistant/frontend/blob/fbd0409837c1f2ad7b897df6cf2a4d7170f4bcec/src/components/ha-badge.ts#L45) in Frontend GitHub. The energy badges use `ha-svg-icon` directly as a slotted element so this is also easy to style with UIX (5.1.0+).
+Home Assistant badges use `ha-badge` in shadow root. `ha-badge` uses many styling vars so most styling can be done on `:host`. See `.badge` [styles](https://github.com/home-assistant/frontend/blob/fbd0409837c1f2ad7b897df6cf2a4d7170f4bcec/src/components/ha-badge.ts#L45) in Frontend GitHub. The energy badges use `ha-svg-icon` directly as a slotted element so this is also easy to style with UIX (5.1.0+).
 
-{% include admonition.html type="tip" title="UIX class selection in themes" body="When using UIX themes on a element like a badge, your CSS can easily target the element itself by class e.g. `:host(.type-power-total)`. However if you need to go to shadow Root with a yaml selector, specific targeting will be difficult without a template. To use a template to help with targeting you CSS rules you would use the `config` variable and check for `config.type` e.g. `power-total`. Look out for a future post showing this concept for templates." %}
+{% include admonition.html type="tip" title="UIX class selection in themes" body="When using UIX themes on a element like a badge, your CSS can easily target the element itself by class e.g. `:host(.type-power-total)`. However if you need to go to shadow root with a yaml selector, specific targeting will be difficult without a template. To use a template to help with targeting your CSS rules you would use the `config` variable and check for `config.type` e.g. `power-total`. Look out for a future post showing this concept for templates." %}
 
 The example below uses `.badge` CSS vars to change the border width, color and badge box-shadow. The icon color is changed to red and is given a pulse animation.
 
