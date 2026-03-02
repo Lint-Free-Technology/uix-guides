@@ -1,5 +1,6 @@
 ---
-title: Using custom CSS variables to simplify code across templates
+title: Custom CSS variables
+description: Using custom CSS variables to reduce your templates
 excerpt_image: /assets/elements/2026-03-02-css-vars-entities.png
 tags:
   - entities
