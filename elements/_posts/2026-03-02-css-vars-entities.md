@@ -37,7 +37,7 @@ entities:
 
 {% endraw %}
 
-The `isDark` calculation here is pretty simple. However, repeating what may be a complex template calculation twice can be quite repetitive and probe to error when you need to adjust.
+The `isDark` calculation here is pretty simple. However, repeating what may be a complex template calculation twice can be quite repetitive and prone to error when you need to adjust.
 
 One method to simplify this, and make it better, uses custom CSS variables on `:host` reducing the templates used from two to one.
 
