@@ -40,4 +40,4 @@ uix-badge: |
     }
 ```
 
-{% include admonition.html type="homeassistant" title="Styled output" body="![Styled entities rows](/assets/elements/2026-03-02-energy-now-badge.gif)" %}
+{% include admonition.html type="homeassistant" title="Styled output" body="![Styled energy now badges output](/assets/elements/2026-03-02-energy-now-badge.gif)" %}
