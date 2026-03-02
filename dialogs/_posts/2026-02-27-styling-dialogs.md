@@ -4,6 +4,7 @@ description: Styling dialogs including template and shadowRoot examples
 excerpt_image: /assets/dialogs/2026-02-27-styling-dialogs.png
 tags:
   - dialogs
+  - templates
 ---
 Home Assistant uses a dialog manager through which most dialogs are shown. UIX patches through the `showDialog()` method to allow styling dialogs via UIX theme.
 
