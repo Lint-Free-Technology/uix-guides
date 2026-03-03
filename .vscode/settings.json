@@ -3,7 +3,8 @@
         "endraw",
         "markdownify",
         "webawesome",
-        "xmark"
+        "xmark",
+        "admon"
     ],
     "cSpell.flagWords": [
         "teh",
