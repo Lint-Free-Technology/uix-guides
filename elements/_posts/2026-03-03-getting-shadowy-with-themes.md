@@ -11,7 +11,7 @@ When using UI eXtension themes, often you can carry out all your styling by simp
 
 Continuing to use the power now badge on the built-in energy dashboard, the example below will change the border of the badge to double. This can only be done by styling in shadow Root as the `.badge` class styling does not expose a CSS variable for `border-style`. Border color and width are styled on `:host(.type-power-now)` on the root element styling key `.:` showing a good example of using both root and specific yaml keys with UIX yaml selection.
 
-{% include admonition.html type="tip" title="Config variable in templates" body="Every UIX template includes the variable `config` which is the element's config. In all but very few cases, the config will include at least the element `type` as well as any user or strategy config. For this example. `config.type == 'power-total`" %}
+{% include admonition.html type="tip" title="Config variable in templates" body="Every UIX template includes the variable `config` which is the element's config. In all but very few cases, the config will include at least the element `type` as well as any user or strategy config. For this example, `config.type == 'power-total'`" %}
 
 {% raw %}
 
