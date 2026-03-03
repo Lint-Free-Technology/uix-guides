@@ -1,6 +1,6 @@
 ---
 title: Getting shadowy with themes
-description: How to use templates in themes to do styling only to a specific to an element config type.
+description: How to use templates in themes to apply styling only to a specific element config type.
 excerpt_image: /assets/elements/2026-03-03-getting-shadowy-with-themes.png
 tags:
   - badge
