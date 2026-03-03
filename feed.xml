@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-03-03T02:50:06+00:00</updated><id>/feed.xml</id><title type="html">UI eXtension Guides</title><subtitle>Guides for UI eXtension (UIX).</subtitle><author><name>Lint-Free-Technology</name></author><entry><title type="html">Getting shadowy with themes</title><link href="/elements/2026/03/03/getting-shadowy-with-themes.html" rel="alternate" type="text/html" title="Getting shadowy with themes" /><published>2026-03-03T00:00:00+00:00</published><updated>2026-03-03T00:00:00+00:00</updated><id>/elements/2026/03/03/getting-shadowy-with-themes</id><content type="html" xml:base="/elements/2026/03/03/getting-shadowy-with-themes.html"><![CDATA[<p>When using UI eXtension themes, often you can carry out all your styling by simple CSS targeting on the hosts class type. For example, see <a href="/elements/2026/03/02/energy-now-badge.html">Styling Home Assistant 2026.3 energy now badges</a> which uses a CSS target of <code class="language-plaintext highlighter-rouge">:host(.type-power-total)</code>. However this will not work if you need to target an element directly in shadow root to target a property that is not styled with a CSS variable, or to inject keyframes into an element’s light DOM.</p>
+
+<p>Continuing to use the power now badge on the built-in energy dashboard, the example below will change the border of the badge to double. This can only be done by styling in shadow root as the <code class="language-plaintext highlighter-rouge">.badge</code> class styling does not expose a CSS variable for <code class="language-plaintext highlighter-rouge">border-style</code>. Border color and width are styled on <code class="language-plaintext highlighter-rouge">:host(.type-power-total)</code> on the root element styling key <code class="language-plaintext highlighter-rouge">.:</code>, showing a good example of using both root and specific yaml keys with UIX yaml selection.</p>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">Config variable in templates</p>
+    <p>
+        <p>Every UIX template includes the variable <code class="language-plaintext highlighter-rouge">config</code> which is the element’s config. In all but very few cases, the config will include at least the element <code class="language-plaintext highlighter-rouge">type</code> as well as any user or strategy config. For this example, <code class="language-plaintext highlighter-rouge">config.type == 'power-total'</code></p>
+
+    </p>
+</div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">Badge Theme</span><span class="pi">:</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">Badge Theme</span>
+  <span class="na">uix-badge-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.: |</span>
+      <span class="s">:host(.type-power-total) {</span>
+        <span class="s">--ha-card-border-width: 3px;</span>
+        <span class="s">--ha-card-border-color: red;</span>
+      <span class="s">}</span>
+    <span class="s">ha-badge $: |</span>
+      <span class="s">{% if config.type == 'power-total' %}</span>
+      <span class="s">.badge {</span>
+        <span class="s">border-style: double !important;</span>
+      <span class="s">}</span>
+      <span class="s">{% endif %}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Styled power now badge</p>
+    <p>
+        <p><img src="/assets/elements/2026-03-03-getting-shadowy-with-themes.png" alt="Styled power now badge" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="elements" /><category term="badge" /><category term="themes" /><category term="templates" /><summary type="html"><![CDATA[How to use templates in themes to apply styling only to a specific element config type.]]></summary></entry><entry><title type="html">Custom CSS variables</title><link href="/elements/2026/03/02/css-vars-entities.html" rel="alternate" type="text/html" title="Custom CSS variables" /><published>2026-03-02T00:00:00+00:00</published><updated>2026-03-02T00:00:00+00:00</updated><id>/elements/2026/03/02/css-vars-entities</id><content type="html" xml:base="/elements/2026/03/02/css-vars-entities.html"><![CDATA[<p>UI eXtension (UIX) templates are confined to a set of style rules, either the default style (string or <code class="language-plaintext highlighter-rouge">.:</code> key) or child style. There is no concept of variable sharing across templates, and it would be too inefficient for this to be coded into UIX with lots of tracking and regeneration of template to the backend when variables change.</p>
+
+<p>Consider the following where you may wish to use a concept of <code class="language-plaintext highlighter-rouge">isDark</code> across multiple entities rows, but not all rows.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">entities</span>
+<span class="na">entities</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">entity</span><span class="pi">:</span> <span class="s">sun.sun</span>
+    <span class="na">uix</span><span class="pi">:</span>
+      <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set isDark = is_state('sun.sun','below_horizon') %}</span>
+        <span class="s">hui-generic-entity-row {</span>
+          <span class="s">background: {{ 'darkslateblue' if isDark else 'inherit' }};</span>
+          <span class="s">color: {{ 'slategrey' if isDark else 'inherit' }};</span>
+          <span class="s">--state-icon-color: {{ 'slategrey' if isDark else 'inherit' }};</span>
+        <span class="s">}</span>
+  <span class="pi">-</span> <span class="na">entity</span><span class="pi">:</span> <span class="s">sun.sun</span>
+    <span class="na">uix</span><span class="pi">:</span>
+      <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set isDark = is_state('sun.sun','below_horizon') %}</span>
+        <span class="s">hui-generic-entity-row {</span>
+          <span class="s">background: {{ 'yellow' if not isDark else 'inherit' }};</span>
+          <span class="s">color: {{ 'orange' if not isDark else 'inherit' }};</span>
+          <span class="s">--state-icon-color: {{ 'orange' if not isDark else 'inherit' }};</span>
+        <span class="s">}</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">isDark</code> calculation here is pretty simple. However, repeating what may be a complex template calculation twice can be quite repetitive and prone to error when you need to adjust.</p>
+
+<p>One method to simplify this, and make it better, uses custom CSS variables on <code class="language-plaintext highlighter-rouge">:host</code> reducing the templates used from two to one.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">entities</span>
+<span class="na">uix</span><span class="pi">:</span>
+  <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">:host {</span>
+      <span class="s">{% set isDark = is_state('sun.sun','below_horizon') %}</span>
+      <span class="s">--darkslateblue-if-dark: {{ 'darkslateblue' if isDark else 'inherit' }};</span>
+      <span class="s">--slategrey-if-dark: {{ 'slategrey' if isDark else 'inherit' }};</span>
+      <span class="s">--yellow-if-not-dark: {{ 'yellow' if not isDark else 'inherit' }};</span>
+      <span class="s">--orange-if-not-dark: {{ 'orange' if not isDark else 'inherit' }};</span>
+    <span class="s">}</span>
+<span class="na">entities</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">entity</span><span class="pi">:</span> <span class="s">sun.sun</span>
+    <span class="na">uix</span><span class="pi">:</span>
+      <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">hui-generic-entity-row {</span>
+          <span class="s">background: var(--darkslateblue-if-dark);</span>
+          <span class="s">color: var(--slategrey-if-dark);</span>
+          <span class="s">--state-icon-color: var(--slategrey-if-dark);</span>
+        <span class="s">}</span>
+  <span class="pi">-</span> <span class="na">entity</span><span class="pi">:</span> <span class="s">sun.sun</span>
+    <span class="na">uix</span><span class="pi">:</span>
+      <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">hui-generic-entity-row {</span>
+          <span class="s">background: var(--yellow-if-not-dark);</span>
+          <span class="s">color: var(--orange-if-not-dark);</span>
+          <span class="s">--state-icon-color: var(--orange-if-not-dark);</span>
+        <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Style entities rows using custom CSS variables</p>
+    <p>
+        <p><img src="/assets/elements/2026-03-02-css-vars-entities.png" alt="Styled entities rows" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="elements" /><category term="entities" /><category term="card" /><category term="templates" /><summary type="html"><![CDATA[Using custom CSS variables to reduce repetition in your templates]]></summary></entry><entry><title type="html">Styling Home Assistant 2026.3 energy now badges</title><link href="/elements/2026/03/02/energy-now-badge.html" rel="alternate" type="text/html" title="Styling Home Assistant 2026.3 energy now badges" /><published>2026-03-02T00:00:00+00:00</published><updated>2026-03-02T00:00:00+00:00</updated><id>/elements/2026/03/02/energy-now-badge</id><content type="html" xml:base="/elements/2026/03/02/energy-now-badge.html"><![CDATA[<p>Home Assistant 2026.3 introduces 3 new energy badge types used in the built-in energy dashboard. These are <code class="language-plaintext highlighter-rouge">power-total</code>, <code class="language-plaintext highlighter-rouge">gas-total</code> and <code class="language-plaintext highlighter-rouge">water-total</code>. To style these on the built-in energy dashboard you need to use a UIX theme.</p>
+
+<p>Home Assistant badges use <code class="language-plaintext highlighter-rouge">ha-badge</code> in shadow root. <code class="language-plaintext highlighter-rouge">ha-badge</code> uses many styling vars so most styling can be done on <code class="language-plaintext highlighter-rouge">:host</code>. See <code class="language-plaintext highlighter-rouge">.badge</code> <a href="https://github.com/home-assistant/frontend/blob/fbd0409837c1f2ad7b897df6cf2a4d7170f4bcec/src/components/ha-badge.ts#L45">styles</a> in Frontend GitHub. The energy badges use <code class="language-plaintext highlighter-rouge">ha-svg-icon</code> directly as a slotted element so this is also easy to style with UIX (5.1.0+).</p>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">UIX class selection in themes</p>
+    <p>
+        <p>When using UIX themes on an element like a badge, your CSS can easily target the element itself by class, e.g. <code class="language-plaintext highlighter-rouge">:host(.type-power-total)</code>. However, if you need to go into the shadow root with a YAML selector, specific targeting will be difficult without a template. To use a template to help with targeting your CSS rules, use the <code class="language-plaintext highlighter-rouge">config</code> variable and check <code class="language-plaintext highlighter-rouge">config.type</code>, e.g. <code class="language-plaintext highlighter-rouge">power-total</code>. Look out for a future post showing this concept for templates.</p>
+
+    </p>
+</div>
+
+<p>The theme example below uses <code class="language-plaintext highlighter-rouge">.badge</code> CSS vars to change the border width, color and badge box-shadow. The icon color is changed to red and is given a pulse animation.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">Badge Theme</span><span class="pi">:</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">Badge Theme</span>
+  <span class="na">uix-badge</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">:host(.type-power-total) {</span>
+        <span class="s">--ha-card-border-width: 2px;</span>
+        <span class="s">--ha-card-border-color: red;</span>
+        <span class="s">--ha-card-box-shadow: 2px 2px 2px orange;</span>
+      <span class="s">}</span>
+      <span class="s">ha-svg-icon {</span>
+        <span class="s">color: red;</span>
+        <span class="s">animation: 1.5s pulse infinite linear;</span>
+        <span class="s">--uix-icon: mdi:lightning-bolt;</span>
+      <span class="s">}</span>
+      <span class="s">@keyframes pulse {</span>
+        <span class="s">0% {</span>
+            <span class="s">opacity: 0;</span>
+            <span class="s">transform: scale(0.5);</span>
+        <span class="s">}</span>
+        <span class="s">50% {</span>
+            <span class="s">opacity: 1;</span>
+        <span class="s">}</span>
+        <span class="s">100% {</span>
+            <span class="s">opacity: 0;</span>
+        <span class="s">}</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Styled output</p>
+    <p>
+        <p><img src="/assets/elements/2026-03-02-energy-now-badge.gif" alt="Styled energy now badges output" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="elements" /><category term="energy" /><category term="badge" /><summary type="html"><![CDATA[Style the energy now badges introduced in Home Assistant 2026.3: power, gas, water.]]></summary></entry><entry><title type="html">Styling dialogs with UI eXtension</title><link href="/dialogs/2026/02/27/styling-dialogs.html" rel="alternate" type="text/html" title="Styling dialogs with UI eXtension" /><published>2026-02-27T00:00:00+00:00</published><updated>2026-02-27T00:00:00+00:00</updated><id>/dialogs/2026/02/27/styling-dialogs</id><content type="html" xml:base="/dialogs/2026/02/27/styling-dialogs.html"><![CDATA[<p>Home Assistant uses a dialog manager through which most dialogs are shown. UIX patches through the <code class="language-plaintext highlighter-rouge">showDialog()</code> method to allow styling dialogs via UIX theme.</p>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">Other dialog guides</p>
+    <p>
+        <p>You can check out all dialog guides via the <a href="/categories.html#h-dialogs">dialog category</a>.</p>
+
+    </p>
+</div>
+
+<p>As there are many different types of dialogs, UIX guides will not be able to cover all dialogs so this guide will lead you through inspecting the DOM to discover more about the dialog you wish to style, and leading you through when to use a template to target the dialog specifically.</p>
+
+<div class="admonition example rounded">
+    <p class="admonition-title">DOM example</p>
+    <p>
+        <p><img src="/assets/dialogs/2026-02-27-styling-dialogs-1.png" alt="DOM example" /></p>
+
+    </p>
+</div>
+
+<p>Above you will see an example of an alert dialog from Home Assistant 2026.3+. Dialogs managed by Home Assistant’s dialog manager will always be the last child element of the shadowRoot of <code class="language-plaintext highlighter-rouge">&lt;home-assistant&gt;</code>. The outer element will be the dialog parent element, which for the alert dialog example is the generic Home Assistant <code class="language-plaintext highlighter-rouge">&lt;dialog-box&gt;</code>. Generally dialogs will use a shadowRoot under which there will be the dialog element, usually either <code class="language-plaintext highlighter-rouge">&lt;ha-dialog&gt;</code> or <code class="language-plaintext highlighter-rouge">&lt;ha-adaptive-dialog&gt;</code>. It is this level which UIX is patched and applied for dialogs.</p>
+
+<p>Basic styling can be done to the dialog element, in the alert example this is <code class="language-plaintext highlighter-rouge">ha-dialog</code>. As the dialog patch is universal, you are best to use the UIX type class to scope your styling, which is <code class="language-plaintext highlighter-rouge">type-dialog-box</code> in the alert example.</p>
+
+<h2 id="basic-example">Basic example</h2>
+
+<p>Below is theme yaml code to make the dialog background red and the text white. Yaml selectors are used as you will generally need to go to the dialog element shadowRoot when styling dialogs.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">UIX Theme</span><span class="pi">:</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">UIX Theme</span>
+  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.: |</span>
+      <span class="s">ha-dialog.type-dialog-box {</span>
+        <span class="s">--card-background-color: red;</span>
+        <span class="s">--primary-text-color: white;</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Styled dialog</p>
+    <p>
+        <p><img src="/assets/dialogs/2026-02-27-styling-dialogs.png" alt="Styled dialog" /></p>
+
+    </p>
+</div>
+
+<h2 id="template-example">Template example</h2>
+
+<p>The <a href="#basic-example">basic example</a> for an alert dialog will style all dialogs of UIX class <code class="language-plaintext highlighter-rouge">type-dialog-box</code>. This is the generic Home Assistant dialog and covers many dialogs including alerts and confirmation dialogs. If you wish to scope your styling to a specific dialog, you will need to template your styling, taking advantage of <code class="language-plaintext highlighter-rouge">params</code> variable which will be available in the template.</p>
+
+<p>Your can view the <code class="language-plaintext highlighter-rouge">params</code> available for the dialog using your browser’s element inspector and console. With the dialog element, in the alert example <code class="language-plaintext highlighter-rouge">ha-dialog</code> selected, type the following code to see the UIX variables, which includes <code class="language-plaintext highlighter-rouge">params</code>.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span>0._uix[0].variables
+</code></pre></div></div>
+
+<div class="admonition example rounded">
+    <p class="admonition-title">Dialog params</p>
+    <p>
+        <p><img src="/assets/dialogs/2026-02-27-styling-dialogs-2.png" alt="Dialog params" /></p>
+
+    </p>
+</div>
+
+<p>Knowing <code class="language-plaintext highlighter-rouge">params</code> which are available you can make a template to target this alert dialog by title.</p>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">Dialog text</p>
+    <p>
+        <p>An important tip to note is that dialog text is <strong>after</strong> localization. Localization keys are not available as the localization is done before the dialog is called.</p>
+
+    </p>
+</div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">UIX Theme</span><span class="pi">:</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">UIX Theme</span>
+  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.: |</span>
+      <span class="s">ha-dialog.type-dialog-box {</span>
+        <span class="s">--card-background-color: red;</span>
+        <span class="s">--primary-text-color: white;</span>
+      <span class="s">}</span>
+      <span class="s">{% set titleText = params.title if 'title' in params else '' %}</span>
+      <span class="s">{% if titleText == 'Alert Dialog' %}</span>
+      <span class="s">ha-dialog.type-dialog-box {</span>
+        <span class="s">--card-background-color: orange !important;</span>
+      <span class="s">}</span>
+      <span class="s">{% endif %}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Styled dialog</p>
+    <p>
+        <p><img src="/assets/dialogs/2026-02-27-styling-dialogs-3.png" alt="Styled dialog" /></p>
+
+    </p>
+</div>
+
+<h2 id="vertical-centering">Vertical centering</h2>
+
+<p><code class="language-plaintext highlighter-rouge">ha-dialog</code> uses <code class="language-plaintext highlighter-rouge">wa-dialog</code> which in turn uses the browser’s <code class="language-plaintext highlighter-rouge">&lt;dialog&gt;</code> element. The only way the <code class="language-plaintext highlighter-rouge">&lt;dialog&gt;</code> element can be adjusted vertically is to use <code class="language-plaintext highlighter-rouge">--dialog-surface-margin-top</code>. By default this is set to <code class="language-plaintext highlighter-rouge">auto</code>. If you wish to have the dialog 40px from the top, like <code class="language-plaintext highlighter-rouge">more-info</code> dialog, you can set <code class="language-plaintext highlighter-rouge">--dialog-surface-margin-top: 40px</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">UIX Theme</span><span class="pi">:</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">UIX Theme</span>
+  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.: |</span>
+      <span class="s">ha-dialog.type-dialog-box {</span>
+        <span class="s">--dialog-surface-margin-top: 40px;</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<h2 id="using-shadow-dom">Using shadow DOM</h2>
+
+<p>Most dialog styling can be done using CSS vars that pierce shadowRoot. However some stylings need to carries out on <code class="language-plaintext highlighter-rouge">wa-dialog</code> which is in shadowRoot. Below are examples to get you started.</p>
+
+<h3 id="move-to-bottom">Move to bottom</h3>
+
+<p>To move a dialog to bottom you need to set <code class="language-plaintext highlighter-rouge">top: unset</code>, <code class="language-plaintext highlighter-rouge">bottom: 0</code> of the actual <code class="language-plaintext highlighter-rouge">dialog</code> element used by <code class="language-plaintext highlighter-rouge">wa-dialog</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">UIX Theme</span><span class="pi">:</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">UIX Theme</span>
+  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">$ wa-dialog $: |</span>
+      <span class="s">dialog {</span>
+        <span class="s">margin-top: 0 !important;</span>
+        <span class="s">top: unset !important;</span>
+        <span class="s">bottom: 0 !important;</span>
+        <span class="s">margin-bottom: 20px !important;</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<h3 id="slide-in-or-other-animations">Slide-in or other animations</h3>
+
+<p>Animations can be slightly problematic for wa-dialog as it has its own animation for show/hide (and pulse if dismiss is blocked). Setting animation times to 0 mostly solves this but you may see the popup briefly before animation.</p>
+
+<p>The following is generally working well.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">UIX Theme</span><span class="pi">:</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">UIX Theme</span>
+  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.: |</span>
+      <span class="s">ha-dialog {</span>
+        <span class="s">--dialog-surface-margin-top: auto !important; /* vertically centered */</span>
+        <span class="s">--ha-dialog-show-duration: 0;</span>
+        <span class="s">--ha-dialog-hide-duration: 0;</span>
+      <span class="s">}</span>
+    <span class="s">$ wa-dialog $: |</span>
+      <span class="s">@keyframes slide-in { from { transform:translateX(100%) } to {</span>
+      <span class="s">transform: translateX(0); } }</span>
+
+      <span class="s">dialog {</span>
+        <span class="s">animation: slide-in 0.3s forwards;</span>
+      <span class="s">}</span>
+</code></pre></div></div>]]></content><author><name>Lint-Free-Technology</name></author><category term="dialogs" /><category term="dialogs" /><category term="templates" /><summary type="html"><![CDATA[Styling dialogs including template and shadowRoot examples]]></summary></entry><entry><title type="html">Adapting tooltips with UI eXtension</title><link href="/elements/2026/02/27/tooltips.html" rel="alternate" type="text/html" title="Adapting tooltips with UI eXtension" /><published>2026-02-27T00:00:00+00:00</published><updated>2026-02-27T00:00:00+00:00</updated><id>/elements/2026/02/27/tooltips</id><content type="html" xml:base="/elements/2026/02/27/tooltips.html"><![CDATA[<p>A common request is to adapt the tooltips in entities rows. In fact, a browser will show a tooltip any element with a <code class="language-plaintext highlighter-rouge">title</code> attribute. This guide will show how to adapt the tooltip for an entities row, and then apply the same technique to add a tool tip to a card.</p>
+
+<p>Any element with title attribute will make the browser show a tooltip. UIX can’t alter attributes (maybe one day) so you can’t change the text. However you can hide the text with <code class="language-plaintext highlighter-rouge">pointer-events: none</code> as long as the element itself does not need <code class="language-plaintext highlighter-rouge">pointer-events</code> for anything pointer function. For an entities row <code class="language-plaintext highlighter-rouge">.info</code> there is no issue. So this means that first step is to hide the existing tooltip with the following code for an entities row.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">entities</span>
+<span class="na">entities</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">entity</span><span class="pi">:</span> <span class="s">sun.sun</span>
+    <span class="na">uix</span><span class="pi">:</span>
+      <span class="na">style</span><span class="pi">:</span>
+        <span class="na">hui-generic-entity-row $</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">.info {</span>
+            <span class="s">pointer-events: none;</span>
+          <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition warning rounded">
+    <p class="admonition-title">CSS tooltips and screen readers</p>
+    <p>
+        <p>CSS-generated tooltips like those in the examples below using <code class="language-plaintext highlighter-rouge">::before { content: ... }</code> are not exposed to assistive technologies (screen readers), so this approach creates a visual-only tooltip.</p>
+
+    </p>
+</div>
+
+<h2 id="tooltip-for-entities-row">Tooltip for entities row</h2>
+
+<p>Next is to get a new tooltip. This can be done in CSS using the pseudo element <code class="language-plaintext highlighter-rouge">::before</code> with initial <code class="language-plaintext highlighter-rouge">opacity: 0</code>, then showing on hover with a transition effect to make it appear to be rising from the middle. The below code shows a tooltip over the entities row. There is limited positional control so this will not do fancy positioning, flipping sides etc like <code class="language-plaintext highlighter-rouge">ha-tooltip</code> that <code class="language-plaintext highlighter-rouge">custom:button-card</code> and other Frontend elements use, nor any delay to showing the tooltip. However it works as is with UIX as its pure CSS.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">entities</span>
+<span class="na">entities</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">entity</span><span class="pi">:</span> <span class="s">sun.sun</span>
+    <span class="na">uix</span><span class="pi">:</span>
+      <span class="na">style</span><span class="pi">:</span>
+        <span class="na">hui-generic-entity-row $</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">.info {</span>
+            <span class="s">pointer-events: none;</span>
+          <span class="s">}</span>
+          <span class="s">.row::before {</span>
+            <span class="s">content: "Test 1 2 3";</span>
+            <span class="s">display: inline-block;</span>
+            <span class="s">position: absolute; </span>
+            <span class="s">bottom: 50%;</span>
+            <span class="s">left: 10%;</span>
+            <span class="s">background: #666; </span>
+            <span class="s">color: #FFF; </span>
+            <span class="s">padding: 5px; </span>
+            <span class="s">border-radius: 5px;</span>
+            <span class="s">opacity:0; </span>
+            <span class="s">transition:.3s; </span>
+            <span class="s">overflow:hidden;</span>
+            <span class="s">max-width: 50%; /* avoids very long sentences */</span>
+            <span class="s">pointer-events: none; /* prevents tooltip from firing on pseudo hover */</span>
+          <span class="s">}</span>
+          <span class="s">.row:hover::before { opacity:1; bottom: 100%; }</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Home Assistant output</p>
+    <p>
+        <p><img src="/assets/elements/2026-02-27-tooltips.png" alt="example" /></p>
+
+    </p>
+</div>
+
+<h2 id="tooltip-for-a-card">Tooltip for a card</h2>
+
+<p>Following on from the example for the entities row, the same technique can be applied to any element, including <code class="language-plaintext highlighter-rouge">ha-card</code>. The following is an example of a tooltip for a tile card.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+<span class="na">entity</span><span class="pi">:</span> <span class="s">input_boolean.test_boolean</span>
+<span class="na">uix</span><span class="pi">:</span>
+  <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">ha-card::before {</span>
+      <span class="s">content: "Test 1 2 3";</span>
+      <span class="s">display: inline-block;</span>
+      <span class="s">position: absolute; </span>
+      <span class="s">left: 10%;</span>
+      <span class="s">bottom: 50%;</span>
+      <span class="s">background: #666; </span>
+      <span class="s">color: #FFF; </span>
+      <span class="s">padding: 5px; </span>
+      <span class="s">border-radius: 5px;</span>
+      <span class="s">opacity:0; </span>
+      <span class="s">transition:0.3s; </span>
+      <span class="s">overflow:hidden;</span>
+      <span class="s">max-width: 50%; /* avoids very long sentences */</span>
+      <span class="s">pointer-events: none; /* prevents tooltip from firing on pseudo hover */</span>
+    <span class="s">}</span>
+    <span class="s">ha-card:hover::before { opacity:1; bottom: 100%; }</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Home Assistant output</p>
+    <p>
+        <p><img src="/assets/elements/2026-02-27-tooltips-1.png" alt="example" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="elements" /><category term="tooltip" /><category term="entities" /><category term="card" /><summary type="html"><![CDATA[Achieving basic tooltip adaptation with UI eXtension]]></summary></entry><entry><title type="html">Dialog changes in Home Assistant 2026.3</title><link href="/dialogs/2026/02/25/dialog-changes-2026.3.html" rel="alternate" type="text/html" title="Dialog changes in Home Assistant 2026.3" /><published>2026-02-25T00:00:00+00:00</published><updated>2026-02-25T00:00:00+00:00</updated><id>/dialogs/2026/02/25/dialog-changes-2026.3</id><content type="html" xml:base="/dialogs/2026/02/25/dialog-changes-2026.3.html"><![CDATA[<p>There are major changes to dialogs in Home Assistant 2026.3. Changes include:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ha-dialog</code> is now a new element that uses the Web Awesome <code class="language-plaintext highlighter-rouge">wa-dialog</code> component rather than the MDC dialog. The final element used is the browser’s <code class="language-plaintext highlighter-rouge">&lt;dialog&gt;</code> element, which is displayed in the browser’s <a href="https://developer.mozilla.org/en-US/docs/Glossary/Top_layer">top layer</a>.</li>
+  <li>the interim <code class="language-plaintext highlighter-rouge">ha-wa-dialog</code> is now <code class="language-plaintext highlighter-rouge">ha-dialog</code> as per above</li>
+  <li>a number of dialogs are now using the newer <code class="language-plaintext highlighter-rouge">ha-adaptive-dialog</code> which either uses <code class="language-plaintext highlighter-rouge">ha-dialog</code> for larger views, or <code class="language-plaintext highlighter-rouge">ha-bottom-sheet</code> for smaller views like mobiles.</li>
+  <li>more-info dialog is now using <code class="language-plaintext highlighter-rouge">ha-adaptive-dialog</code>.</li>
+</ul>
+
+<p>As dialog modding is only a relatively newer feature of UIX, this may not affect you directly. However for those who jumped in and modded out more-info, or other dialogs, you will need to adapt your modifications, especially for more-info dialog.</p>
+
+<p>A start of the types of changes required are below. This list is not exhaustive as there will be many scenarios based on what you have modded:</p>
+
+<ul>
+  <li>for dialogs that were using <code class="language-plaintext highlighter-rouge">ha-wa-dialog</code> in the interim, you should be able to change your modifications to update all use of <code class="language-plaintext highlighter-rouge">ha-wa-dialog</code> to <code class="language-plaintext highlighter-rouge">ha-dialog</code>.</li>
+  <li>for dialogs that have migrated to <code class="language-plaintext highlighter-rouge">ha-adaptive-dialog</code>, you will need to account for this extra element in your yaml theme selectors plus additional theming for <code class="language-plaintext highlighter-rouge">ha-bottom-sheet</code>.</li>
+</ul>
+
+<p>This post will be updated as further examples arise in the 2026.3.0 beta period.</p>
+
+<p><strong>Additional Resource:</strong> For more information on likely changes for <code class="language-plaintext highlighter-rouge">ha-dialog</code> see <a href="https://github.com/thomasloven/hass-browser_mod/issues/1163">Browser Mod Issue #1163</a></p>]]></content><author><name>Lint-Free-Technology</name></author><category term="dialogs" /><category term="dialogs" /><summary type="html"><![CDATA[There are major changes to dialogs in Home Assistant 2026.3. Changes include:]]></summary></entry><entry><title type="html">ha-icon-button changes for 2026.3</title><link href="/elements/2026/02/25/ha-icon-button.html" rel="alternate" type="text/html" title="ha-icon-button changes for 2026.3" /><published>2026-02-25T00:00:00+00:00</published><updated>2026-02-25T00:00:00+00:00</updated><id>/elements/2026/02/25/ha-icon-button</id><content type="html" xml:base="/elements/2026/02/25/ha-icon-button.html"><![CDATA[<p>Home Assistant 2026.3 changes <code class="language-plaintext highlighter-rouge">ha-icon-button</code> from using mdc button to webawesome (<code class="language-plaintext highlighter-rouge">ha-button</code>). This means that all uses of <code class="language-plaintext highlighter-rouge">--mdc-icon-button-size</code> need to change to <code class="language-plaintext highlighter-rouge">--ha-icon-button-size</code>.</p>
+
+<p>The example below changes the default size of the picture-glance entity button icon from 40px to 70px. The icon color is changed to yellow for example effect only.</p>
+
+<p>UIX mods required:</p>
+
+<ul>
+  <li>Change <code class="language-plaintext highlighter-rouge">--ha-icon-button-size</code> to 70px from default of 40px.</li>
+  <li>Change <code class="language-plaintext highlighter-rouge">--mdc-icon-size</code> to 54px from default of 24px.</li>
+  <li>Change icon button wrapper width to 70px from default of 40px.</li>
+</ul>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">picture-glance</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s">Kitchen</span>
+<span class="na">image</span><span class="pi">:</span> <span class="s">https://demo.home-assistant.io/stub_config/kitchen.png</span>
+<span class="na">entities</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">entity</span><span class="pi">:</span> <span class="s">light.kitchen_lights</span>
+<span class="na">uix</span><span class="pi">:</span>
+  <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.wrapper {</span>
+      <span class="s">width: 70px;</span>
+    <span class="s">}</span>
+    <span class="s">ha-icon-button {</span>
+      <span class="s">--ha-icon-button-size: 70px;</span>
+      <span class="s">--mdc-icon-size: 54px;</span>
+      <span class="s">color: yellow !important;</span>
+    <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Home Assistant output</p>
+    <p>
+        <p><img src="/assets/elements/2026-02-25-ha-icon-button.png" alt="example" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="elements" /><category term="icon" /><category term="button" /><category term="card" /><category term="picture-glance" /><summary type="html"><![CDATA[Home Assistant 2026.3 changes ha-icon-button from using mdc button to webawesome (ha-button). This means that all uses of --mdc-icon-button-size need to change to --ha-icon-button-size.]]></summary></entry><entry><title type="html">Modifying sidebar menu icon</title><link href="/frontend/2026/02/25/sidebar-menu-icon.html" rel="alternate" type="text/html" title="Modifying sidebar menu icon" /><published>2026-02-25T00:00:00+00:00</published><updated>2026-02-25T00:00:00+00:00</updated><id>/frontend/2026/02/25/sidebar-menu-icon</id><content type="html" xml:base="/frontend/2026/02/25/sidebar-menu-icon.html"><![CDATA[<p>Starting with UIX version <a href="https://github.com/Lint-Free-Technology/uix/releases/tag/v5.1.0">5.1.0</a>, you can now apply <code class="language-plaintext highlighter-rouge">--uix-icon</code> to icons that do not have a parent of <code class="language-plaintext highlighter-rouge">ha-icon</code>. These are often icons which have a set purpose in the Home Assistant interface and are not able to be changed, unless you have UIX.</p>
+
+<p>Generally modifying such icons is accomplished using UIX in your <a href="https://uix.lf.technology/using/themes/">themes</a>.</p>
+
+<p>The example below changes the sidebar hamburger menu icon to the Home Assistant icon.</p>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">Home Assistant themes</p>
+    <p>
+        <p>If you are new to Home Assistant themes in general check out the <a href="https://www.home-assistant.io/integrations/frontend/">https://www.home-assistant.io/integrations/frontend/</a>.</p>
+
+    </p>
+</div>
+
+<p>If you already have any of the theme keys in your theme as yaml version, e.g. <code class="language-plaintext highlighter-rouge">uix-sidebar-yaml</code>,then you will need to adjust to include the CSS rules in your base element selector <code class="language-plaintext highlighter-rouge">.:</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">UIX Test</span><span class="pi">:</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">UIX Test</span>
+  <span class="na">uix-sidebar</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.menu &gt; ha-icon-button {</span>
+      <span class="s">--uix-icon: hass:home-assistant;</span>
+      <span class="s">--uix-icon-color: var(--primary-color);</span>
+    <span class="s">}</span>
+  <span class="na">uix-top-app-bar-fixed</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">slot[name="navigationIcon"] {</span>
+      <span class="s">--uix-icon: hass:home-assistant;</span>
+      <span class="s">--uix-icon-color: var(--primary-color);</span>
+    <span class="s">}</span>
+  <span class="na">uix-root-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.: |</span>
+      <span class="s">ha-menu-button[slot="navigationIcon"] {</span>
+        <span class="s">--uix-icon: hass:home-assistant;</span>
+        <span class="s">--uix-icon-color: var(--primary-color);</span>
+      <span class="s">}</span>
+  <span class="na">uix-profile-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">"* $":</span>
+      <span class="s">hass-tabs-subpage $: |</span>
+        <span class="s">.toolbar.narrow &gt; slot[name="toolbar"] {</span>
+          <span class="s">--uix-icon: hass:home-assistant;</span>
+          <span class="s">--uix-icon-color: var(--primary-color);</span>
+        <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Home Assistant output</p>
+    <p>
+        <p><img src="/assets/frontend/2026-02-25-sidebar-menu-icon.png" alt="example" /></p>
+
+    </p>
+</div>
+
+<p>This has been tested on lovelace dashboard pages, config settings pages, and user profile. There may be additional panels, custom panels where this does not apply. If you have any updates please <a href="/general/2026/02/25/contrubuting-to-uix-guides.html">contribute</a>.</p>]]></content><author><name>Lint-Free-Technology</name></author><category term="frontend" /><category term="sidebar" /><category term="icon" /><summary type="html"><![CDATA[Starting with UIX version 5.1.0, you can now apply --uix-icon to icons that do not have a parent of ha-icon. These are often icons which have a set purpose in the Home Assistant interface and are not able to be changed, unless you have UIX.]]></summary></entry><entry><title type="html">Contributing to UI eXtension guides</title><link href="/general/2026/02/25/contrubuting-to-uix-guides.html" rel="alternate" type="text/html" title="Contributing to UI eXtension guides" /><published>2026-02-25T00:00:00+00:00</published><updated>2026-02-25T00:00:00+00:00</updated><id>/general/2026/02/25/contrubuting-to-uix-guides</id><content type="html" xml:base="/general/2026/02/25/contrubuting-to-uix-guides.html"><![CDATA[<p>Contribution to UI eXtension guides is most welcome. To view your edits locally you will need <a href="https://www.ruby-lang.org/en/">ruby</a> as the site is built with Jekyll. If you don’t have ruby then don’t let that stop you from contributing. Simply follow the guide writing your post in markdown and any suggested edits will be made when you submit your pull request.</p>
+
+<h2 id="creating-a-post">Creating a post</h2>
+
+<p>Fork the repository and either work online in GitHub desktop or in your favorite development environment.</p>
+
+<ul>
+  <li>Create new markdown <code class="language-plaintext highlighter-rouge">.md</code> posts in <code class="language-plaintext highlighter-rouge">_posts/</code> directory in directories of main project directory. These directories become categories. e.g. <code class="language-plaintext highlighter-rouge">elements/_posts</code></li>
+  <li>Name markdown file <code class="language-plaintext highlighter-rouge">YYYY-MM-DD-&lt;descriptive short name&gt;.md</code></li>
+  <li>Save any images to <code class="language-plaintext highlighter-rouge">assets/&lt;category&gt;/YYYY-MM-DD-&lt;descriptive short name&gt;.png</code> and use in post from this location.</li>
+  <li>Follow Jekyll front matter format
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">title:</code></li>
+      <li><code class="language-plaintext highlighter-rouge">excerpt_image:</code> if required</li>
+      <li><code class="language-plaintext highlighter-rouge">tags:</code> list</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Submit a PR against the <code class="language-plaintext highlighter-rouge">contrib</code> branch.</p>
+
+<h2 id="setup-for-local-development">Setup for local development</h2>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<ul>
+  <li>Ruby (3.4.8)</li>
+  <li>Bundler</li>
+  <li>
+    <p>Git</p>
+
+    <p><em>GitHub action uses Ruby 3.4.8. If you use MacOS/Linux you can use rbenv to manage your ruby installs. Repo has <code class="language-plaintext highlighter-rouge">.ruby-version</code> file set to 3.4.8</em></p>
+  </li>
+</ul>
+
+<h3 id="build-steps">Build steps</h3>
+
+<ol>
+  <li>
+    <p>Clone the repository:</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/Lint-Free-Technology/uix-guides.git
+<span class="nb">cd </span>uix-guides
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Install dependencies:</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle <span class="nb">install</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Run the local server:</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle <span class="nb">exec </span>jekyll serve
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Visit <code class="language-plaintext highlighter-rouge">http://localhost:4000</code> in your browser</p>
+  </li>
+</ol>]]></content><author><name>Lint-Free-Technology</name></author><category term="general" /><category term="community" /><summary type="html"><![CDATA[Contribution to UI eXtension guides is most welcome. To view your edits locally you will need ruby as the site is built with Jekyll. If you don’t have ruby then don’t let that stop you from contributing. Simply follow the guide writing your post in markdown and any suggested edits will be made when you submit your pull request.]]></summary></entry></feed>
