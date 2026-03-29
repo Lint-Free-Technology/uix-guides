@@ -8,7 +8,7 @@ tags:
   - templates
 ---
 
-{% include admonition.html type="tip" title="Host/element selector" body="To save using a template just for type you can use the alternate method using [Host/element selector]({% post_url /elements/2026-03-29-getting-shadowy-with-themes-host-element-selector %})" %}
+{% include admonition.html type="tip" title="Host/element selector" body="To save using a template just for type you can use the alternate method using [Host/element selector](/elements/2026/03/29/getting-shadowy-with-themes-host-element-selector.html)" %}
 
 When using UI eXtension themes, often you can carry out all your styling by simple CSS targeting on the hosts class type. For example, see [Styling Home Assistant 2026.3 energy now badges]({% post_url /elements/2026-03-02-energy-now-badge %}) which uses a CSS target of `:host(.type-power-total)`. However this will not work if you need to target an element directly in shadow root to target a property that is not styled with a CSS variable, or to inject keyframes into an element's light DOM.
 
