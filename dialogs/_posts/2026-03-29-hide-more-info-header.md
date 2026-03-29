@@ -33,4 +33,4 @@ UIX Theme:
         }
 ```
 
-{% include admonition.html type="homeassistant" title="More-info dialog with header removed" body="![Screenshot of Home Assistant fullscreen web browser media player dialog](/assets/dialogs/2026-03-29-hide-more-info-header.png)" %}
+{% include admonition.html type="homeassistant" title="More-info dialog with header removed" body="![Screenshot of Home Assistant more-info dialog with header removed](/assets/dialogs/2026-03-29-hide-more-info-header.png)" %}
