@@ -79,4 +79,4 @@ Specific customizations:
         }
 ```
 
-{% include admonition.html type="homeassistant" title="Media player web browser styled fullscreen" body="![Styled power now badge](/assets/dialogs/2026-03-29-fullscreen-media-player-dialog.png)" %}
+{% include admonition.html type="homeassistant" title="Media player web browser styled fullscreen" body="![Screenshot of Home Assistant fullscreen web browser media player dialog](/assets/dialogs/2026-03-29-fullscreen-media-player-dialog.png)" %}
