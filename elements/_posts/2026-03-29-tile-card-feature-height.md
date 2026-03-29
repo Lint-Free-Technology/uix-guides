@@ -18,9 +18,9 @@ The screenshot below shows `hui-card-feature` and that it indeed sets `--feature
 
 ![DOM screenshot](/assets/elements/2026-03-29-tile-card-feature-height-1.png)
 
-## Step 2: run uix_style_path/uix_path
+## Step 2: run uix_style_path()
 
-With `hui-card-feature` selected in browser's inspector, run `uix_style_path($0)` (`uix_path()` is shorthand for `uix_style_path`).
+With `hui-card-feature` selected in browser's inspector, run `uix_style_path($0)` - `uix_path()` is shorthand for `uix_style_path()`.
 
 ![DOM screenshot](/assets/elements/2026-03-29-tile-card-feature-height-2.png)
 
@@ -65,7 +65,7 @@ uix: # Included from Boilerplate UIX YAML, filling in desired styling
 
 From the `uix_style_path()` output take the 📝 Boilerplate Theme YAML and use to create a new theme or add to an existing theme already set up for UIX styling. If you already have a theme you would just take the `uix-card-yaml:` section.
 
-{% include admonition.html type="tip" title="Merging UIX styling" body="If you already have `uix-card:` theme section and need to migrate to `uix-card-yaml` you need to place any existing under the root key `.:`." %}
+{% include admonition.html type="tip" title="Merging UIX styling" body="If you already have `uix-card:` theme section and need to migrate to `uix-card-yaml` you need to place any existing under the root key `.:`. For more information see [Updating uix-\<thing\> variable to uix-\<thing\>-yaml variable](https://uix.lf.technology/using/themes/#updating-uix-thing-variable-to-uix-thing-yaml-variable)" %}
 
 📝 Boilerplate Theme YAML
 
