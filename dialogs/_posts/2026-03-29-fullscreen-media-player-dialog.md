@@ -9,7 +9,7 @@ tags:
 
 When viewing media in the Home Assistant Media panel, the dialog used is large in size. This guide shows how to make the dialog fullscreen, without title so you can focus on the media itself. Videos will fit by default and img styling is included to make sure they are contained.
 
-Styling dialogs is done using a theme. Check out [styling dialogs](/dialogs/2026/02/27/styling-dialogs.html)
+Styling dialogs is done using a theme. Check out [styling dialogs]({% post_url dialogs/2026-02-27-styling-dialogs %})
 
 ## Style dialog size
 
