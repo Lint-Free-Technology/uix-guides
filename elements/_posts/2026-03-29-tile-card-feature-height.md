@@ -55,7 +55,7 @@ features:
   - type: light-brightness
 uix: # Included from Boilerplate UIX YAML, filling in desired styling
   style:
-    hui-card-features $: |
+    "hui-card-features $": |
       hui-card-feature {
         --feature-height: 20px;
       }
