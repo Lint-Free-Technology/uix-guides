@@ -92,4 +92,4 @@ UIX Test:
       }
 ```
 
-{% include admonition.html type="homeassistant" title="Styled tile card feature height" body="![Styled power now badge](/assets/elements/2026-03-29-tile-card-feature-height.png)" %}
+{% include admonition.html type="homeassistant" title="Styled tile card feature height" body="![Styled tile card feature height](/assets/elements/2026-03-29-tile-card-feature-height.png)" %}
