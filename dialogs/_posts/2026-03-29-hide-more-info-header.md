@@ -6,7 +6,7 @@ tags:
   - dialogs
 ---
 
-Since Home Assistant 2026.3.0, more-info dialog uses an adaptive dialog (`ha-adaptive-dialog`), which is includes either a standard dialog (`ha-dialog`) on larger screens or a bottom sheet (`ha-bottom-sheet`) on smaller screens. This guides shows how to target each type of dialog in order to hide the header.
+Since Home Assistant 2026.3.0, more-info dialog uses an adaptive dialog (`ha-adaptive-dialog`), which includes either a standard dialog (`ha-dialog`) on larger screens or a bottom sheet (`ha-bottom-sheet`) on smaller screens. This guide shows how to target each type of dialog in order to hide the header.
 
 In both cases, the parent dialog element is `ha-adaptive-dialog`. For more-info dialog UIX is applied in the light DOM of the adaptive dialog (`ha-adaptive-dialog`). To reach either dialog crossing of a shadow root `$` is required.
 
