@@ -63,7 +63,7 @@ uix: # Included from Boilerplate UIX YAML, filling in desired styling
 
 ## Step 3b: style tile card via theme
 
-From the `uix_style_path()` output take the 📝 Boilerplate Theme YAML and use to create a new theme or add to an existing theme already setup for UIX styling. if you already have a theme you would just take `uix-card-yaml:` section.
+From the `uix_style_path()` output take the 📝 Boilerplate Theme YAML and use to create a new theme or add to an existing theme already set up for UIX styling. If you already have a theme you would just take the `uix-card-yaml:` section.
 
 {% include admonition.html type="tip" title="Merging UIX styling" body="If you already have `uix-card:` theme section and need to migrate to `uix-card-yaml` you need to place any existing under the root key `.:`." %}
 
