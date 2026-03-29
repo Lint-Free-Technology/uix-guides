@@ -1,6 +1,6 @@
 ---
 title: Fullscreen media player dialog
-description: How to make the inbuilt Home Assistant media player dialog fullscreen
+description: How to make the built-in Home Assistant media player dialog fullscreen
 excerpt_image: /assets/dialogs/2026-03-29-fullscreen-media-player-dialog.png
 tags:
   - dialogs
