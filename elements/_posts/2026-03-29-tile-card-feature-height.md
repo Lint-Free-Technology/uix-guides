@@ -5,8 +5,8 @@ excerpt_image: /assets/elements/2026-03-29-tile-card-feature-height.png
 tags:
   - tile
   - card
-  - theme
-  - uix_path()
+  - themes
+  - uix_path
 ---
 Tile card features have a height which is a CSS var `--feature-height`. This is set on the feature element itself, `hui-card-feature`, which is in shadow root of `hui-card-features`. Below is a step by step guide on using [`uix_style_path()`](https://uix.lf.technology/concepts/dom/#uix_style_path0-specific-helper) to discover yaml selector to cross the shadow root for styling with UIX.
 
