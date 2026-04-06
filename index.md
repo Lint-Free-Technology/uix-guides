@@ -9,7 +9,7 @@ Welcome to UI eXtension Guides! This site is your comprehensive resource for lea
 
 ## What is UIX Styling?
 
-UIX Styling allows you to apply custom CSS styling to to (almost) every UI element of Home Assistant
+UIX Styling allows you to apply custom CSS styling to (almost) every UI element of Home Assistant.
 
 - Customize the appearance of any card
 - Apply themes and styling to match your design preferences
