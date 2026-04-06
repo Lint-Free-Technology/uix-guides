@@ -147,7 +147,7 @@ As the same template is used for `entity` and `camera_image` a macro can be used
 
 {% include admonition.html type="tip" title="Macros and variables" body="Jinja macros are isolated from the where they are used so any variables you wish to use need to be a param of the macro" %}
 
-The macro added uses a param of `uixConfig` which will be passed through from the updated template used for `entity` and `camera_image`.
+The macro added uses a param of `uixForge` which will be passed through from the updated template used for `entity` and `camera_image`.
 
 {% raw %}
 
