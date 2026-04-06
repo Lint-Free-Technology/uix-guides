@@ -5,16 +5,24 @@ title: Home
 
 # Welcome to UI eXtension Guides
 
-Welcome to UI eXtension Guides! This site is your comprehensive resource for learning about and mastering UI eXtension (UIX), a powerful tool for customizing Home Assistant dashboards.
+Welcome to UI eXtension Guides! This site is your comprehensive resource for learning about and mastering [UI eXtension Styling](https://uix.lf.technology/using/) (UIX Styling) and [UI eXtension Forge](https://uix.lf.technology/forge/) (UIX Forge), powerful tools for customizing Home Assistant dashboards.
 
-## What is UIX?
+## What is UIX Styling?
 
-UIX is a Home Assistant integration that allows you to apply custom CSS styling to to (almost) every UI element of Home Assistant
+UIX Styling allows you to apply custom CSS styling to (almost) every UI element of Home Assistant.
 
 - Customize the appearance of any card
 - Apply themes and styling to match your design preferences
 - Create unique and personalized dashboard layouts
 - Override default styles with precision
+
+## What is UIX Forge?
+
+UIX Forge (`custom:uix-forge`) is a custom Lovelace element that combines template-driven configuration with additional behaviours called sparks. Use it to:
+
+- Forge any standard Home Assistant element from templates, allowing the entire element config to react to entity states, user, browser and other template variables.
+- Add sparks — self-contained behaviours that augment the forged element.
+- Apply UIX Styling to the forged element, exactly like any other element. Additionally, any spark variables are made available in `uixForge` template variables.
 
 ## Contributing
 
