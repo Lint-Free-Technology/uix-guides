@@ -13,7 +13,7 @@ tags:
 
 ## Template entities in picture-entity cards
 
-With UIX Forge, all forged element config accept templates. This includes using a template for the element's entity. To show this in the most basic form, we can include a simple string template for the `entity` and `camera_image` in a `picture-entity`card.
+With UIX Forge, all forged element configs accept templates. This includes using a template for the element's entity. To show this in the most basic form, we can include a simple string template for the `entity` and `camera_image` in a `picture-entity` card.
 
 {% raw %}
 
