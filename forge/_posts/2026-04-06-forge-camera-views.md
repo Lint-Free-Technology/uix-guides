@@ -95,7 +95,7 @@ element:
   camera_view: auto
   fit_mode: cover
   type: picture-entity
-  # entity and camera_image use template with default to camera_camera.1
+  # entity and camera_image use template with default to camera.camera_1
   entity: "{{ uixForge.event.entity | default('camera.camera_1') }}"
   camera_image: "{{ uixForge.event.entity | default('camera.camera_1') }}"
 ```
