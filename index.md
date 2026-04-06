@@ -5,7 +5,7 @@ title: Home
 
 # Welcome to UI eXtension Guides
 
-Welcome to UI eXtension Guides! This site is your comprehensive resource for learning about and mastering [UI eXtension Styling](https://uix.lf.technology/using/) (UIX Styling) abd [UI eXtension Forge](https://uix.lf.technology/forge/) (UIX Forge), powerful tools for customizing Home Assistant dashboards.
+Welcome to UI eXtension Guides! This site is your comprehensive resource for learning about and mastering [UI eXtension Styling](https://uix.lf.technology/using/) (UIX Styling) and [UI eXtension Forge](https://uix.lf.technology/forge/) (UIX Forge), powerful tools for customizing Home Assistant dashboards.
 
 ## What is UIX Styling?
 
