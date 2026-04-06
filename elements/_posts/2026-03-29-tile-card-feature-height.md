@@ -8,7 +8,7 @@ tags:
   - themes
   - uix_path
 ---
-Tile card features have a height which is a CSS var `--feature-height`. This is set on the feature element itself, `hui-card-feature`, which is in shadow root of `hui-card-features`. Below is a step by step guide on using [`uix_style_path()`](https://uix.lf.technology/concepts/dom/#uix_style_path0-specific-helper) to discover yaml selector to cross the shadow root for styling with UIX.
+Tile card features have a height which is a CSS var `--feature-height`. This is set on the feature element itself, `hui-card-feature`, in the shadow root of `hui-card-features`. Below is a step by step guide on using [`uix_style_path()`](https://uix.lf.technology/concepts/dom/#uix_style_path0-specific-helper) to discover a YAML selector to cross the shadow root for styling with UIX.
 
 ## Step 1: find feature needing styling
 
