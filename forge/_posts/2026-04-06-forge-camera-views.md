@@ -7,7 +7,7 @@ tags:
   - event spark
   - macros
 ---
-[UIX Forge](https://uix.lf.technology/forge) allows you to forge an element and apply various features with [forge sparks](https://uix.lf.technology/forge/sparks). This guide uses UIX Forge to forge an picture view element which can be changed from section header badge buttons using the [event spark](https://uix.lf.technology/forge/sparks/event).
+[UIX Forge](https://uix.lf.technology/forge) allows you to forge an element and apply various features with [forge sparks](https://uix.lf.technology/forge/sparks). This guide uses UIX Forge to forge a picture view element which can be changed from section header badge buttons using the [event spark](https://uix.lf.technology/forge/sparks/event).
 
 {% include admonition.html type="info" title="Forge elements" body="All UIX Forge documentation will describe the card, row, badge, section, picture-element as **element** as indeed, a forged element is not restricted to being a card, but can be any type supported by UIX Forge mold type" %}
 
