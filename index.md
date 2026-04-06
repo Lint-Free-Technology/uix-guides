@@ -18,7 +18,7 @@ UIX Styling allows you to apply custom CSS styling to to (almost) every UI eleme
 
 ## What is UIX Forge?
 
-UIX Forge (custom:uix-forge) is a custom Lovelace element that combines template-driven configuration with additional behaviours called sparks. Use it to:
+UIX Forge (`custom:uix-forge`) is a custom Lovelace element that combines template-driven configuration with additional behaviours called sparks. Use it to:
 
 - Forge any standard Home Assistant element from templates, allowing the entire element config to react to entity states, user, browser and other template variables.
 - Add sparks — self-contained behaviours that augment the forged element.
