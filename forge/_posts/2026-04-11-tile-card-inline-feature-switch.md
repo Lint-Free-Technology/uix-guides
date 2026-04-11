@@ -19,8 +19,8 @@ This guide relies heavily on [template macros](https://uix.lf.technology/using/t
 Four macros are used in the final solution. They are:
 
 1. **feature_options()**: Returns an array of lookup dicts to provide an icon and a feature. Uses `returns: true` [returns method](https://uix.lf.technology/using/templates/#macros-with-returns) as the macro returns an array.
-2. **feature_max_index**: Returns the length of the array return by feature_options() minus 1 to give a zero based index. Also uses the returns method as the macro returns an integer.
-3. **feature_next_index(index)**: Returns the next zero based index available in the array, rolling over back to start of the array. Takes a param of `index` and uses returns method as the macro returns an integer.
+2. **feature_max_index()**: Returns the length of the array returned by feature_options() minus 1 to give a zero-based index. Also uses the returns method as the macro returns an integer.
+3. **feature_next_index(index)**: Returns the next zero-based index available in the array, rolling over back to start of the array. Takes a param of `index` and uses returns method as the macro returns an integer.
 4. **feature_item(index, key)**: Returns the item by key of the dict at the index in the feature_options() array. It takes params of `index` and `key`.
 
 {% raw %}
