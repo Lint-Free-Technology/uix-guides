@@ -49,8 +49,6 @@ $0._uix[0].variables
 
 `$0` refers to the currently selected element in the Elements panel. The `params` object contains the values passed to the dialog, such as `title` and `text`, which you can use in UIX Jinja2 templates to target a specific dialog.
 
-{% include admonition.html type="info" title="Using params in templates" body="See the [Styling dialogs]({% post_url dialogs/2026-02-27-styling-dialogs %}) guide for a full example of using `params` in a UIX template to target a specific dialog." %}
-
 ## Styling the dialogs you are testing
 
 For a complete guide on how to style dialogs using UIX themes — including template examples and shadow DOM targeting — see [Styling dialogs with UI eXtension]({% post_url dialogs/2026-02-27-styling-dialogs %}).
