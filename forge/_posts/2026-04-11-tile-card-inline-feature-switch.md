@@ -138,11 +138,11 @@ element:
 
 ## Add event spark
 
-Next we will use the [event spark](https://uix.lf.technology/forge/sparks/event/) for teh forged element to be able to use data received from `fire-dom-event`.
+Next we will use the [event spark](https://uix.lf.technology/forge/sparks/event/) for the forged element to be able to use data received from `fire-dom-event`.
 
-The event spark needs a `forge_id`. Here the id used is made up of a prefix and the entity from the element config.
+The event spark needs a `forge_id`. Here the ID used is made up of a prefix and the entity from the element config.
 
-In th forged element we now use data from the event spark as input to **feature_item()**. As per event spark guidelines, pur event data will not be available when first loaded, so `default(0)` is used. The data will also come as string so we cast to `int`.
+In the forged element we now use data from the event spark as input to **feature_item()**. As per event spark guidelines, our event data will not be available when first loaded, so `default(0)` is used. The data will also come as a string so we cast to `int`.
 
 {% raw %}
 
