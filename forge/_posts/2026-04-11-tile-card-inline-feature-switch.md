@@ -107,15 +107,15 @@ forge:
     feature_max_index:
       returns: true
       template: |
-        {% do returns(feature_options() | length) %}
+        {%- do returns(feature_options() | length - 1) -%}
     feature_next_index:
       params:
         - index
       returns: true
       template: |
-        {% set nextIndex = index | int + 1 %}
-        {% set maxIndex = feature_max_index() | int %}
-        {% do returns(nextIndex if nextIndex < maxIndex else 0) %}
+        {%- set nextIndex = index | int + 1 -%}
+        {%- set maxIndex = feature_max_index() | int -%}
+        {%- do returns(nextIndex if nextIndex <= maxIndex else 0) -%}
     feature_item:
       params:
         - index
@@ -133,8 +133,7 @@ element:
 
 {% endraw %}
 
-{% include admonition.html type="homeassistant" title="Forged tile cards" body="Output with two copies of the forge code, one as per above, and one changing the index from 0 to 1
-![feature-example](/assets/forge/2026-04-11-tile-card-inline-feature-switch-2.png)" %}
+{% include admonition.html type="homeassistant" title="Forged tile cards" body="Output with two copies of the forge code, one as per above, and one changing the index from 0 to 1 ![feature-example](/assets/forge/2026-04-11-tile-card-inline-feature-switch-2.png)" %}
 
 ## Add event spark
 
@@ -164,15 +163,15 @@ forge:
     feature_max_index:
       returns: true
       template: |
-        {% do returns(feature_options() | length) %}
+        {%- do returns(feature_options() | length - 1) -%}
     feature_next_index:
       params:
         - index
       returns: true
       template: |
-        {% set nextIndex = index | int + 1 %}
-        {% set maxIndex = feature_max_index() | int %}
-        {% do returns(nextIndex if nextIndex < maxIndex else 0) %}
+        {%- set nextIndex = index | int + 1 -%}
+        {%- set maxIndex = feature_max_index() | int -%}
+        {%- do returns(nextIndex if nextIndex <= maxIndex else 0) -%}
     feature_item:
       params:
         - index
@@ -249,15 +248,15 @@ forge:
     feature_max_index:
       returns: true
       template: |
-        {% do returns(feature_options() | length) %}
+        {%- do returns(feature_options() | length - 1) -%}
     feature_next_index:
       params:
         - index
       returns: true
       template: |
-        {% set nextIndex = index | int + 1 %}
-        {% set maxIndex = feature_max_index() | int %}
-        {% do returns(nextIndex if nextIndex < maxIndex else 0) %}
+        {%- set nextIndex = index | int + 1 -%}
+        {%- set maxIndex = feature_max_index() | int -%}
+        {%- do returns(nextIndex if nextIndex <= maxIndex else 0) -%}
     feature_item:
       params:
         - index
