@@ -308,13 +308,13 @@ element:
 
 ## Extra - features as an object
 
-Up until now we have used and set features as a string, assigning the output from **feature_item(index, 'feature)** to `- type:` under `features:`. To extend the solution we can use features as an object. Careful construction of the object is needed here as it is set as a python dict.
+Up until now we have used and set features as a string, assigning the output from `feature_item(index, 'feature')` to `- type:` under `features:`. To extend the solution we can use features as an object. Careful construction of the object is needed here as it is set as a Python dict.
 
 Changes required:
 
 1. `feature` in the `options` array becomes an array with a single dict. For simple features the dict is `{ 'type': 'feature-string' }`
 2. features requiring more than just `type` can be added as a dict as the sole member of the array. In the example here, a custom feature of a button is used.
-3. `feature_item()` now returns an object rather than a string ans uses returns method.
+3. `feature_item()` now returns an object rather than a string and uses returns method.
 4. `features:` config uses the output from `feature_item()` macro directly.
 
 {% raw %}
