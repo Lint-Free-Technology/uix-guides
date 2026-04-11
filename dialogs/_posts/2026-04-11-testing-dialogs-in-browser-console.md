@@ -24,7 +24,7 @@ document.querySelector("home-assistant").dispatchEvent(new CustomEvent("hass-not
 `window.cardHelpers` exposes the same dialog helpers that Home Assistant cards use internally. The following opens an alert dialog:
 
 ```console
-window.cardHelpers.showAlertDialog(document.querySelector("home-assistant"), { title: "Home Assistant herstarten?", text: "Some text" });
+window.cardHelpers.showAlertDialog(document.querySelector("home-assistant"), { title: "Restart Home Assistant?", text: "Some text" });
 ```
 
 Replace `title` and `text` with the values you want to test. The dialog type class reported in the DOM will be `type-dialog-box`, which you can use to scope CSS in your UIX theme.
