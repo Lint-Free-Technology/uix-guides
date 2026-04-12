@@ -43,23 +43,29 @@ element:
 
 Native browser tooltips have limited styling and behaviour options. A better approach is to use the [attribute spark](https://uix.lf.technology/forge/sparks/attribute) to remove the existing `title` attribute first, then add the [tooltip spark](https://uix.lf.technology/forge/sparks/tooltip) to provide a fully featured replacement.
 
-In this example the attribute spark removes the `title` attribute from the `ha-card` element, then the tooltip spark adds a custom tooltip with its own content.
+In this example a weather forecast card is forged. The attribute spark removes the native `title` from the location name element, and the tooltip spark adds a wind speed tooltip to the temperature/attribute area using Jinja templates to pull live state attributes.
 
+{% raw %}
 ```yaml
 type: custom:uix-forge
 forge:
   mold: card
   sparks:
     - type: attribute
-      selector: ha-card
+      for: hui-weather-forecast-card $ div.name
       attribute: title
-      remove: true
+      action: remove
     - type: tooltip
-      content: "This is a UIX Forge tooltip"
+      for: "hui-weather-forecast-card $ div.temp-attribute"
+      content: "Wind: {{ state_attr(config.element.entity, 'wind_speed') }} {{ state_attr(config.element.entity, 'wind_speed_unit') }} ({{ state_attr(config.element.entity, 'wind_bearing') }})"
 element:
-  type: tile
-  entity: sun.sun
+  show_current: true
+  show_forecast: false
+  type: weather-forecast
+  entity: weather.carlingford
+  forecast_type: daily
 ```
+{% endraw %}
 
 {% include admonition.html type="homeassistant" title="Home Assistant output — tooltip spark replacing native title" body="![tooltip spark replacing native title attribute](/assets/forge/2026-04-12-forge-tooltip-spark-2.png)" %}
 
