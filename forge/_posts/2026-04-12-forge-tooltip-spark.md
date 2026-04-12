@@ -20,6 +20,7 @@ A browser will display a native tooltip for any element that has a `title` attri
 
 In the example below a tile card is forged and the attribute spark adds a `title` attribute whose value is a Jinja template. The template uses `relative_time` to show how long ago the entity last changed, producing a browser native tooltip that updates each time the card renders.
 
+{% raw %}
 ```yaml
 type: custom:uix-forge
 forge:
@@ -34,6 +35,7 @@ element:
   type: tile
   entity: light.bed_light
 ```
+{% endraw %}
 
 {% include admonition.html type="homeassistant" title="Home Assistant output — adjusted title tooltip" body="![attribute spark adjusting title attribute](/assets/forge/2026-04-12-forge-tooltip-spark-1.png)" %}
 
