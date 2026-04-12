@@ -22,6 +22,7 @@ A browser will display a native tooltip for any element that has a `title` attri
 In the example below a tile card is forged and the attribute spark adds a `title` attribute whose value is a Jinja template. The template uses `relative_time` to show how long ago the entity last changed, producing a browser native tooltip that updates each time the card renders.
 
 {% raw %}
+
 ```yaml
 type: custom:uix-forge
 forge:
@@ -36,6 +37,7 @@ element:
   type: tile
   entity: light.bed_light
 ```
+
 {% endraw %}
 
 {% include admonition.html type="homeassistant" title="Home Assistant output — adjusted title tooltip" body="![attribute spark adjusting title attribute](/assets/forge/2026-04-12-forge-tooltip-spark-1.png)" %}
@@ -54,7 +56,7 @@ forge:
   mold: card
   sparks:
     - type: attribute
-      for: hui-weather-forecast-card $ div.name
+      for: "hui-weather-forecast-card $ div.name"
       attribute: title
       action: remove
     - type: tooltip
@@ -83,10 +85,6 @@ type: custom:uix-forge
 forge:
   mold: card
   sparks:
-    - type: attribute
-      selector: ha-card
-      attribute: title
-      remove: true
     - type: tooltip
       content: "I appear after a short pause and stay a little longer"
       show_delay: 600
@@ -111,10 +109,6 @@ type: custom:uix-forge
 forge:
   mold: card
   sparks:
-    - type: attribute
-      selector: ha-card
-      attribute: title
-      remove: true
     - type: tooltip
       content: "Rich styled tooltip — bottom right"
       placement: bottom-end
@@ -131,7 +125,6 @@ forge:
         --uix-tooltip-border-style: solid;
         --uix-tooltip-border-color: #4a4aff;
         --uix-tooltip-border-radius: 8px;
-        --uix-tooltip-padding: 8px 14px;
         --uix-tooltip-padding: 0.85em;
         --uix-tooltip-box-shadow: 0 4px 16px rgba(74, 74, 255, 0.4);
       }
