@@ -1,14 +1,15 @@
 ---
 title: Using UIX Forge tooltip and attribute sparks for tooltips
-description: A guide to adding and customising tooltips with UIX Forge tooltip and attribute sparks
+description: A guide to adding and customizing tooltips with UIX Forge tooltip and attribute sparks
 excerpt_image: /assets/forge/2026-04-12-forge-tooltip-spark.png
 tags:
   - forge
+  - tooltip
   - sparks
   - tooltip spark
   - attribute spark
 ---
-[UIX Forge](https://uix.lf.technology/forge) allows you to forge an element and apply various features with [forge sparks](https://uix.lf.technology/forge/sparks). This guide uses the [attribute spark](https://uix.lf.technology/forge/sparks/attribute) and the [tooltip spark](https://uix.lf.technology/forge/sparks/tooltip) to add rich, customisable tooltips to Home Assistant cards and elements.
+[UIX Forge](https://uix.lf.technology/forge) allows you to forge an element and apply various features with [forge sparks](https://uix.lf.technology/forge/sparks). This guide uses the [attribute spark](https://uix.lf.technology/forge/sparks/attribute) and the [tooltip spark](https://uix.lf.technology/forge/sparks/tooltip) to add rich, customizable tooltips to Home Assistant cards and elements.
 
 {% include admonition.html type="info" title="Forge elements" body="All UIX Forge documentation will describe the card, row, badge, section, picture-element as **element** as indeed, a forged element is not restricted to being a card, but can be any type supported by UIX Forge mold type" %}
 
@@ -46,6 +47,7 @@ Native browser tooltips have limited styling and behaviour options. A better app
 In this example a weather forecast card is forged. The attribute spark removes the native `title` from the location name element, and the tooltip spark adds a wind speed tooltip to the temperature/attribute area using Jinja templates to pull live state attributes.
 
 {% raw %}
+
 ```yaml
 type: custom:uix-forge
 forge:
@@ -65,6 +67,7 @@ element:
   entity: weather.carlingford
   forecast_type: daily
 ```
+
 {% endraw %}
 
 {% include admonition.html type="homeassistant" title="Home Assistant output — tooltip spark replacing native title" body="![tooltip spark replacing native title attribute](/assets/forge/2026-04-12-forge-tooltip-spark-2.png)" %}
@@ -93,13 +96,13 @@ element:
   entity: sun.sun
 ```
 
-{% include admonition.html type="homeassistant" title="Home Assistant output — tooltip with custom show and hide delays" body="![tooltip spark with custom show and hide delays](/assets/forge/2026-04-12-forge-tooltip-spark-3.png)" %}
+{% include admonition.html type="homeassistant" title="Home Assistant output — tooltip with custom show and hide delays" body="![tooltip spark with custom show and hide delays](/assets/forge/2026-04-12-forge-tooltip-spark-3.gif)" %}
 
 {% include admonition.html type="tip" title="Delay tips" body="A `show_delay` of 400–600 ms is a good starting point for cards where you want to avoid the tooltip flashing during normal interaction. Use a small `hide_delay` (100–200 ms) to let the cursor move away without the tooltip feeling sticky." %}
 
 ## Scenario 4: Rich CSS styles, placement, and skidding
 
-The tooltip spark also supports placement control and positional fine-tuning with `placement`, `skidding`, and `distance` options. These allow you to position the tooltip relative to the element and nudge it along or away from the element. Custom CSS can be applied with the `style` option to create rich visual tooltip designs.
+The tooltip spark also supports placement control and positional fine-tuning with `placement`, `skidding`, and `distance` options. These allow you to position the tooltip relative to the element and nudge it along or away from the element. Custom CSS can be applied with UIX Styling on the forge to create rich visual tooltip designs.
 
 The supported placements are `top`, `bottom`, `left`, and `right` (with optional `-start` and `-end` variants such as `top-start` or `bottom-end`).
 
@@ -115,18 +118,23 @@ forge:
     - type: tooltip
       content: "Rich styled tooltip — bottom right"
       placement: bottom-end
-      skidding: 10
+      skidding: 50
       distance: 8
       show_delay: 400
       hide_delay: 150
-      style: |
-        background: linear-gradient(135deg, #1a1a2e, #16213e);
-        color: #e0e0ff;
-        border: 1px solid #4a4aff;
-        border-radius: 8px;
-        padding: 8px 14px;
-        font-size: 0.85em;
-        box-shadow: 0 4px 16px rgba(74, 74, 255, 0.4);
+  uix:
+    style: |
+      :host {
+        --uix-tooltip-background-color: #4a4aff;
+        --uix-tooltip-content-color: #e0e0ff;
+        --uix-tooltip-border-width: 1px;
+        --uix-tooltip-border-style: solid;
+        --uix-tooltip-border-color: #4a4aff;
+        --uix-tooltip-border-radius: 8px;
+        --uix-tooltip-padding: 8px 14px;
+        --uix-tooltip-padding: 0.85em;
+        --uix-tooltip-box-shadow: 0 4px 16px rgba(74, 74, 255, 0.4);
+      }
 element:
   type: tile
   entity: sun.sun
