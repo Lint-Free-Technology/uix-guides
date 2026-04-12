@@ -18,7 +18,7 @@ The [attribute spark](https://uix.lf.technology/forge/sparks/attribute) lets you
 
 A browser will display a native tooltip for any element that has a `title` attribute. The [attribute spark](https://uix.lf.technology/forge/sparks/attribute) can target an element by CSS selector and change its `title` attribute to any value you choose.
 
-In the example below a tile card is forged and the attribute spark targets the inner `ha-card` element. The `title` attribute is set to a custom string which will appear as the browser's native tooltip when the card is hovered.
+In the example below a tile card is forged and the attribute spark adds a `title` attribute whose value is a Jinja template. The template uses `relative_time` to show how long ago the entity last changed, producing a browser native tooltip that updates each time the card renders.
 
 ```yaml
 type: custom:uix-forge
@@ -26,12 +26,13 @@ forge:
   mold: card
   sparks:
     - type: attribute
-      selector: ha-card
       attribute: title
-      value: "Customised native tooltip text"
+      action: add
+      value: |
+        {{ relative_time(states[config.element.entity].last_changed) }} ago
 element:
   type: tile
-  entity: sun.sun
+  entity: light.bed_light
 ```
 
 {% include admonition.html type="homeassistant" title="Home Assistant output — adjusted title tooltip" body="![attribute spark adjusting title attribute](/assets/forge/2026-04-12-forge-tooltip-spark-1.png)" %}
