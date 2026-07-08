@@ -13,7 +13,7 @@ As the current Developer Tools panel (`ha-panel-developer-tools`) and new Tools 
 2. There will be **NO** direct replacement theme item.
 3. The new Tools panel (`ha-panel-tools`) can be styled using `uix-config(-yaml)`.
 
-You can prepare for this change now swapping out any existing `uix-developer-tools(-yaml)` theme item with a `uix-config(-yaml)` theme item as per below example theme code.
+You can prepare for this change now by swapping out any existing `uix-developer-tools(-yaml)` theme item with a `uix-config(-yaml)` theme item as per below example theme code.
 
 Existing theme example, changing card heading color on the YAML tab to red.
 
@@ -25,7 +25,7 @@ Existing theme example, changing card heading color on the YAML tab to red.
       }
 ```
 
-New theme code which will work prior to and after 2026.7 is released.
+New theme code which will work prior to and after 2026.8 is released.
 
 ```yaml
   uix-config-yaml: |
