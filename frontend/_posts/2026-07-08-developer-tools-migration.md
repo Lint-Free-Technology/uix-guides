@@ -9,11 +9,11 @@ Starting in Home Assistant 2026.8, Developer Tools will be renamed to Tools. Thi
 
 As the current Developer Tools panel (`ha-panel-developer-tools`) and new Tools panel (`ha-panel-tools`) are both config panels (`ha-panel-config`), which can be styled in theme with `uix-config(-yaml)`, the following changes will take place in UIX Styling.
 
-1. The theme item `uix-developer-tools(-yaml)` will cease to apply in Home Assistant 2026.7 as `ha-developer-tools-panel` will cease to exist.
+1. The theme item `uix-developer-tools(-yaml)` will cease to apply in Home Assistant 2026.8 as `ha-developer-tools-panel` will cease to exist.
 2. There will be **NO** direct replacement theme item.
 3. The new Tools panel (`ha-panel-tools`) can be styled using `uix-config(-yaml)`.
 
-You can prepare for this change now swapping out any existing `uix-developer-tools(-yaml)` theme item with a `uix-config(-yaml)` theme item as per below example theme code.
+You can prepare for this change now by swapping out any existing `uix-developer-tools(-yaml)` theme item with a `uix-config(-yaml)` theme item, as shown in the example theme code below.
 
 Existing theme example, changing card heading color on the YAML tab to red.
 
@@ -25,7 +25,7 @@ Existing theme example, changing card heading color on the YAML tab to red.
       }
 ```
 
-New theme code which will work prior to and after 2026.7 is released.
+New theme code which will work prior to and after 2026.8 is released.
 
 ```yaml
   uix-config-yaml: |
