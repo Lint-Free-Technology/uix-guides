@@ -1,6 +1,6 @@
 ---
-title: Using UIX Forge more-info combining with UIX actions
-description: A guide to using more-info spark together in a vertical stack with heading and badges using UIX actions
+title: Using UIX Forge more-info spark combined with UIX actions
+description: A guide to stacking the more-info spark with a heading card and action badges that open specific more-info views
 excerpt_image: /assets/forge/2026-07-15-forge-more-info-header.png
 tags:
   - forge
