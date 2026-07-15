@@ -17,7 +17,7 @@ Elements used:
 
 A vertical-stack is used with a heading card containing badges that use [UIX actions](https://uix.lf.technology/extras/uix-actions/) to show specific more-info pages - history, settings and related.
 
-The example yaml is for a grid section in a Sections dashboard.
+The example YAML is for a grid section in a Sections dashboard.
 
 ```yaml
 type: grid
@@ -54,7 +54,7 @@ cards:
                 action: more-info
                 data:
                   entity: weather.demo_weather_south
-                  view: details
+                  view: related
         tap_action:
           action: more-info
           entity: weather.demo_weather_south
