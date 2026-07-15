@@ -12,6 +12,8 @@ UI eXtension can style the adaptive popover using `uix-dialog-yaml` theming.
 
 The example below shows an entities row with a date entity which will show the adaptive popover. The theme styling sets selected date(s) to red, and hover to red with opacity of 0.2. The theme yaml selector uses UIX Styling [Host/element path selection](https://uix.lf.technology/concepts/dom/#hostelement-path-selection) to only target dialogs of `type-dialog-date-picker`.
 
+{% include admonition.html type="tip" title="CSS selectors" body="The CSS selector for hover, `calendar-month:not(.dummy)::part(button selected):hover`, includes a class .dummy that never exists. This is so this CSS selector always matches at a higher specificity (0,2,2) than the hover CSS, `calendar-month::part(button):hover` (0,1,2),  that sets the background with opacity 0.2, which is already using `!important` to override the standard CSS. This technique can be used when you need to make sure that a CSS selector will get higher specificity as the `:not(.dummy)` class selector will always add +1 for class specificity." %}
+
 ```yaml
 uix-date-picker-selection: # theme name
   uix-theme: uix-date-picker-selection # setting UIX theme to theme name
