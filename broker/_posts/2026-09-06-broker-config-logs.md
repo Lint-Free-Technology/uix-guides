@@ -86,8 +86,8 @@ uix_broker:
 7. An [`event` directive](https://uix.lf.technology/broker/directives/#event) is used to fire an event on window to set Home Assistant Frontend Kiosk mode. This removes the sidebar.
 8. A `property` directive is used, with its own rules, to set a default provider if one is not provided by URL search string `provider=<provider>`. Change to suit what you wish default to be. Here it is `core`.
 9. A `property` directive is used to set the inline style of the back button to none. This makes the log fully standalone, removing temptation to browse elsewhere and, say, make this a duplicate dashboard tab.
-10. A [`call` directive](https://uix.lf.technology/broker/directives/#call) is used to call `style.setProperty` on `home-assistant` element to set `error-card-height` which by default is `calc(100vh - 255px)` as default styling includes `16px` margin. The call here sets to `calc(100vh - 255px)` as our theme (11) clears the margins to 0.
-11. Theme styling is added to `uix-config-yaml` UIX Theme variable to reduced `error-log-card` margins to 0 and remove card borders.
+10. A [`call` directive](https://uix.lf.technology/broker/directives/#call) is used to call `style.setProperty` on the `home-assistant` element to set `--error-log-card-height`. The call here sets it to `calc(100vh - 255px + 32px)` to account for the `16px` top/bottom margin removed by the theme in (11).
+11. Theme styling is added to the `uix-config-yaml` UIX Theme variable to reduce `error-log-card` margins to 0 and remove card borders.
 
 ```yaml
   - realm: browser #1
