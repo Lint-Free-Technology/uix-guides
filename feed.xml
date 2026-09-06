@@ -1,0 +1,1353 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-09-06T12:50:41+00:00</updated><id>/feed.xml</id><title type="html">UI eXtension Guides</title><subtitle>Guides for UI eXtension (UIX).</subtitle><author><name>Lint-Free-Technology</name></author><entry><title type="html">Using UIX Broker to customize config/logs to open raw and focused standalone</title><link href="/broker/2026/09/06/broker-config-logs.html" rel="alternate" type="text/html" title="Using UIX Broker to customize config/logs to open raw and focused standalone" /><published>2026-09-06T00:00:00+00:00</published><updated>2026-09-06T00:00:00+00:00</updated><id>/broker/2026/09/06/broker-config-logs</id><content type="html" xml:base="/broker/2026/09/06/broker-config-logs.html"><![CDATA[<p>With the archiving of the <a href="https://github.com/hassio-addons/addon-log-viewer">Home Assistant Community Add-on: Log Viewer</a>, Home Assistant may wish for a similar log viewing experience in a single focussed page using as much viewing space as possible for raw logs. This collection of UIX Broker interactions allows for just that by i. setting the System → Logs to open in a new page, ii. adding a button for secondary focussed log adjustable by input_select entity, iii. setting kiosk mode to the logs view and removing back button, and iv. setting raw more for core logs and turning off wrap lines by default.</p>
+
+<p>Each UIX Broker interaction is explained separately. See Full interaction file to get full yaml to copy and paste into UIX Broker UI config or YAML file.</p>
+
+<h2 id="system--logs-link-and-additional-button">System → Logs link and additional button</h2>
+
+<ol>
+  <li>Interaction listens in <a href="https://uix.lf.technology/broker/realms/#browser">Browser realm</a> to <code class="language-plaintext highlighter-rouge">uix-broker-ready</code>, <code class="language-plaintext highlighter-rouge">uix-update</code> and <code class="language-plaintext highlighter-rouge">uix-update-custom-system-panel</code> events. <code class="language-plaintext highlighter-rouge">uix-broker-ready</code> is fired on page load when UIX Broker is ready as well as when UIX Broker config is updated or UIX Broker YAML files reloaded. <code class="language-plaintext highlighter-rouge">uix-update</code> is fired after navigation when the <code class="language-plaintext highlighter-rouge">panel</code> state is ready. <code class="language-plaintext highlighter-rouge">uix-update-custom-system-panel</code>  is a custom event used for notifying this interaction that entities used in <code class="language-plaintext highlighter-rouge">javascript</code> directive have changed. See <a href="#entity-state-subscription">Entity state subscription</a>. The interaction is not reentrant so if it is already running when any of the listener events fire, it will not run twice and the current run will continue to completion.</li>
+  <li>The <a href="https://uix.lf.technology/broker/interaction-anchors/">interaction anchor</a> used is absolute compact <a href="https://uix.lf.technology/broker/interaction-anchors/#select-tree-anchors">select_tree</a> form for <code class="language-plaintext highlighter-rouge">home-assistant</code> DOM element.</li>
+  <li>A <a href="https://uix.lf.technology/broker/rules/#panel-rules"><code class="language-plaintext highlighter-rouge">panel</code> rule</a> is used to match when the <code class="language-plaintext highlighter-rouge">fullUrlPath</code> is <code class="language-plaintext highlighter-rouge">config/system</code>. Ths is the page where the Logs link shows.</li>
+  <li>A <a href="https://uix.lf.technology/broker/rules/#host-element-rules">Host-element rule</a> is used to only match if not running on Companion App, in which case <code class="language-plaintext highlighter-rouge">hass.auth.external</code> will be present.</li>
+  <li>A <a href="https://uix.lf.technology/broker/directives/#property"><code class="language-plaintext highlighter-rouge">property</code> directive</a> is used with anchor being the Logs link. It’s <code class="language-plaintext highlighter-rouge">target</code> is set to <code class="language-plaintext highlighter-rouge">_blank</code> to open in a new tab.</li>
+  <li>A <a href="https://uix.lf.technology/broker/directives/#javascript"><code class="language-plaintext highlighter-rouge">javascript</code> directive</a> to prepare button config, including setting by input_select entity if available. Examples of both quoted and camelCase variables are used. See the following directive for how these object variables are used.</li>
+  <li>A <code class="language-plaintext highlighter-rouge">button</code> directive to show an additional UIX Broker button to open up the secondary log set by input_select or hard coded value in 6 above. CSS variables are used to style the button based on config returned in 6.</li>
+</ol>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">uix_broker</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">realm</span><span class="pi">:</span> <span class="s">browser</span> <span class="c1">#1</span>
+    <span class="na">reentrant</span><span class="pi">:</span> <span class="kc">false</span>
+    <span class="na">listen</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">uix-broker-ready</span>
+      <span class="pi">-</span> <span class="s">uix-update</span>
+      <span class="pi">-</span> <span class="s">uix-update-custom-system-panel</span>
+    <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span> <span class="c1">#2</span>
+    <span class="na">rules</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">panel</span> <span class="c1">#3</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">fullUrlPath</span>
+        <span class="na">match</span><span class="pi">:</span> <span class="s2">"</span><span class="s">config/system"</span>
+      <span class="pi">-</span> <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span> <span class="c1">#4</span>
+        <span class="na">match</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{!.hass.auth.external}"</span>
+    <span class="na">directives</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#5</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-system-navigation</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-navigation-list</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-list-item-button:nth-of-type(4)</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">a#item"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">target</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">_blank"</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">javascript</span> <span class="c1">#6</span>
+        <span class="na">id</span><span class="pi">:</span> <span class="s">config_path</span>
+        <span class="na">code</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">const rawProvider = hass.states['input_select.log_provider']?.state;</span>
+          <span class="s">const provider = rawProvider ? rawProvider : 'supervisor';</span>
+          <span class="s">return {</span>
+            <span class="s">path: `/config/logs?provider=${provider}`,</span>
+            <span class="s">label: `Open ${provider.charAt(0).toUpperCase() + provider.slice(1)} logs`,</span>
+            <span class="s">icon: 'mdi:package-variant',</span>
+            <span class="s">'icon-color': 'red',</span>
+            <span class="s">backgroundColor: 'red',</span>
+            <span class="s">backgroundOpacity: '0.08'</span>
+          <span class="s">};</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span> <span class="c1">#7</span>
+        <span class="na">after</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-system-navigation</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-navigation-list</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-list-item-button:nth-of-type(4)</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">a#item</span><span class="nv"> </span><span class="s">div.content"</span>
+        <span class="c1"># label: "@config_path.label" # Uncomment for label</span>
+        <span class="na">icon</span><span class="pi">:</span> <span class="s2">"</span><span class="s">@config_path.icon"</span> <span class="c1"># comment if using label</span>
+        <span class="na">color</span><span class="pi">:</span> <span class="s2">"</span><span class="s">@config_path['icon-color']"</span>
+        <span class="na">tap_action</span><span class="pi">:</span>
+          <span class="na">action</span><span class="pi">:</span> <span class="s">url</span>
+          <span class="na">url_path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">@config_path.path"</span>
+        <span class="na">style</span><span class="pi">:</span> <span class="c1"># Remove styles if using label and consider button variant and appearance config</span>
+          <span class="s2">"</span><span class="s">--uix-icon-button-background-color"</span><span class="err">:</span> <span class="s2">"</span><span class="s">@config_path.backgroundColor"</span>
+          <span class="s2">"</span><span class="s">--uix-icon-button-background-opacity"</span><span class="err">:</span> <span class="s2">"</span><span class="s">@config_path.backgroundOpacity"</span>
+          <span class="s2">"</span><span class="s">--uix-button-border-color"</span><span class="err">:</span> <span class="s1">'</span><span class="s">@config_path["icon-color"]'</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">System Logs</p>
+    <p>
+        <p><img src="/assets/broker/2026-09-06-broker-config-logs-1.png" alt="System Logs" /></p>
+
+    </p>
+</div>
+
+<h2 id="config-logs-panel-customizations">Config logs panel customizations</h2>
+
+<ol>
+  <li>Listens in <a href="https://uix.lf.technology/broker/realms/#browser">Browser realm</a> to <code class="language-plaintext highlighter-rouge">uix-broker-ready</code> which is fired on page load when UIX Broker is ready as well as when UIX Broker config is updated or UIX Broker YAML files reloaded.</li>
+  <li>The <a href="https://uix.lf.technology/broker/interaction-anchors/">interaction anchor</a> used is absolute compact <a href="https://uix.lf.technology/broker/interaction-anchors/#select-tree-anchors">select_tree</a> form for <code class="language-plaintext highlighter-rouge">home-assistant</code> DOM element.</li>
+  <li>A <a href="https://uix.lf.technology/broker/rules/#panel-rules"><code class="language-plaintext highlighter-rouge">panel</code> rule</a> is used to match when <code class="language-plaintext highlighter-rouge">fullUrlPath</code> is <code class="language-plaintext highlighter-rouge">config/logs</code></li>
+  <li>A <a href="https://uix.lf.technology/broker/rules/#browser-search-parameters"><code class="language-plaintext highlighter-rouge">search</code> rule</a> is used to provide a break glass way of viewing config logs without any customizations. e.g. <code class="language-plaintext highlighter-rouge">/config/logs?noUixBroker</code></li>
+  <li>A <a href="https://uix.lf.technology/broker/directives/#property"><code class="language-plaintext highlighter-rouge">property</code> directive</a> is used to set the <code class="language-plaintext highlighter-rouge">ha-config-logs</code> element to be in raw (details) mode. When logs can be condensed like for <code class="language-plaintext highlighter-rouge">core</code> provider, this forces the log view to be raw (details).</li>
+  <li>A <code class="language-plaintext highlighter-rouge">property</code> directive is used to set line wrap to false. This is set on <code class="language-plaintext highlighter-rouge">error-log-card</code> element which is used for raw (details) logs.</li>
+  <li>An <a href="https://uix.lf.technology/broker/directives/#event"><code class="language-plaintext highlighter-rouge">event</code> directive</a> is used to fire an event on window to set Home Assistant Frontend Kiosk mode. This removes the sidebar.</li>
+  <li>A <code class="language-plaintext highlighter-rouge">property</code> directive is used, with its own rules, to set a default provider if one is not provided by URL search string <code class="language-plaintext highlighter-rouge">provider=&lt;provider&gt;</code>. Change to suit what you wish default to be. Here it is <code class="language-plaintext highlighter-rouge">core</code>.</li>
+  <li>A <code class="language-plaintext highlighter-rouge">property</code> directive is used to set the inline style of the back button to none. This makes the log fully standalone, removing temptation to browse elsewhere and, say, make this a duplicate dashboard tab.</li>
+  <li>A <a href="https://uix.lf.technology/broker/directives/#call"><code class="language-plaintext highlighter-rouge">call</code> directive</a> is used to call <code class="language-plaintext highlighter-rouge">style.setProperty</code> on the <code class="language-plaintext highlighter-rouge">home-assistant</code> element to set <code class="language-plaintext highlighter-rouge">--error-log-card-height</code>. The call here sets it to <code class="language-plaintext highlighter-rouge">calc(100vh - 255px + 32px)</code> to account for the <code class="language-plaintext highlighter-rouge">16px</code> top/bottom margin removed by the theme in (11).</li>
+  <li>Theme styling is added to the <code class="language-plaintext highlighter-rouge">uix-config-yaml</code> UIX Theme variable to reduce <code class="language-plaintext highlighter-rouge">error-log-card</code> margins to 0 and remove card borders.</li>
+</ol>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="pi">-</span> <span class="na">realm</span><span class="pi">:</span> <span class="s">browser</span> <span class="c1">#1</span>
+    <span class="na">listen</span><span class="pi">:</span> <span class="s">uix-broker-ready</span>
+    <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span> <span class="c1">#2</span>
+    <span class="na">rules</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">panel</span> <span class="c1">#3</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">fullUrlPath</span>
+        <span class="na">match</span><span class="pi">:</span>
+          <span class="na">operator</span><span class="pi">:</span> <span class="s">contains</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">config/logs"</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">search</span> <span class="c1">#4</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">noUixBroker</span>
+        <span class="na">match</span><span class="pi">:</span>
+          <span class="na">exists</span><span class="pi">:</span> <span class="kc">false</span>
+    <span class="na">directives</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#5</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-drawer</span><span class="nv"> </span><span class="s">partial-panel-resolver</span><span class="nv"> </span><span class="s">ha-panel-config</span><span class="nv"> </span><span class="s">ha-config-logs"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">_detail</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#6</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-logs</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">hass-subpage</span><span class="nv"> </span><span class="s">div.content</span><span class="nv"> </span><span class="s">error-log-card"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">_wrapLines</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="kc">false</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span> <span class="c1">#7</span>
+        <span class="na">target</span><span class="pi">:</span> <span class="s">window</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">hass-kiosk-mode</span>
+        <span class="na">data</span><span class="pi">:</span>
+          <span class="na">enable</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#8</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-drawer</span><span class="nv"> </span><span class="s">partial-panel-resolver</span><span class="nv"> </span><span class="s">ha-panel-config</span><span class="nv"> </span><span class="s">ha-config-logs"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">_selectedLogProvider</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">core"</span> <span class="c1"># Get list of provider from inspecting ha-core-logs and look at _logProviders property</span>
+        <span class="na">rules</span><span class="pi">:</span>
+          <span class="c1"># only apply this directive if the provider does not exist as a search string</span>
+          <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">search</span>
+            <span class="na">path</span><span class="pi">:</span> <span class="s">provider</span>
+            <span class="na">match</span><span class="pi">:</span>
+              <span class="na">exists</span><span class="pi">:</span> <span class="kc">false</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#9</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-logs</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">hass-subpage</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">div.toolbar</span><span class="nv"> </span><span class="s">div.toolbar-content</span><span class="nv"> </span><span class="s">ha-icon-button-arrow-prev"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">style.display</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">none"</span>
+        <span class="c1"># Remove below directive if not theming reduced margin for the error log card</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">call</span> <span class="c1">#10</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span>
+        <span class="na">method</span><span class="pi">:</span> <span class="s">style.setProperty</span>
+        <span class="na">args</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">--error-log-card-height</span>
+          <span class="pi">-</span> <span class="s">calc(100vh - 255px + 32px)</span>
+</code></pre></div></div>
+
+<h3 id="theme-for-reduced-margin-for-error-log-card">Theme for reduced margin for error-log-card</h3>
+
+<p>(11) Add the following to your <a href="https://uix.lf.technology/using/themes/">UIX Theme</a>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">uix-config-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+
+    <span class="s">"ha-config-logs $ error-log-card $": |</span>
+      <span class="s">div.error-log-intro {</span>
+        <span class="s">margin: 0px;</span>
+      <span class="s">}</span>
+      <span class="s">ha-card {</span>
+        <span class="s">border: none;</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Config Logs</p>
+    <p>
+        <p><img src="/assets/broker/2026-09-06-broker-config-logs.png" alt="Config Logs" /></p>
+
+    </p>
+</div>
+
+<h2 id="entity-state-subscription">Entity state subscription</h2>
+
+<p>If you are using an <code class="language-plaintext highlighter-rouge">input_select</code> entity to adjust the provider for the button, it will not subscribe to updates as the <code class="language-plaintext highlighter-rouge">javascript</code> directive, like the <code class="language-plaintext highlighter-rouge">template</code> directive, does not perform any entity state subscription. To enable a subscription you can create a Server realm to Browser realm interaction to listen for <code class="language-plaintext highlighter-rouge">state_changed</code> updates in the Server realm and then fire an custom update event to the Browser.</p>
+
+<p>If you are not using <code class="language-plaintext highlighter-rouge">input_select.log_provider</code> you do not need this interaction. The config logs interaction above has a default of <code class="language-plaintext highlighter-rouge">supervisor</code> hardcoded which you can adjust.</p>
+
+<ol>
+  <li>Listen in <code class="language-plaintext highlighter-rouge">server</code> realm</li>
+</ol>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="pi">-</span> <span class="na">realm</span><span class="pi">:</span> <span class="s">server</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="kc">false</span>
+    <span class="na">listen</span><span class="pi">:</span> <span class="s">state_changed</span>
+    <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span>
+    <span class="na">directives</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">uix-update-custom-system-panel</span>
+        <span class="na">rules</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">captured</span>
+            <span class="na">path</span><span class="pi">:</span> <span class="s">data.entity_id</span>
+            <span class="na">match</span><span class="pi">:</span>
+              <span class="na">or</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="s">input_select.log_provider</span>
+</code></pre></div></div>
+
+<h2 id="full-yaml-config">Full YAML config</h2>
+
+<p>Full YAML config combining all the YAML code above into one file. If you are adding to an already configured UI Broker UI, or an existing YAML registered UIX Broker file, leave out <code class="language-plaintext highlighter-rouge">uix_broker</code> which will already be in the UI config/YAML file.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">uix_broker</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">realm</span><span class="pi">:</span> <span class="s">browser</span> <span class="c1">#1</span>
+    <span class="na">reentrant</span><span class="pi">:</span> <span class="kc">false</span>
+    <span class="na">listen</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">uix-broker-ready</span>
+      <span class="pi">-</span> <span class="s">uix-update</span>
+      <span class="pi">-</span> <span class="s">uix-update-custom-system-panel</span>
+    <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span> <span class="c1">#2</span>
+    <span class="na">rules</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">panel</span> <span class="c1">#3</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">fullUrlPath</span>
+        <span class="na">match</span><span class="pi">:</span> <span class="s2">"</span><span class="s">config/system"</span>
+      <span class="pi">-</span> <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span> <span class="c1">#4</span>
+        <span class="na">match</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{!.hass.auth.external}"</span>
+    <span class="na">directives</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#5</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-system-navigation</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-navigation-list</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-list-item-button:nth-of-type(4)</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">a#item"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">target</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">_blank"</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">javascript</span> <span class="c1">#6</span>
+        <span class="na">id</span><span class="pi">:</span> <span class="s">config_path</span>
+        <span class="na">code</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">const rawProvider = hass.states['input_select.log_provider']?.state;</span>
+          <span class="s">const provider = rawProvider ? rawProvider : 'supervisor';</span>
+          <span class="s">return {</span>
+            <span class="s">path: `/config/logs?provider=${provider}`,</span>
+            <span class="s">label: `Open ${provider.charAt(0).toUpperCase() + provider.slice(1)} logs`,</span>
+            <span class="s">icon: 'mdi:package-variant',</span>
+            <span class="s">'icon-color': 'red',</span>
+            <span class="s">backgroundColor: 'red',</span>
+            <span class="s">backgroundOpacity: '0.08'</span>
+          <span class="s">};</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span> <span class="c1">#7</span>
+        <span class="na">after</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-system-navigation</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-navigation-list</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-list-item-button:nth-of-type(4)</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">a#item</span><span class="nv"> </span><span class="s">div.content"</span>
+        <span class="c1"># label: "@config_path.label" # Uncomment for label</span>
+        <span class="na">icon</span><span class="pi">:</span> <span class="s2">"</span><span class="s">@config_path.icon"</span> <span class="c1"># comment if using label</span>
+        <span class="na">color</span><span class="pi">:</span> <span class="s2">"</span><span class="s">@config_path['icon-color']"</span>
+        <span class="na">tap_action</span><span class="pi">:</span>
+          <span class="na">action</span><span class="pi">:</span> <span class="s">url</span>
+          <span class="na">url_path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">@config_path.path"</span>
+        <span class="na">style</span><span class="pi">:</span> <span class="c1"># Remove styles if using label and consider button variant and appearance config</span>
+          <span class="s2">"</span><span class="s">--uix-icon-button-background-color"</span><span class="err">:</span> <span class="s2">"</span><span class="s">@config_path.backgroundColor"</span>
+          <span class="s2">"</span><span class="s">--uix-icon-button-background-opacity"</span><span class="err">:</span> <span class="s2">"</span><span class="s">@config_path.backgroundOpacity"</span>
+          <span class="s2">"</span><span class="s">--uix-button-border-color"</span><span class="err">:</span> <span class="s1">'</span><span class="s">@config_path["icon-color"]'</span>
+  <span class="pi">-</span> <span class="na">realm</span><span class="pi">:</span> <span class="s">browser</span> <span class="c1">#1</span>
+    <span class="na">listen</span><span class="pi">:</span> <span class="s">uix-broker-ready</span>
+    <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span> <span class="c1">#2</span>
+    <span class="na">debug</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">rules</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">panel</span> <span class="c1">#3</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">fullUrlPath</span>
+        <span class="na">match</span><span class="pi">:</span>
+          <span class="na">operator</span><span class="pi">:</span> <span class="s">contains</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">config/logs"</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">search</span> <span class="c1">#4</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">noUixBroker</span>
+        <span class="na">match</span><span class="pi">:</span>
+          <span class="na">exists</span><span class="pi">:</span> <span class="kc">false</span>
+    <span class="na">directives</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#5</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-drawer</span><span class="nv"> </span><span class="s">partial-panel-resolver</span><span class="nv"> </span><span class="s">ha-panel-config</span><span class="nv"> </span><span class="s">ha-config-logs"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">_detail</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#6</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-logs</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">hass-subpage</span><span class="nv"> </span><span class="s">div.content</span><span class="nv"> </span><span class="s">error-log-card"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">_wrapLines</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="kc">false</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span> <span class="c1">#7</span>
+        <span class="na">target</span><span class="pi">:</span> <span class="s">window</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">hass-kiosk-mode</span>
+        <span class="na">data</span><span class="pi">:</span>
+          <span class="na">enable</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#7</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-drawer</span><span class="nv"> </span><span class="s">partial-panel-resolver</span><span class="nv"> </span><span class="s">ha-panel-config</span><span class="nv"> </span><span class="s">ha-config-logs"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">_selectedLogProvider</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">core"</span> <span class="c1"># Get list of provider from inspecting ha-core-logs and look at _logProviders property</span>
+        <span class="na">rules</span><span class="pi">:</span>
+          <span class="c1"># only apply this directive if the provider does not exist as a search string</span>
+          <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">search</span>
+            <span class="na">path</span><span class="pi">:</span> <span class="s">provider</span>
+            <span class="na">match</span><span class="pi">:</span>
+              <span class="na">exists</span><span class="pi">:</span> <span class="kc">false</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">property</span> <span class="c1">#9</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">home-assistant-main</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">ha-config-logs</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">hass-subpage</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">div.toolbar</span><span class="nv"> </span><span class="s">div.toolbar-content</span><span class="nv"> </span><span class="s">ha-icon-button-arrow-prev"</span>
+        <span class="na">set</span><span class="pi">:</span> <span class="s">style.display</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">none"</span>
+        <span class="c1"># Remove below directive if not theming reduced margin for the error log card</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">call</span> <span class="c1">#10</span>
+        <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span>
+        <span class="na">method</span><span class="pi">:</span> <span class="s">style.setProperty</span>
+        <span class="na">args</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">--error-log-card-height</span>
+          <span class="pi">-</span> <span class="s">calc(100vh - 255px + 32px)</span>
+  <span class="pi">-</span> <span class="na">realm</span><span class="pi">:</span> <span class="s">server</span>
+    <span class="na">listen</span><span class="pi">:</span> <span class="s">state_changed</span>
+    <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant"</span>
+    <span class="na">directives</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">uix-update-custom-system-panel</span>
+        <span class="na">rules</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">captured</span>
+            <span class="na">path</span><span class="pi">:</span> <span class="s">data.entity_id</span>
+            <span class="na">match</span><span class="pi">:</span>
+              <span class="na">or</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="s">input_select.log_provider</span>
+</code></pre></div></div>]]></content><author><name>Lint-Free-Technology</name></author><category term="broker" /><category term="broker" /><category term="browser realm" /><category term="button directive" /><category term="broker panel rule" /><category term="broker property directive" /><category term="broker javascript directive" /><category term="broker call directive" /><summary type="html"><![CDATA[A guide to using UIX Broker to open config/logs in a new page standalone, switching to focused raw mode with wrap lines turned off.]]></summary></entry><entry><title type="html">Styling adaptive popover dialogs - date picker example</title><link href="/dialogs/2026/07/15/adaptive-popover-date-picker.html" rel="alternate" type="text/html" title="Styling adaptive popover dialogs - date picker example" /><published>2026-07-15T00:00:00+00:00</published><updated>2026-07-15T00:00:00+00:00</updated><id>/dialogs/2026/07/15/adaptive-popover-date-picker</id><content type="html" xml:base="/dialogs/2026/07/15/adaptive-popover-date-picker.html"><![CDATA[<p>Home Assistant Frontend 2026.5 brought in a new adaptive popover dialog. It is like standard dialogs but on desktop shows a smaller dialog in place targeted to the element using the dialog, and on mobile uses a bottom sheet. The date picker dialog now uses adaptive popover dialog.</p>
+
+<p>UI eXtension can style the adaptive popover using <code class="language-plaintext highlighter-rouge">uix-dialog-yaml</code> theming.</p>
+
+<p>The example below shows an entities row with a date entity which will show the adaptive popover. The theme styling sets selected date(s) to red, and hover to red with opacity of 0.2. The theme yaml selector uses UIX Styling <a href="https://uix.lf.technology/concepts/dom/#hostelement-path-selection">Host/element path selection</a> to only target dialogs of <code class="language-plaintext highlighter-rouge">type-dialog-date-picker</code>.</p>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">CSS selectors</p>
+    <p>
+        <p>The CSS selector for hover, <code class="language-plaintext highlighter-rouge">calendar-month:not(.dummy)::part(button selected):hover</code>, includes a class .dummy that never exists. This is so this CSS selector always matches at a higher specificity (0,2,2) than the hover CSS, <code class="language-plaintext highlighter-rouge">calendar-month::part(button):hover</code> (0,1,2),  that sets the background with opacity 0.2, which is already using <code class="language-plaintext highlighter-rouge">!important</code> to override the standard CSS. This technique can be used when you need to make sure that a CSS selector will get higher specificity as the <code class="language-plaintext highlighter-rouge">:not(.dummy)</code> class selector will always add +1 for class specificity.</p>
+
+    </p>
+</div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">uix-date-picker-selection</span><span class="pi">:</span> <span class="c1"># theme name</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">uix-date-picker-selection</span> <span class="c1"># setting UIX theme to theme name</span>
+
+  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">"&amp;.type-dialog-date-picker": |</span>
+      <span class="s">calendar-month::part(range-inner),</span>
+      <span class="s">calendar-month::part(range-start),</span>
+      <span class="s">calendar-month::part(range-end),</span>
+      <span class="s">calendar-month::part(selected),</span>
+      <span class="s">calendar-month::part(selected):hover,</span>
+      <span class="s">calendar-month:not(.dummy)::part(button selected):hover {</span>
+        <span class="s">background-color: red !important;</span>
+      <span class="s">}</span>
+      <span class="s">calendar-month::part(button):hover {</span>
+        <span class="s">background-color: rgba(255, 0, 0, 0.2) !important;</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Styling date picker adaptive popover dialog</p>
+    <p>
+        <p><img src="/assets/dialogs/2026-07-15-adaptive-popover-date-picker.png" alt="Styling date picker adaptive popover dialog" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="dialogs" /><category term="dialogs" /><category term="date picker" /><summary type="html"><![CDATA[Using UIX Styling with dialog theme to style date picker adaptive popover]]></summary></entry><entry><title type="html">Using UIX Forge more-info spark combined with UIX actions</title><link href="/forge/2026/07/15/forge-more-info-header.html" rel="alternate" type="text/html" title="Using UIX Forge more-info spark combined with UIX actions" /><published>2026-07-15T00:00:00+00:00</published><updated>2026-07-15T00:00:00+00:00</updated><id>/forge/2026/07/15/forge-more-info-header</id><content type="html" xml:base="/forge/2026/07/15/forge-more-info-header.html"><![CDATA[<p>Elements used:</p>
+
+<ul>
+  <li>UIX Forge <a href="https://uix.lf.technology/forge/sparks/more-info/">more-info spark</a></li>
+  <li>more-info <a href="https://uix.lf.technology/extras/uix-actions/#more-info-show-home-assistant-more-info-for-an-entity-with-starting-view">UIX action</a></li>
+</ul>
+
+<p>A vertical-stack is used with a heading card containing badges that use <a href="https://uix.lf.technology/extras/uix-actions/">UIX actions</a> to show specific more-info pages - history, settings and related.</p>
+
+<p>The example YAML is for a grid section in a Sections dashboard.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">grid</span>
+<span class="na">cards</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">vertical-stack</span>
+    <span class="na">cards</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">heading</span>
+        <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:weather-partly-cloudy</span>
+        <span class="na">heading</span><span class="pi">:</span> <span class="s">Weather</span>
+        <span class="na">badges</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+            <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:chart-box-outline</span>
+            <span class="na">tap_action</span><span class="pi">:</span>
+              <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+              <span class="na">uix</span><span class="pi">:</span>
+                <span class="na">action</span><span class="pi">:</span> <span class="s">more-info</span>
+                <span class="na">data</span><span class="pi">:</span>
+                  <span class="na">entity</span><span class="pi">:</span> <span class="s">weather.demo_weather_south</span>
+                  <span class="na">view</span><span class="pi">:</span> <span class="s">history</span>
+          <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+            <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:cog-outline</span>
+            <span class="na">tap_action</span><span class="pi">:</span>
+              <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+              <span class="na">uix</span><span class="pi">:</span>
+                <span class="na">action</span><span class="pi">:</span> <span class="s">more-info</span>
+                <span class="na">data</span><span class="pi">:</span>
+                  <span class="na">entity</span><span class="pi">:</span> <span class="s">weather.demo_weather_south</span>
+                  <span class="na">view</span><span class="pi">:</span> <span class="s">settings</span>
+          <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+            <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:information-outline</span>
+            <span class="na">tap_action</span><span class="pi">:</span>
+              <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+              <span class="na">uix</span><span class="pi">:</span>
+                <span class="na">action</span><span class="pi">:</span> <span class="s">more-info</span>
+                <span class="na">data</span><span class="pi">:</span>
+                  <span class="na">entity</span><span class="pi">:</span> <span class="s">weather.demo_weather_south</span>
+                  <span class="na">view</span><span class="pi">:</span> <span class="s">related</span>
+        <span class="na">tap_action</span><span class="pi">:</span>
+          <span class="na">action</span><span class="pi">:</span> <span class="s">more-info</span>
+          <span class="na">entity</span><span class="pi">:</span> <span class="s">weather.demo_weather_south</span>
+        <span class="na">heading_style</span><span class="pi">:</span> <span class="s">title</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+        <span class="na">forge</span><span class="pi">:</span>
+          <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+          <span class="na">sparks</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">more-info</span>
+              <span class="na">entity</span><span class="pi">:</span> <span class="s">weather.demo_weather_south</span>
+
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">More-info spark in vertical stack with heading card and more-info action badges</p>
+    <p>
+        <p><img src="/assets/forge/2026-07-15-forge-more-info-header.png" alt="more-info spark in vertical stack with heading card and more-info action badges" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="sparks" /><category term="more-info spark" /><category term="actions" /><category term="more-info action" /><summary type="html"><![CDATA[A guide to stacking the more-info spark with a heading card and action badges that open specific more-info views]]></summary></entry><entry><title type="html">Developer tools migration</title><link href="/frontend/2026/07/08/developer-tools-migration.html" rel="alternate" type="text/html" title="Developer tools migration" /><published>2026-07-08T00:00:00+00:00</published><updated>2026-07-08T00:00:00+00:00</updated><id>/frontend/2026/07/08/developer-tools-migration</id><content type="html" xml:base="/frontend/2026/07/08/developer-tools-migration.html"><![CDATA[<p>Starting in Home Assistant 2026.8, Developer Tools will be renamed to Tools. This change will impact UIX Styling using the theme item <code class="language-plaintext highlighter-rouge">uix-developer-tools(-yaml)</code>.</p>
+
+<p>As the current Developer Tools panel (<code class="language-plaintext highlighter-rouge">ha-panel-developer-tools</code>) and new Tools panel (<code class="language-plaintext highlighter-rouge">ha-panel-tools</code>) are both config panels (<code class="language-plaintext highlighter-rouge">ha-panel-config</code>), which can be styled in theme with <code class="language-plaintext highlighter-rouge">uix-config(-yaml)</code>, the following changes will take place in UIX Styling.</p>
+
+<ol>
+  <li>The theme item <code class="language-plaintext highlighter-rouge">uix-developer-tools(-yaml)</code> will cease to apply in Home Assistant 2026.8 as <code class="language-plaintext highlighter-rouge">ha-developer-tools-panel</code> will cease to exist.</li>
+  <li>There will be <strong>NO</strong> direct replacement theme item.</li>
+  <li>The new Tools panel (<code class="language-plaintext highlighter-rouge">ha-panel-tools</code>) can be styled using <code class="language-plaintext highlighter-rouge">uix-config(-yaml)</code>.</li>
+</ol>
+
+<p>You can prepare for this change now by swapping out any existing <code class="language-plaintext highlighter-rouge">uix-developer-tools(-yaml)</code> theme item with a <code class="language-plaintext highlighter-rouge">uix-config(-yaml)</code> theme item, as shown in the example theme code below.</p>
+
+<p>Existing theme example, changing card heading color on the YAML tab to red.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">uix-developer-tools-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">developer-yaml-config $ ha-card $: |</span>
+      <span class="s">:host {</span>
+        <span class="s">--ha-card-header-color: red;</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<p>New theme code which will work prior to and after 2026.8 is released.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">uix-config-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">ha-panel-developer-tools,ha-panel-tools $:</span>
+      <span class="s">developer-yaml-config $ ha-card $: |</span>
+        <span class="s">:host {</span>
+          <span class="s">--ha-card-header-color: red;</span>
+        <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Home Assistant output</p>
+    <p>
+        <p><img src="/assets/frontend/2026-07-08-developer-tools-migration.png" alt="example" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="frontend" /><category term="developer tools" /><category term="tools" /><summary type="html"><![CDATA[Starting in Home Assistant 2026.8, Developer Tools will be renamed to Tools. This change will impact UIX Styling using the theme item uix-developer-tools(-yaml).]]></summary></entry><entry><title type="html">Using UIX Forge tooltip and attribute sparks for tooltips</title><link href="/forge/2026/04/12/forge-tooltip-spark.html" rel="alternate" type="text/html" title="Using UIX Forge tooltip and attribute sparks for tooltips" /><published>2026-04-12T00:00:00+00:00</published><updated>2026-04-12T00:00:00+00:00</updated><id>/forge/2026/04/12/forge-tooltip-spark</id><content type="html" xml:base="/forge/2026/04/12/forge-tooltip-spark.html"><![CDATA[<p><a href="https://uix.lf.technology/forge">UIX Forge</a> allows you to forge an element and apply various features with <a href="https://uix.lf.technology/forge/sparks">forge sparks</a>. This guide uses the <a href="https://uix.lf.technology/forge/sparks/attribute">attribute spark</a> and the <a href="https://uix.lf.technology/forge/sparks/tooltip">tooltip spark</a> to add rich, customizable tooltips to Home Assistant cards and elements.</p>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">Forge elements</p>
+    <p>
+        <p>All UIX Forge documentation will describe the card, row, badge, section, picture-element as <strong>element</strong> as indeed, a forged element is not restricted to being a card, but can be any type supported by UIX Forge mold type</p>
+
+    </p>
+</div>
+
+<p>The <a href="https://uix.lf.technology/forge/sparks/attribute">attribute spark</a> lets you set or remove HTML attributes on elements inside a forged element’s shadow DOM. The <a href="https://uix.lf.technology/forge/sparks/tooltip">tooltip spark</a> adds a fully featured tooltip — with placement, delay, skidding, and CSS control — powered by UIX Forge.</p>
+
+<h2 id="scenario-1-adjust-a-title-attribute-with-the-attribute-spark">Scenario 1: Adjust a title attribute with the attribute spark</h2>
+
+<p>A browser will display a native tooltip for any element that has a <code class="language-plaintext highlighter-rouge">title</code> attribute. The <a href="https://uix.lf.technology/forge/sparks/attribute">attribute spark</a> can target an element by CSS selector and change its <code class="language-plaintext highlighter-rouge">title</code> attribute to any value you choose.</p>
+
+<p>In the example below a tile card is forged and the attribute spark adds a <code class="language-plaintext highlighter-rouge">title</code> attribute whose value is a Jinja template. The template uses <code class="language-plaintext highlighter-rouge">relative_time</code> to show how long ago the entity last changed, producing a browser native tooltip that updates each time the card renders.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">attribute</span>
+      <span class="na">attribute</span><span class="pi">:</span> <span class="s">title</span>
+      <span class="na">action</span><span class="pi">:</span> <span class="s">add</span>
+      <span class="na">value</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{{ relative_time(states[config.element.entity].last_changed) }} ago</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Home Assistant output — adjusted title tooltip</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-12-forge-tooltip-spark-1.png" alt="attribute spark adjusting title attribute" /></p>
+
+    </p>
+</div>
+
+<h2 id="scenario-2-remove-the-title-attribute-and-add-the-tooltip-spark">Scenario 2: Remove the title attribute and add the tooltip spark</h2>
+
+<p>Native browser tooltips have limited styling and behaviour options. A better approach is to use the <a href="https://uix.lf.technology/forge/sparks/attribute">attribute spark</a> to remove the existing <code class="language-plaintext highlighter-rouge">title</code> attribute first, then add the <a href="https://uix.lf.technology/forge/sparks/tooltip">tooltip spark</a> to provide a fully featured replacement.</p>
+
+<p>In this example a weather forecast card is forged. The attribute spark removes the native <code class="language-plaintext highlighter-rouge">title</code> from the location name element, and the tooltip spark adds a wind speed tooltip to the temperature/attribute area using Jinja templates to pull live state attributes.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">attribute</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s2">"</span><span class="s">hui-weather-forecast-card</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">div.name"</span>
+      <span class="na">attribute</span><span class="pi">:</span> <span class="s">title</span>
+      <span class="na">action</span><span class="pi">:</span> <span class="s">remove</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">tooltip</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s2">"</span><span class="s">hui-weather-forecast-card</span><span class="nv"> </span><span class="s">$</span><span class="nv"> </span><span class="s">div.temp-attribute"</span>
+      <span class="na">content</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Wind:</span><span class="nv"> </span><span class="s">{{</span><span class="nv"> </span><span class="s">state_attr(config.element.entity,</span><span class="nv"> </span><span class="s">'wind_speed')</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">{{</span><span class="nv"> </span><span class="s">state_attr(config.element.entity,</span><span class="nv"> </span><span class="s">'wind_speed_unit')</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">({{</span><span class="nv"> </span><span class="s">state_attr(config.element.entity,</span><span class="nv"> </span><span class="s">'wind_bearing')</span><span class="nv"> </span><span class="s">}})"</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">show_current</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">show_forecast</span><span class="pi">:</span> <span class="kc">false</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">weather-forecast</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">weather.carlingford</span>
+  <span class="na">forecast_type</span><span class="pi">:</span> <span class="s">daily</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Home Assistant output — tooltip spark replacing native title</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-12-forge-tooltip-spark-2.png" alt="tooltip spark replacing native title attribute" /></p>
+
+    </p>
+</div>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">Removing the title attribute first</p>
+    <p>
+        <p>Always remove the native <code class="language-plaintext highlighter-rouge">title</code> attribute before adding the tooltip spark to avoid both appearing at the same time.</p>
+
+    </p>
+</div>
+
+<h2 id="scenario-3-adjust-tooltip-show-and-hide-delay-times">Scenario 3: Adjust tooltip show and hide delay times</h2>
+
+<p>The tooltip spark provides <code class="language-plaintext highlighter-rouge">show_delay</code> and <code class="language-plaintext highlighter-rouge">hide_delay</code> options (in milliseconds) to control how quickly the tooltip appears and disappears. This is useful when tooltips should only show after intentional hover, or should linger longer after the cursor leaves.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">tooltip</span>
+      <span class="na">content</span><span class="pi">:</span> <span class="s2">"</span><span class="s">I</span><span class="nv"> </span><span class="s">appear</span><span class="nv"> </span><span class="s">after</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">short</span><span class="nv"> </span><span class="s">pause</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">stay</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">little</span><span class="nv"> </span><span class="s">longer"</span>
+      <span class="na">show_delay</span><span class="pi">:</span> <span class="m">600</span>
+      <span class="na">hide_delay</span><span class="pi">:</span> <span class="m">300</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">sun.sun</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Home Assistant output — tooltip with custom show and hide delays</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-12-forge-tooltip-spark-3.gif" alt="tooltip spark with custom show and hide delays" /></p>
+
+    </p>
+</div>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">Delay tips</p>
+    <p>
+        <p>A <code class="language-plaintext highlighter-rouge">show_delay</code> of 400–600 ms is a good starting point for cards where you want to avoid the tooltip flashing during normal interaction. Use a small <code class="language-plaintext highlighter-rouge">hide_delay</code> (100–200 ms) to let the cursor move away without the tooltip feeling sticky.</p>
+
+    </p>
+</div>
+
+<h2 id="scenario-4-rich-css-styles-placement-and-skidding">Scenario 4: Rich CSS styles, placement, and skidding</h2>
+
+<p>The tooltip spark also supports placement control and positional fine-tuning with <code class="language-plaintext highlighter-rouge">placement</code>, <code class="language-plaintext highlighter-rouge">skidding</code>, and <code class="language-plaintext highlighter-rouge">distance</code> options. These allow you to position the tooltip relative to the element and nudge it along or away from the element. Custom CSS can be applied with UIX Styling on the forge to create rich visual tooltip designs.</p>
+
+<p>The supported placements are <code class="language-plaintext highlighter-rouge">top</code>, <code class="language-plaintext highlighter-rouge">bottom</code>, <code class="language-plaintext highlighter-rouge">left</code>, and <code class="language-plaintext highlighter-rouge">right</code> (with optional <code class="language-plaintext highlighter-rouge">-start</code> and <code class="language-plaintext highlighter-rouge">-end</code> variants such as <code class="language-plaintext highlighter-rouge">top-start</code> or <code class="language-plaintext highlighter-rouge">bottom-end</code>).</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">tooltip</span>
+      <span class="na">content</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Rich</span><span class="nv"> </span><span class="s">styled</span><span class="nv"> </span><span class="s">tooltip</span><span class="nv"> </span><span class="s">—</span><span class="nv"> </span><span class="s">bottom</span><span class="nv"> </span><span class="s">right"</span>
+      <span class="na">placement</span><span class="pi">:</span> <span class="s">bottom-end</span>
+      <span class="na">skidding</span><span class="pi">:</span> <span class="m">50</span>
+      <span class="na">distance</span><span class="pi">:</span> <span class="m">8</span>
+      <span class="na">show_delay</span><span class="pi">:</span> <span class="m">400</span>
+      <span class="na">hide_delay</span><span class="pi">:</span> <span class="m">150</span>
+  <span class="na">uix</span><span class="pi">:</span>
+    <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">:host {</span>
+        <span class="s">--uix-tooltip-background-color: #4a4aff;</span>
+        <span class="s">--uix-tooltip-content-color: #e0e0ff;</span>
+        <span class="s">--uix-tooltip-border-width: 1px;</span>
+        <span class="s">--uix-tooltip-border-style: solid;</span>
+        <span class="s">--uix-tooltip-border-color: #4a4aff;</span>
+        <span class="s">--uix-tooltip-border-radius: 8px;</span>
+        <span class="s">--uix-tooltip-padding: 0.85em;</span>
+        <span class="s">--uix-tooltip-box-shadow: 0 4px 16px rgba(74, 74, 255, 0.4);</span>
+      <span class="s">}</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">sun.sun</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Home Assistant output — richly styled tooltip with custom placement</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-12-forge-tooltip-spark-4.png" alt="tooltip spark with rich styles and custom placement" /></p>
+
+    </p>
+</div>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">Placement and skidding</p>
+    <p>
+        <p><code class="language-plaintext highlighter-rouge">skidding</code> shifts the tooltip along the axis of the placement edge (e.g. left/right for <code class="language-plaintext highlighter-rouge">top</code> or <code class="language-plaintext highlighter-rouge">bottom</code> placements). <code class="language-plaintext highlighter-rouge">distance</code> controls how far away from the element the tooltip appears. Both accept positive and negative values.</p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="tooltip" /><category term="sparks" /><category term="tooltip spark" /><category term="attribute spark" /><summary type="html"><![CDATA[A guide to adding and customizing tooltips with UIX Forge tooltip and attribute sparks]]></summary></entry><entry><title type="html">Testing dialogs in the browser console</title><link href="/dialogs/2026/04/11/testing-dialogs-in-browser-console.html" rel="alternate" type="text/html" title="Testing dialogs in the browser console" /><published>2026-04-11T00:00:00+00:00</published><updated>2026-04-11T00:00:00+00:00</updated><id>/dialogs/2026/04/11/testing-dialogs-in-browser-console</id><content type="html" xml:base="/dialogs/2026/04/11/testing-dialogs-in-browser-console.html"><![CDATA[<p>When developing or troubleshooting UIX dialog styles it is useful to be able to trigger dialogs on demand without navigating to the relevant part of the UI. This guide provides a centralized, linkable reference of browser console snippets that let you do exactly that.</p>
+
+<p>Open the browser developer tools with <code class="language-plaintext highlighter-rouge">F12</code> (or <code class="language-plaintext highlighter-rouge">Cmd ⌥ I</code> on macOS) and paste any of the snippets below into the <strong>Console</strong> tab.</p>
+
+<h2 id="trigger-a-uix-update-notification">Trigger a UIX update notification</h2>
+
+<p>The following dispatches a persistent <code class="language-plaintext highlighter-rouge">hass-notification</code> event on the <code class="language-plaintext highlighter-rouge">&lt;home-assistant&gt;</code> root element, simulating the banner that appears when UIX has been updated.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">document.querySelector("home-assistant").dispatchEvent(new CustomEvent("hass-notification", { detail: { message: "UIX has been updated", duration: -1, dismissable: true }, bubbles: true, composed: true }));</span><span class="w">
+</span></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">duration: -1</code> keeps the notification visible until it is manually dismissed. Change the <code class="language-plaintext highlighter-rouge">message</code> value to test other notification texts.</p>
+
+<h2 id="trigger-an-alert-dialog">Trigger an alert dialog</h2>
+
+<p><code class="language-plaintext highlighter-rouge">window.cardHelpers</code> exposes the same dialog helpers that Home Assistant cards use internally. The following opens an alert dialog:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">window.cardHelpers.showAlertDialog(document.querySelector("home-assistant"), { title: "Restart Home Assistant?", text: "Some text" });</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Replace <code class="language-plaintext highlighter-rouge">title</code> and <code class="language-plaintext highlighter-rouge">text</code> with the values you want to test. The dialog type class reported in the DOM will be <code class="language-plaintext highlighter-rouge">type-dialog-box</code>, which you can use to scope CSS in your UIX theme.</p>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">Finding the dialog type class</p>
+    <p>
+        <p>With the dialog open, open the <strong>Elements</strong> panel in developer tools and inspect the last child of the <code class="language-plaintext highlighter-rouge">&lt;home-assistant&gt;</code> shadow root. The outer element is the dialog parent (e.g. <code class="language-plaintext highlighter-rouge">&lt;dialog-box&gt;</code>). Its type class (e.g. <code class="language-plaintext highlighter-rouge">type-dialog-box</code>) can be used to scope your UIX theme CSS.</p>
+
+    </p>
+</div>
+
+<h2 id="trigger-a-confirmation-dialog">Trigger a confirmation dialog</h2>
+
+<p>A confirmation dialog (with <strong>Cancel</strong> and <strong>Confirm</strong> buttons) can be opened with <code class="language-plaintext highlighter-rouge">showConfirmationDialog</code>:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">window.cardHelpers.showConfirmationDialog(document.querySelector("home-assistant"), { title: "Restart?", text: "Are you sure you want to restart Home Assistant?", confirmText: "Restart", dismissText: "Cancel" });</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="inspect-uix-variables-on-a-dialog-element">Inspect UIX variables on a dialog element</h2>
+
+<p>Once a dialog is open and visible in the <strong>Elements</strong> panel, select the inner dialog element (e.g. <code class="language-plaintext highlighter-rouge">ha-dialog</code>) and run the following in the <strong>Console</strong> to see all UIX variables including <code class="language-plaintext highlighter-rouge">params</code>:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span>0._uix[0].variables
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">$0</code> refers to the currently selected element in the Elements panel. The <code class="language-plaintext highlighter-rouge">params</code> object contains the values passed to the dialog, such as <code class="language-plaintext highlighter-rouge">title</code> and <code class="language-plaintext highlighter-rouge">text</code>, which you can use in UIX Jinja2 templates to target a specific dialog.</p>
+
+<h2 id="styling-the-dialogs-you-are-testing">Styling the dialogs you are testing</h2>
+
+<p>For a complete guide on how to style dialogs using UIX themes — including template examples and shadow DOM targeting — see <a href="/dialogs/2026/02/27/styling-dialogs.html">Styling dialogs with UI eXtension</a>.</p>]]></content><author><name>Lint-Free-Technology</name></author><category term="dialogs" /><category term="dialogs" /><category term="testing" /><summary type="html"><![CDATA[A one-stop reference for triggering and testing Home Assistant dialogs and UIX notifications from the browser developer console]]></summary></entry><entry><title type="html">Using UIX Forge event and button sparks to change inline tile card feature</title><link href="/forge/2026/04/11/tile-card-inline-feature-switch.html" rel="alternate" type="text/html" title="Using UIX Forge event and button sparks to change inline tile card feature" /><published>2026-04-11T00:00:00+00:00</published><updated>2026-04-11T00:00:00+00:00</updated><id>/forge/2026/04/11/tile-card-inline-feature-switch</id><content type="html" xml:base="/forge/2026/04/11/tile-card-inline-feature-switch.html"><![CDATA[<p><a href="https://uix.lf.technology/forge">UIX Forge</a> allows you to forge an element and apply various features with <a href="https://uix.lf.technology/forge/sparks">forge sparks</a>. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the <a href="https://uix.lf.technology/forge/sparks/event">event spark</a> and <a href="https://uix.lf.technology/forge/sparks/button">button spark</a>.</p>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">Forge elements</p>
+    <p>
+        <p>All UIX Forge documentation will describe the card, row, badge, section, picture-element as <strong>element</strong> as indeed, a forged element is not restricted to being a card, but can be any type supported by UIX Forge mold type</p>
+
+    </p>
+</div>
+
+<h2 id="template-macros">Template macros</h2>
+
+<p>This guide relies heavily on <a href="https://uix.lf.technology/using/templates/#macros">template macros</a>. To first understand the macros and their output, a markdown card will be used as the forged element. This is a good way to check your macros are working as expected before proceeding to use in any final solution.</p>
+
+<p>Four macros are used in the final solution. They are:</p>
+
+<ol>
+  <li><strong>feature_options()</strong>: Returns an array of lookup dicts to provide an icon and a feature. Uses <code class="language-plaintext highlighter-rouge">returns: true</code> <a href="https://uix.lf.technology/using/templates/#macros-with-returns">returns method</a> as the macro returns an array.</li>
+  <li><strong>feature_max_index()</strong>: Returns the length of the array returned by feature_options() minus 1 to give a zero-based index. Also uses the returns method as the macro returns an integer.</li>
+  <li><strong>feature_next_index(index)</strong>: Returns the next zero-based index available in the array, rolling over back to start of the array. Takes a param of <code class="language-plaintext highlighter-rouge">index</code> and uses returns method as the macro returns an integer.</li>
+  <li><strong>feature_item(index, key)</strong>: Returns the item by key of the dict at the index in the feature_options() array. It takes params of <code class="language-plaintext highlighter-rouge">index</code> and <code class="language-plaintext highlighter-rouge">key</code>.</li>
+</ol>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{%- do returns(options) -%}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">markdown</span>
+  <span class="na">content</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">**feature_options()**: {{ feature_options() }}</span>
+
+    <span class="s">**feature_max_index()**: {{ feature_max_index() }}</span>
+
+    <span class="s">**feature_next_index(0)**: {{ feature_next_index(0) }}</span>
+    <span class="s">**feature_next_index(1)**: {{ feature_next_index(1) }}</span>
+
+    <span class="s">**feature_item(0, 'icon')**: {{ feature_item(0, 'icon') }}</span>
+    <span class="s">**feature_item(0, 'feature')**: {{ feature_item(0, 'feature') }}</span>
+
+    <span class="s">**feature_item(1, 'icon')**: {{ feature_item(1, 'icon') }}</span>
+    <span class="s">**feature_item(1, 'feature')**: {{ feature_item(1, 'feature') }}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Macro testing output</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-1.png" alt="macro-testing-example" /></p>
+
+    </p>
+</div>
+
+<h2 id="switch-to-tile-element">Switch to tile element</h2>
+
+<p>Now the macros are well defined and ready to be used we can start building the forged tile element. Here a static index is used for <strong>feature_item()</strong>. This will change once the event spark is added.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{% do returns(options) %}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
+  <span class="na">features</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">feature_item(0,</span><span class="nv"> </span><span class="s">'feature')</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Forged tile cards</p>
+    <p>
+        <p>Output with two copies of the forge code, one as per above, and one changing the index from 0 to 1 <img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-2.png" alt="feature-example" /></p>
+
+    </p>
+</div>
+
+<h2 id="add-event-spark">Add event spark</h2>
+
+<p>Next we will use the <a href="https://uix.lf.technology/forge/sparks/event/">event spark</a> for the forged element to be able to use data received from <code class="language-plaintext highlighter-rouge">fire-dom-event</code>.</p>
+
+<p>The event spark needs a <code class="language-plaintext highlighter-rouge">forge_id</code>. Here the ID used is made up of a prefix and the entity from the element config.</p>
+
+<p>In the forged element we now use data from the event spark as input to <strong>feature_item()</strong>. As per event spark guidelines, our event data will not be available when first loaded, so <code class="language-plaintext highlighter-rouge">default(0)</code> is used. The data will also come as a string so we cast to <code class="language-plaintext highlighter-rouge">int</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{% do returns(options) %}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
+  <span class="na">features</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">feature_item(uixForge.event.index</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(0)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">int,</span><span class="nv"> </span><span class="s">'feature')</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
+</code></pre></div></div>
+
+<h2 id="use-buttons-to-test">Use buttons to test</h2>
+
+<p>First up, we will use two standard buttons to test the solution so far. We need to send <code class="language-plaintext highlighter-rouge">0</code> and <code class="language-plaintext highlighter-rouge">1</code> as <code class="language-plaintext highlighter-rouge">index</code> to the <code class="language-plaintext highlighter-rouge">forge_id</code> <code class="language-plaintext highlighter-rouge">light_tile_light.bed_light</code> with <code class="language-plaintext highlighter-rouge">uix_forge</code> <code class="language-plaintext highlighter-rouge">fire-dom-event</code>.</p>
+
+<p>Two buttons will be used using the YAML below.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">show_icon</span><span class="pi">:</span> <span class="kc">false</span>
+<span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+<span class="na">name</span><span class="pi">:</span> <span class="s">Feature Index </span><span class="m">0</span>
+<span class="na">grid_options</span><span class="pi">:</span>
+  <span class="na">columns</span><span class="pi">:</span> <span class="m">6</span>
+  <span class="na">rows</span><span class="pi">:</span> <span class="m">1</span>
+<span class="na">tap_action</span><span class="pi">:</span>
+  <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+  <span class="na">uix_forge</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_light.bed_light</span>
+      <span class="na">data</span><span class="pi">:</span>
+        <span class="na">index</span><span class="pi">:</span> <span class="m">0</span> <span class="c1"># one button with 0, one button with 1</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Using buttons to send spark event data</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-3.gif" alt="macro-testing-example" /></p>
+
+    </p>
+</div>
+
+<h2 id="full-solution">Full solution</h2>
+
+<p>Now that testing with external buttons show that the event spark is working, we can now use a button spark to add a button adjacent to the inline feature to change the inline feature.</p>
+
+<p>The button spark has the following specific config:</p>
+
+<ol>
+  <li><strong>after</strong>: is set to <code class="language-plaintext highlighter-rouge">hui-tile-card $ hui-card-features</code>.</li>
+  <li><strong>icon</strong>: is set to <code class="language-plaintext highlighter-rouge">{{ feature_item(feature_next_index(uixForge.event.index | default(0) | int), 'icon') }}</code></li>
+  <li><strong>forge_id</strong>: of the <code class="language-plaintext highlighter-rouge">fire-dom-event</code> for <code class="language-plaintext highlighter-rouge">uix_forge</code> is set to <code class="language-plaintext highlighter-rouge">light_tile_{{config.element.entity}}</code> to match the event spark’s <code class="language-plaintext highlighter-rouge">forge_id</code>.</li>
+</ol>
+
+<p>Finally we style the forged tile element to adjust the spacing of the tile to give the feature more room and have the tile icon and the button added to take minimal space.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{% do returns(options) %}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+      <span class="na">after</span><span class="pi">:</span> <span class="s">hui-tile-card $ hui-card-features</span>
+      <span class="na">icon</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+        <span class="s">{{ feature_item(feature_next_index(uixForge.event.index | default(0) |</span>
+        <span class="s">int), 'icon') }}</span>
+      <span class="na">color</span><span class="pi">:</span> <span class="s">grey</span>
+      <span class="na">tap_action</span><span class="pi">:</span>
+        <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+        <span class="na">uix_forge</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+            <span class="na">data</span><span class="pi">:</span>
+              <span class="na">index</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+                <span class="s">{{ feature_next_index(uixForge.event.index | default(0) | int)</span>
+                <span class="s">}}</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
+  <span class="na">features</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">feature_item(uixForge.event.index</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(0)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">int,</span><span class="nv"> </span><span class="s">'feature')</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
+  <span class="na">uix</span><span class="pi">:</span>
+    <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">ha-tile-icon {</span>
+        <span class="s">flex: 0;</span>
+      <span class="s">}</span>
+      <span class="s">ha-tile-info {</span>
+        <span class="s">flex: 1;</span>
+      <span class="s">}</span>
+      <span class="s">hui-card-features {</span>
+        <span class="s">flex: 2;</span>
+        <span class="s">padding-right: 0px !important;</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Full solution</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-4.gif" alt="full-solution" /></p>
+
+    </p>
+</div>
+
+<h2 id="extra---features-as-an-object">Extra - features as an object</h2>
+
+<p>Up until now we have used and set features as a string, assigning the output from <code class="language-plaintext highlighter-rouge">feature_item(index, 'feature')</code> to <code class="language-plaintext highlighter-rouge">- type:</code> under <code class="language-plaintext highlighter-rouge">features:</code>. To extend the solution we can use features as an object. Careful construction of the object is needed here as it is set as a Python dict.</p>
+
+<p>Changes required:</p>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">feature</code> in the <code class="language-plaintext highlighter-rouge">options</code> array becomes an array with a single dict. For simple features the dict is <code class="language-plaintext highlighter-rouge">{ 'type': 'feature-string' }</code></li>
+  <li>features requiring more than just <code class="language-plaintext highlighter-rouge">type</code> can be added as a dict as the sole member of the array. In the example here, a custom feature of a button is used.</li>
+  <li><code class="language-plaintext highlighter-rouge">feature_item()</code> now returns an object rather than a string and uses returns method.</li>
+  <li><code class="language-plaintext highlighter-rouge">features:</code> config uses the output from <code class="language-plaintext highlighter-rouge">feature_item()</code> macro directly.</li>
+</ol>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': [ { 'type': 'light-brightness' } ] }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': [ { 'type': 'light-color-favorites' } ] },</span>
+            <span class="s">{'icon': 'mdi:cog', 'feature': [ { 'type': 'custom:service-call', 'entries': [ { 'type': 'button', 'icon': 'mdi:cog', 'thumb': 'default', 'tap_action': { 'action': 'more-info', 'target': { 'entity_id': 'light.bed_light' }, 'data': {} } } ] } ] }</span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{% do returns(options) %}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% do returns(feature_options() | length - 1) %}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%}  {%- set option = options[index][key] -%} {% do</span>
+        <span class="s">returns(option) %} {%- endif -%}</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+      <span class="na">after</span><span class="pi">:</span> <span class="s">hui-tile-card $ hui-card-features</span>
+      <span class="na">icon</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+        <span class="s">{{ feature_item(feature_next_index(uixForge.event.index | default(0) |</span>
+        <span class="s">int), 'icon') }}</span>
+      <span class="na">color</span><span class="pi">:</span> <span class="s">grey</span>
+      <span class="na">tap_action</span><span class="pi">:</span>
+        <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+        <span class="na">uix_forge</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+            <span class="na">data</span><span class="pi">:</span>
+              <span class="na">index</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+                <span class="s">{{ feature_next_index(uixForge.event.index | default(0) | int)</span>
+                <span class="s">}}</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
+  <span class="na">features</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">{{ feature_item(uixForge.event.index | default(0) | int, 'feature') }}</span>
+  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
+  <span class="na">uix</span><span class="pi">:</span>
+    <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">ha-tile-icon {</span>
+        <span class="s">flex: 0;</span>
+      <span class="s">}</span>
+      <span class="s">ha-tile-info {</span>
+        <span class="s">flex: 1;</span>
+      <span class="s">}</span>
+      <span class="s">hui-card-features {</span>
+        <span class="s">flex: 2;</span>
+        <span class="s">padding-right: 0px !important;</span>
+      <span class="s">}</span>
+
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Full solution</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-5.gif" alt="full-solution" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="sparks" /><category term="event spark" /><category term="button spark" /><category term="macros" /><summary type="html"><![CDATA[UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the event spark and button spark.]]></summary></entry><entry><title type="html">Using UIX Forge event spark to change a camera view</title><link href="/forge/2026/04/06/forge-camera-views.html" rel="alternate" type="text/html" title="Using UIX Forge event spark to change a camera view" /><published>2026-04-06T00:00:00+00:00</published><updated>2026-04-06T00:00:00+00:00</updated><id>/forge/2026/04/06/forge-camera-views</id><content type="html" xml:base="/forge/2026/04/06/forge-camera-views.html"><![CDATA[<p><a href="https://uix.lf.technology/forge">UIX Forge</a> allows you to forge an element and apply various features with <a href="https://uix.lf.technology/forge/sparks">forge sparks</a>. This guide uses UIX Forge to forge a picture view element which can be changed from section header badge buttons using the <a href="https://uix.lf.technology/forge/sparks/event">event spark</a>.</p>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">Forge elements</p>
+    <p>
+        <p>All UIX Forge documentation will describe the card, row, badge, section, picture-element as <strong>element</strong> as indeed, a forged element is not restricted to being a card, but can be any type supported by UIX Forge mold type</p>
+
+    </p>
+</div>
+
+<h2 id="template-entities-in-picture-entity-cards">Template entities in picture-entity cards</h2>
+
+<p>With UIX Forge, all forged element configs accept templates. This includes using a template for the element’s entity. To show this in the most basic form, we can include a simple string template for the <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code> in a <code class="language-plaintext highlighter-rouge">picture-entity</code> card.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">grid_options</span><span class="pi">:</span>
+    <span class="na">columns</span><span class="pi">:</span> <span class="s">full</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">show_state</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">camera_view</span><span class="pi">:</span> <span class="s">auto</span>
+  <span class="na">fit_mode</span><span class="pi">:</span> <span class="s">cover</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">picture-entity</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">'camera.camera_1'</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">camera_image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">'camera.camera_1'</span><span class="nv"> </span><span class="s">}}"</span>
+</code></pre></div></div>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">picture-entity - Camera 1</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-06-forge-camera-views.png" alt="picture-entity example" /></p>
+
+    </p>
+</div>
+
+<p>Now change to another camera by adjusting the string template. This is to show how we will build up to using the event spark to change this using an event.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">grid_options</span><span class="pi">:</span>
+    <span class="na">columns</span><span class="pi">:</span> <span class="s">full</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">show_state</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">camera_view</span><span class="pi">:</span> <span class="s">auto</span>
+  <span class="na">fit_mode</span><span class="pi">:</span> <span class="s">cover</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">picture-entity</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">'camera.camera_2'</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">camera_image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">'camera.camera_2'</span><span class="nv"> </span><span class="s">}}"</span>
+</code></pre></div></div>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">picture-entity - Camera 2</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-06-forge-camera-views-1.png" alt="picture-entity example" /></p>
+
+    </p>
+</div>
+
+<h2 id="add-event-spark">Add event spark</h2>
+
+<p>The <a href="https://uix.lf.technology/forge/sparks/event">event spark</a> config includes a <code class="language-plaintext highlighter-rouge">forge_id</code>. This allows the event spark to receive event data sent by Home Assistant Frontend events using <code class="language-plaintext highlighter-rouge">fire-dom-event</code>.</p>
+
+<p>After adding an event spark, the forged element’s <code class="language-plaintext highlighter-rouge">uixForge</code> variable will include an <code class="language-plaintext highlighter-rouge">event</code> dictionary which will include the event data sent by a Home Assistant Frontend event. By default the event dictionary will be empty so any templates will need to handle this with either <code class="language-plaintext highlighter-rouge">default()</code> handling or using similar logic to handle data not being in the dictionary on first view.</p>
+
+<p>For the picture-element the following is updated to implement the event spark:</p>
+
+<ol>
+  <li>Add event spark with <code class="language-plaintext highlighter-rouge">forge_id: picture_camera</code>.</li>
+  <li>Add templates with defaults for <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code>.</li>
+</ol>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">grid_options</span><span class="pi">:</span>
+    <span class="na">columns</span><span class="pi">:</span> <span class="s">full</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span> <span class="c1"># event spark</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">show_state</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">camera_view</span><span class="pi">:</span> <span class="s">auto</span>
+  <span class="na">fit_mode</span><span class="pi">:</span> <span class="s">cover</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">picture-entity</span>
+  <span class="c1"># entity and camera_image use template with default to camera.camera_1</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">uixForge.event.entity</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default('camera.camera_1')</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">camera_image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">uixForge.event.entity</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default('camera.camera_1')</span><span class="nv"> </span><span class="s">}}"</span>
+</code></pre></div></div>
+
+<h2 id="add-button-badges">Add button badges</h2>
+
+<p>Now the <code class="language-plaintext highlighter-rouge">picture-entity</code> is ready to update its <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code> from Home Assistant Frontend event using <code class="language-plaintext highlighter-rouge">action: fire-dom-event</code> from any Home Assistant element or any custom element that supports <code class="language-plaintext highlighter-rouge">fire-dom-event</code> actions which is the majority of custom elements.</p>
+
+<p>For the <code class="language-plaintext highlighter-rouge">picture-entity</code> example, we add some button badges to a heading card inserted before the <code class="language-plaintext highlighter-rouge">picture-element</code>. We use three badges with different icons, and different <code class="language-plaintext highlighter-rouge">data</code> for our <code class="language-plaintext highlighter-rouge">forge_id</code> in the <code class="language-plaintext highlighter-rouge">uix_forge</code> config for <code class="language-plaintext highlighter-rouge">fire-dom-event</code> action. Once this done, the button badges can be used to control the camera entity and image.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">heading</span>
+<span class="na">heading</span><span class="pi">:</span> <span class="s">Cameras</span>
+<span class="na">heading_style</span><span class="pi">:</span> <span class="s">title</span>
+<span class="na">badges</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+    <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:numeric-1-circle</span>
+    <span class="na">tap_action</span><span class="pi">:</span>
+      <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+      <span class="na">uix_forge</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
+          <span class="na">data</span><span class="pi">:</span>
+            <span class="na">entity</span><span class="pi">:</span> <span class="s">camera.camera_1</span>
+  <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+    <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:numeric-2-circle</span>
+    <span class="na">tap_action</span><span class="pi">:</span>
+      <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+      <span class="na">uix_forge</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
+          <span class="na">data</span><span class="pi">:</span>
+            <span class="na">entity</span><span class="pi">:</span> <span class="s">camera.camera_2</span>
+  <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+    <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:numeric-3-circle</span>
+    <span class="na">tap_action</span><span class="pi">:</span>
+      <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+      <span class="na">uix_forge</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
+          <span class="na">data</span><span class="pi">:</span>
+            <span class="na">entity</span><span class="pi">:</span> <span class="s">camera.camera_3</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">picture-entity - dynamic camera views</p>
+    <p>
+        <p><img src="/assets/forge/2026-04-06-forge-camera-views-ani.gif" alt="picture-entity example" /></p>
+
+    </p>
+</div>
+
+<h2 id="update-to-use-a-macro">Update to use a macro</h2>
+
+<p>As the same template is used for <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code> a macro can be used to save having the default in multiple places. While this actually extends the number of lines of yaml config, it moves the default cameras image to one place in the config.</p>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">Macros and variables</p>
+    <p>
+        <p>Jinja macros are isolated from the where they are used so any variables you wish to use need to be a param of the macro</p>
+
+    </p>
+</div>
+
+<p>The macro added uses a param of <code class="language-plaintext highlighter-rouge">uixForge</code> which will be passed through from the updated template used for <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">camera_entity</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">uixForge</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">uixForge.event.entity</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default('camera.camera_1')</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">grid_options</span><span class="pi">:</span>
+    <span class="na">columns</span><span class="pi">:</span> <span class="s">full</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">show_state</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">camera_view</span><span class="pi">:</span> <span class="s">auto</span>
+  <span class="na">fit_mode</span><span class="pi">:</span> <span class="s">cover</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">picture-entity</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">camera_entity(uixForge)</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">camera_image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">camera_entity(uixForge)</span><span class="nv"> </span><span class="s">}}"</span>
+</code></pre></div></div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="sparks" /><category term="event spark" /><category term="macros" /><summary type="html"><![CDATA[UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a picture view element which can be changed from section header badge buttons using the event spark.]]></summary></entry><entry><title type="html">Fullscreen media player dialog</title><link href="/dialogs/2026/03/29/fullscreen-media-player-dialog.html" rel="alternate" type="text/html" title="Fullscreen media player dialog" /><published>2026-03-29T00:00:00+00:00</published><updated>2026-03-29T00:00:00+00:00</updated><id>/dialogs/2026/03/29/fullscreen-media-player-dialog</id><content type="html" xml:base="/dialogs/2026/03/29/fullscreen-media-player-dialog.html"><![CDATA[<div class="admonition info rounded">
+    <p class="admonition-title">Host/element path selector</p>
+    <p>
+        <p>Applying this guide requires the <code class="language-plaintext highlighter-rouge">&amp;</code> <a href="https://uix.lf.technology/concepts/dom/#hostelement-path-selection">Host/element path selector</a></p>
+
+    </p>
+</div>
+
+<p>When viewing media in the Home Assistant Media panel, the dialog used is large in size. This guide shows how to make the dialog fullscreen, without title so you can focus on the media itself. Videos will fit by default and img styling is included to make sure they are contained.</p>
+
+<p>Styling dialogs is done using a theme. Check out <a href="/dialogs/2026/02/27/styling-dialogs.html">styling dialogs</a></p>
+
+<h2 id="style-dialog-size">Style dialog size</h2>
+
+<p>First the dialog needs to be set to full width and height. As the web browser media player uses dialog size large <code class="language-plaintext highlighter-rouge">--ha-dialog-width-lg</code>, the size used when dialogs have size set to large, is overridden. Also set is <code class="language-plaintext highlighter-rouge">--ha-dialog-width-full</code> which is the size used when the dialog is shown on a small device screen. Safe areas are not considered here as it is likely you would wish the dialog to cover all of a device’s screen.</p>
+
+<p>The web browser play media dialog will have a class of <code class="language-plaintext highlighter-rouge">.type-hui-dialog-web-browser-play-media</code>. This is used with a CSS selector to target the dialog only when it has class of <code class="language-plaintext highlighter-rouge">.type-hui-dialog-web-browser-play-media</code>.</p>
+
+<p>Yaml style selectors are used as they will be needed in the following steps.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.: |</span>
+      <span class="s">ha-dialog.type-hui-dialog-web-browser-play-media {</span>
+        <span class="s">--ha-dialog-width-lg: 100vw;</span>
+        <span class="s">--ha-dialog-width-full: 100vw;</span>
+        <span class="s">--ha-dialog-min-height: 100vh;</span>
+        <span class="s">--ha-dialog-border-radius: 0;</span>
+        <span class="s">--dialog-content-padding: 0;</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<h2 id="style-dialog-header-and-content---full-example">Style dialog header and content - full example</h2>
+
+<p>Since the styling is being applied in a theme for <code class="language-plaintext highlighter-rouge">uix-dialog-yaml</code> it will apply to all dialogs. So yaml selectors need to filter to the web browser dialog only using <code class="language-plaintext highlighter-rouge">&amp;</code> <a href="https://uix.lf.technology/concepts/dom/#hostelement-path-selection">Host/element selector</a>.</p>
+
+<p>The web browser play media dialog will have a class of <code class="language-plaintext highlighter-rouge">.type-hui-dialog-web-browser-play-media</code> A parent key selector of <code class="language-plaintext highlighter-rouge">"&amp;.type-hui-dialog-web-browser-play-media"</code> is used to target the dialog only when it has class type <code class="language-plaintext highlighter-rouge">.type-hui-dialog-web-browser-play-media</code>.</p>
+
+<p>Specific customizations:</p>
+
+<ul>
+  <li>The element itself <code class="language-plaintext highlighter-rouge">.:</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">img</code> set to <code class="language-plaintext highlighter-rouge">object-fit: contain;</code> so when the media is an image it is not distorted.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">"$ ha-dialog-header $"</code> targeting the dialog header shadow root
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">section.header-content</code> display set to none to not show the title.</li>
+      <li><code class="language-plaintext highlighter-rouge">header.header</code>, the header bar, set to <code class="language-plaintext highlighter-rouge">position: absolute</code> with <code class="language-plaintext highlighter-rouge">z-index: 1</code> so it shows at the top overlaid on the media image/video and <code class="language-plaintext highlighter-rouge">color: white</code> so the close <code class="language-plaintext highlighter-rouge">X</code> is most visible. Safe areas may be considered here on <code class="language-plaintext highlighter-rouge">top</code> position if required.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">"$"</code>, the shadow root of the dialog.
+    <ul>
+      <li>Background is set to black</li>
+      <li>Display is set to flex to have image/media vertically aligned centrally.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">.: |</span>
+      <span class="s">ha-dialog.type-hui-dialog-web-browser-play-media {</span>
+        <span class="s">--ha-dialog-width-lg: 100vw;</span>
+        <span class="s">--ha-dialog-width-full: 100vw;</span>
+        <span class="s">--ha-dialog-min-height: 100vh;</span>
+        <span class="s">--ha-dialog-border-radius: 0;</span>
+        <span class="s">--dialog-content-padding: 0;</span>
+      <span class="s">}</span>
+    <span class="s">"&amp;.type-hui-dialog-web-browser-play-media":</span>
+      <span class="s">.: |</span>
+        <span class="s">img {</span>
+          <span class="s">object-fit: contain;</span>
+        <span class="s">}</span>
+      <span class="s">"$ ha-dialog-header $": |</span>
+        <span class="s">section.header-content {</span>
+          <span class="s">display: none;</span>
+        <span class="s">}</span>
+        <span class="s">header.header {</span>
+          <span class="s">position: absolute;</span>
+          <span class="s">z-index: 1;</span>
+          <span class="s">color: white;</span>
+        <span class="s">}</span>
+      <span class="s">"$": |</span>
+        <span class="s">wa-dialog div.content-wrapper div.body {</span>
+          <span class="s">display: flex;</span>
+          <span class="s">background: black;</span>
+        <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Media player web browser styled fullscreen</p>
+    <p>
+        <p><img src="/assets/dialogs/2026-03-29-fullscreen-media-player-dialog.png" alt="Screenshot of Home Assistant fullscreen web browser media player dialog" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="dialogs" /><category term="dialogs" /><summary type="html"><![CDATA[How to make the built-in Home Assistant media player dialog fullscreen]]></summary></entry><entry><title type="html">Hide more-info dialog header</title><link href="/dialogs/2026/03/29/hide-more-info-header.html" rel="alternate" type="text/html" title="Hide more-info dialog header" /><published>2026-03-29T00:00:00+00:00</published><updated>2026-03-29T00:00:00+00:00</updated><id>/dialogs/2026/03/29/hide-more-info-header</id><content type="html" xml:base="/dialogs/2026/03/29/hide-more-info-header.html"><![CDATA[<p>Since Home Assistant 2026.3.0, more-info dialog uses an adaptive dialog (<code class="language-plaintext highlighter-rouge">ha-adaptive-dialog</code>), which includes either a standard dialog (<code class="language-plaintext highlighter-rouge">ha-dialog</code>) on larger screens or a bottom sheet (<code class="language-plaintext highlighter-rouge">ha-bottom-sheet</code>) on smaller screens. This guide shows how to target each type of dialog in order to hide the header.</p>
+
+<p>In both cases, the parent dialog element is <code class="language-plaintext highlighter-rouge">ha-adaptive-dialog</code>. For the more-info dialog, UIX is applied in the light DOM of the adaptive dialog (<code class="language-plaintext highlighter-rouge">ha-adaptive-dialog</code>). To reach either dialog across the shadow root, the <code class="language-plaintext highlighter-rouge">$</code> selector is required.</p>
+
+<p>When the more-info dialog is <code class="language-plaintext highlighter-rouge">ha-dialog</code>, the full header item, <code class="language-plaintext highlighter-rouge">ha-dialog-header</code>, is in a slot in <code class="language-plaintext highlighter-rouge">wa-dialog</code>, which itself is in a shadow root of <code class="language-plaintext highlighter-rouge">ha-dialog</code>. The components used in <code class="language-plaintext highlighter-rouge">ha-dialog-header</code> are in slots in <code class="language-plaintext highlighter-rouge">ha-dialog</code> so styling these would not need crossing into <code class="language-plaintext highlighter-rouge">ha-dialog</code> shadow root.</p>
+
+<p>When more-info is a bottom sheet (<code class="language-plaintext highlighter-rouge">ha-bottom-sheet</code>) the full header item, <code class="language-plaintext highlighter-rouge">ha-dialog-header</code>, is in a slot of <code class="language-plaintext highlighter-rouge">ha-bottom-sheet</code>.</p>
+
+<p>Theme code hiding the more-info dialog header is shown below.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">UIX Theme</span><span class="pi">:</span>
+  <span class="na">uix-theme</span><span class="pi">:</span> <span class="s">UIX Theme</span>
+
+  <span class="na">uix-more-info-yaml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">"$":</span>
+      <span class="s">.: |</span>
+        <span class="s">ha-bottom-sheet slot:nth-of-type(1) ha-dialog-header</span>
+        <span class="s">{</span>
+          <span class="s">display: none;</span>
+        <span class="s">}</span>
+      <span class="s">"ha-dialog $": |</span>
+        <span class="s">wa-dialog slot:nth-of-type(1) ha-dialog-header {</span>
+          <span class="s">display: none;</span>
+        <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">More-info dialog with header removed</p>
+    <p>
+        <p><img src="/assets/dialogs/2026-03-29-hide-more-info-header.png" alt="Screenshot of Home Assistant more-info dialog with header removed" /></p>
+
+    </p>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="dialogs" /><category term="dialogs" /><summary type="html"><![CDATA[How to hide the more-info dialog header since Home Assistant 2026.3.0]]></summary></entry></feed>

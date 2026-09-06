@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-translate-customization" content="108d9124921d80c3-80e20d618ff053c8-g4f02ec6f3dba68b7-c">
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Using UIX Forge event and button sparks to change inline tile card feature | UI eXtension Guides</title>
+<meta name="generator" content="Jekyll v4.4.1">
+<meta property="og:title" content="Using UIX Forge event and button sparks to change inline tile card feature">
+<meta name="author" content="Lint-Free-Technology">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the event spark and button spark.">
+<meta name="twitter:description" property="og:description" content="UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the event spark and button spark.">
+<link rel="canonical" href="/forge/2026/04/11/tile-card-inline-feature-switch.html">
+<meta property="og:url" content="/forge/2026/04/11/tile-card-inline-feature-switch.html">
+<meta property="og:site_name" content="UI eXtension Guides">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2026-04-11T00:00:00+00:00">
+<meta property="article:modified_time" content="2026-04-11T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Using UIX Forge event and button sparks to change inline tile card feature">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Lint-Free-Technology"},"dateModified":"2026-04-11T00:00:00+00:00","datePublished":"2026-04-11T00:00:00+00:00","description":"UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the event spark and button spark.","headline":"Using UIX Forge event and button sparks to change inline tile card feature","mainEntityOfPage":{"@type":"WebPage","@id":"/forge/2026/04/11/tile-card-inline-feature-switch.html"},"url":"/forge/2026/04/11/tile-card-inline-feature-switch.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="icon" href="/assets/images/icon.png">
+  <link rel="canonical" href="">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-noto-sans@0.0.72/index.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <script src="/assets/js/main.js"></script><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="UI eXtension Guides">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+<!-- and it's easy to individually load additional languages -->
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/go.min.js" async></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// Init highlight js
+document.addEventListener('DOMContentLoaded', function(event) {
+  var els = document.querySelectorAll('pre code')
+
+  function addLangData(block) {
+    var outer = block.parentElement.parentElement.parentElement;
+    var lang = block.getAttribute('data-lang');
+    for (var i = 0; i < outer.classList.length; i++) {
+      var cls = outer.classList[i];
+      if (cls.startsWith('language-')) {
+        lang = cls;
+        break;
+      }
+    }
+    if (!lang) {
+      cls = block.getAttribute('class');
+      lang = cls ? cls.replace('hljs ', '') : '';
+    }
+    if (lang.startsWith('language-')) {
+      lang = lang.substr(9);
+    }
+    block.setAttribute('class', 'hljs ' + lang);
+    block.parentNode.setAttribute('data-lang', lang);
+  }
+
+  function addBadge(block) {
+    var enabled = ('true' || 'true').toLowerCase();
+    if (enabled == 'true') {
+      var pre = block.parentElement;
+      pre.classList.add('badge');
+    }
+  }
+
+  function handle(block) {
+    addLangData(block);
+    addBadge(block)
+    hljs.highlightBlock(block);
+  }
+
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    handle(el);
+  }
+});
+</script>
+
+<style>
+  /* code language badge */
+  pre.badge::before {
+    content: attr(data-lang);
+    color: #fff;
+    background-color: #ff4e00;
+    padding: 0 .5em;
+    border-radius: 0 2px;
+    text-transform: uppercase;
+    text-align: center;
+    min-width: 32px;
+    display: inline-block;
+    position: absolute;
+    right: 0;
+  }
+
+  /* fix wrong badge display for firefox browser */
+  code > table pre::before {
+    display: none;
+  }
+</style>
+<script src="//cdnjs.cloudflare.com/ajax/libs/photoswipe/5.3.7/umd/photoswipe-lightbox.umd.min.js" async></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/photoswipe/5.3.7/umd/photoswipe.umd.min.js" async></script>
+<link href="//cdnjs.cloudflare.com/ajax/libs/photoswipe/5.3.7/photoswipe.min.css" rel="stylesheet">
+<style>
+  .pswp .pswp__container .pswp__img {
+    background-color: white;
+  }
+</style>
+
+<script>
+  function initPhotoSwipe() {
+    let customOptions = {};
+
+    try {
+      const data = ``.replaceAll("=>", ":");
+      customOptions = JSON.parse(data);
+    } catch (e) {
+      console.info("Invalid custom photo previewer options! " + e.message);
+    }
+
+    // Define object and gallery options
+    const options = Object.assign(
+      {
+        gallery: "section.main",
+        children: "a.photo-swipe",
+        photo_scale: 2,
+        // dynamic import is not supported in UMD version
+        pswpModule: PhotoSwipe,
+      },
+      customOptions
+    );
+
+    const galleryEl = document.querySelector(options.gallery);
+    if (!galleryEl) {
+      return;
+    }
+
+    const imgEls = [];
+    const els = galleryEl.querySelectorAll("img:not(.emoji)");
+    els.forEach((el) => {
+      if (el.src.trim() == "") {
+        return;
+      }
+      if (!imgEls.includes(el)) {
+        imgEls.push(el);
+      }
+    });
+
+    if (imgEls.length === 0) {
+      return;
+    }
+
+    imgEls.forEach((imgEl) => {
+      imgEl.outerHTML = `
+      <a class="photo-swipe"
+        href="${imgEl.src}"
+        data-pswp-width="${
+          Math.max(imgEl.naturalWidth, imgEl.width) * options.photo_scale
+        }"
+        data-pswp-height="${
+          Math.max(imgEl.naturalHeight, imgEl.height) * options.photo_scale
+        }"
+        data-pswp-caption="${imgEl.getAttribute("caption") || imgEl.alt}"
+        target="_blank">
+        ${imgEl.outerHTML}
+      </a>`;
+    });
+
+    // Initialize PhotoSwipe 5
+    var lightbox = new PhotoSwipeLightbox(options);
+
+    lightbox.init();
+  }
+
+  window.addEventListener("load", initPhotoSwipe);
+</script>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<header class="site-header " role="banner">
+
+  <div class="wrapper">
+    <div class="site-header-inner">
+<span class="site-brand"><a class="site-brand-inner" rel="author" href="/">
+  <img class="site-favicon" title="UI eXtension Guides" src="/assets/images/icon.png" onerror="this.style.display='none'">
+  UI eXtension Guides
+</a>
+</span><nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger">
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewbox="0 0 18 15" width="18px" height="15px">
+                <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+<a class="page-link" href="/">HOME</a><a class="page-link" href="/archives.html">ARCHIVES</a><a class="page-link" href="/categories.html">CATEGORIES</a><a class="page-link" href="/tags.html">TAGS</a>
+
+
+
+
+
+
+
+
+
+<div class="page-link" style="display: inline;">
+
+
+
+<div id="google_translate_element" style="display: none;">
+</div>
+
+<div class="ct-language">
+  <ul class="list-unstyled ct-language-dropdown">
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="en">
+          
+          <img src="https://cdn.countryflags.com/thumbs/united-states-of-america/flag-400.png" title="English">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="fr">
+          
+          <img src="https://cdn.countryflags.com/thumbs/france/flag-400.png" title="French">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="de">
+          
+          <img src="https://cdn.countryflags.com/thumbs/germany/flag-400.png" title="German">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="it">
+          
+          <img src="https://cdn.countryflags.com/thumbs/italy/flag-400.png" title="Italian">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="nl">
+          
+          <img src="https://cdn.countryflags.com/thumbs/netherlands/flag-400.png" title="Dutch">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="es">
+          
+          <img src="https://cdn.countryflags.com/thumbs/spain/flag-400.png" title="Spanish">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="zh-CN">
+          
+          <img src="https://cdn.countryflags.com/thumbs/china/flag-400.png" title="Chinese(Simple)">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ja">
+          
+          <img src="https://cdn.countryflags.com/thumbs/japan/flag-400.png" title="Japanese">
+          
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    autoDisplay: false,
+    layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+  }, 'google_translate_element');
+
+  // Links to cross-origin destinations are unsafe
+  var gll = document.getElementsByClassName('goog-logo-link')[0];
+  if (gll) {
+    gll.setAttribute('rel', 'noopener');
+  }
+
+  function restoreLang() {
+    var iframe = document.getElementsByClassName('goog-te-banner-frame')[0];
+    if (!iframe) return;
+
+    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    var restore_el = innerDoc.getElementsByTagName("button");
+
+    for (var i = 0; i < restore_el.length; i++) {
+      if (restore_el[i].id.indexOf("restore") >= 0) {
+        restore_el[i].click();
+        var close_el = innerDoc.getElementsByClassName("goog-close-link");
+        close_el[0].click();
+        return;
+      }
+    }
+  }
+
+  function triggerHtmlEvent(element, eventName) {
+    var event;
+    if (document.createEvent) {
+      event = document.createEvent('HTMLEvents');
+      event.initEvent(eventName, true, true);
+      element.dispatchEvent(event);
+    } else {
+      event = document.createEventObject();
+      event.eventType = eventName;
+      element.fireEvent('on' + event.eventType, event);
+    }
+  }
+
+  var googleCombo = document.querySelector("select.goog-te-combo");
+  var langSelect = document.querySelector('.ct-language');
+  langSelect.addEventListener('click', function(event) {
+    if (!event.target) {
+      return;
+    }
+
+    var selected = document.querySelector('.ct-language .ct-language-selected');
+    if (selected) {
+      selected.classList.remove('ct-language-selected');
+    }
+
+    var target = event.target;
+    while (target && target !== langSelect ) {
+      if (target.matches('.lang-select')) {
+        break;
+      }
+      target = target.parentElement;
+    }
+
+    if (target && target.matches('.lang-select')) {
+      var lang = target.getAttribute('data-lang');
+      if (googleCombo.value == lang) {
+        restoreLang();
+      } else {
+        target.parentElement.classList.add('ct-language-selected');
+        googleCombo.value = lang;
+        triggerHtmlEvent(googleCombo, 'change');
+      }
+    }
+
+    event.preventDefault();
+  });
+}
+</script>
+
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
+</div>
+</div>
+        </nav>
+</div>
+  </div>
+</header>
+
+<script>
+  function initHeader() {
+    var lastScrollY = getScrollPos().y;
+    var documentElement = document.documentElement;
+
+    function storeScrollData() {
+      var y = getScrollPos().y;var scrollStatus = "";
+
+      if (y <= 0) {
+        scrollStatus = "top";
+      } else if ((window.innerHeight + y) >= document.body.offsetHeight) {
+        scrollStatus = "bottom";
+      } else {
+        var isScrollDown = (y - lastScrollY > 0) ? true : false;
+        scrollStatus = isScrollDown ? "down" : "up";
+      }
+
+      lastScrollY = y;
+      documentElement.setAttribute("data-scroll-status", scrollStatus);
+    }
+
+    window.addEventListener('scroll', function(e) {
+      storeScrollData();
+    });
+
+    storeScrollData();
+  }
+  document.addEventListener('DOMContentLoaded', initHeader);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  function hashLocate(hashValue) {
+    hashValue = hashValue.replace(/^.*#h-/, '');
+    hashValue = decodeURIComponent(hashValue);
+    var element = document.getElementById(hashValue);
+
+    if (!element) {
+      return;
+    }
+
+    var header = document.querySelector('header.site-header');
+    var headerRect = header.getBoundingClientRect();
+    var headerTop = Math.floor(headerRect.top);
+    var headerHeight = Math.floor(headerRect.height);
+    var scrollPos = getScrollPos();
+    var offsetY = element.offsetTop - (headerTop + headerHeight + 20);
+
+    if (offsetY == scrollPos.y) {
+      return;
+    }
+
+    if (headerTop == 0  && offsetY > scrollPos.y) {
+      offsetY += headerHeight + 2;
+    } else if (headerTop < 0  && offsetY < scrollPos.y) {
+      offsetY -= headerHeight - 2;
+    }
+
+    smoothScrollTo(offsetY);
+  }
+
+  // The first event occurred
+  window.addEventListener('load', function(event) {
+    if (window.location.hash) {
+      hashLocate(window.location.hash);
+    }
+  });
+
+  // The first event occurred
+  window.addEventListener('click', function(event) {
+    if (event.target.tagName.toLowerCase() == 'a') {
+      hashLocate(event.target.getAttribute('href'));
+    }
+  });
+</script>
+<div class="theme-toggle">
+  <input type="checkbox" id="theme-switch">
+  <label for="theme-switch">
+    <div class="toggle"></div>
+    <div class="names">
+      <p class="light">Light</p>
+      <p class="dark">Dark</p>
+    </div>
+  </label>
+</div>
+
+
+
+
+<script>
+  (function() {
+    var sw = document.getElementById('theme-switch');
+    var html = document.getElementsByTagName('html')[0];
+    var nightModeOption = ('auto' || 'auto').toLowerCase();
+    var storage = nightModeOption === 'manual'
+        ? localStorage
+        : sessionStorage;
+    var themeData = loadThemeData();
+
+    function saveThemeData(data) {
+      storage.setItem('theme', JSON.stringify(data));
+    }
+
+    function loadThemeData() {
+      var data = storage.getItem('theme');
+      try {
+        data = JSON.parse(data ? data : '');
+      } catch(e) {
+        data = { nightShift: undefined, autoToggleAt: 0 };
+        saveThemeData(data);
+      }
+      return data;
+    }
+
+    function handleThemeToggle(nightShift) {
+      themeData.nightShift = nightShift;
+      saveThemeData(themeData);
+      html.dataset.theme = nightShift ? 'dark' : 'light';
+      setTimeout(function() {
+        sw.checked = nightShift ? true : false;
+        document.dispatchEvent(new Event('theme-changed'));
+      }, 50);
+    }
+
+    function autoThemeToggle() {
+      // Next time point of theme toggle
+      var now = new Date();
+      var toggleAt = new Date();
+      var hours = now.getHours();
+      var nightShift = hours >= 19 || hours <=7;
+
+      if (nightShift) {
+        if (hours > 7) {
+          toggleAt.setDate(toggleAt.getDate() + 1);
+        }
+        toggleAt.setHours(7);
+      } else {
+        toggleAt.setHours(19);
+      }
+
+      toggleAt.setMinutes(0);
+      toggleAt.setSeconds(0);
+      toggleAt.setMilliseconds(0)
+
+      var delay = toggleAt.getTime() - now.getTime();
+
+      // auto toggle theme mode
+      setTimeout(function() {
+        handleThemeToggle(!nightShift);
+      }, delay);
+
+      return {
+        nightShift: nightShift,
+        toggleAt: toggleAt.getTime()
+      };
+    }
+
+    // Listen the theme toggle event
+    sw.addEventListener('change', function(event) {
+      handleThemeToggle(event.target.checked);
+    });
+
+    if (nightModeOption == 'auto') {
+      var data = autoThemeToggle();
+
+      // Toggle theme by local setting
+      if (data.toggleAt > themeData.autoToggleAt) {
+        themeData.autoToggleAt = data.toggleAt;
+        handleThemeToggle(data.nightShift);
+      } else {
+        handleThemeToggle(themeData.nightShift);
+      }
+    } else if (nightModeOption == 'manual') {
+      handleThemeToggle(themeData.nightShift);
+    } else {
+      var nightShift = themeData.nightShift;
+      if (nightShift === undefined) {
+        nightShift = nightModeOption === 'on';
+      }
+      handleThemeToggle(nightShift);
+    }
+  })();
+</script>
+<div id="click-to-top" class="click-to-top">
+  <i class="fa fa-arrow-up"></i>
+</div>
+<script>
+  (function () {
+    const clickToTop = document.getElementById('click-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        clickToTop.classList.add('show')
+      }else {
+        clickToTop.classList.remove('show')
+      }
+    });
+    clickToTop.addEventListener('click', () => {
+      window.smoothScrollTo(0);
+    });
+  })();
+</script>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="framework">
+  <section class="main">
+
+     <div class="post">
+  <section>
+
+
+
+
+
+
+
+
+
+<header class="post-header">
+  <h1 class="post-title p-name" itemprop="name headline">Using UIX Forge event and button sparks to change inline tile card feature</h1>
+  <h2 class="post-subtitle"></h2>
+
+  <div class="post-meta">
+    <time class="dt-published" datetime="2026-04-11T00:00:00+00:00" itemprop="datePublished"><i class="fa fa-calendar"></i> 11 Apr, 2026
+    </time>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <span class="post-reading-time left-vsplit"><i class="fa fa-clock-o"></i> About 15 mins</span>
+  </div>
+<div class="post-tags">
+<a class="post-tag" href="/tags.html#forge">#forge</a><a class="post-tag" href="/tags.html#sparks">#sparks</a><a class="post-tag" href="/tags.html#event%20spark">#event spark</a><a class="post-tag" href="/tags.html#button%20spark">#button spark</a><a class="post-tag" href="/tags.html#macros">#macros</a>
+</div></header>
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="post-content e-content" itemprop="articleBody">
+
+      <p><a href="https://uix.lf.technology/forge">UIX Forge</a> allows you to forge an element and apply various features with <a href="https://uix.lf.technology/forge/sparks">forge sparks</a>. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the <a href="https://uix.lf.technology/forge/sparks/event">event spark</a> and <a href="https://uix.lf.technology/forge/sparks/button">button spark</a>.</p>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">Forge elements</p>
+    <p>
+        </p>
+<p>All UIX Forge documentation will describe the card, row, badge, section, picture-element as <strong>element</strong> as indeed, a forged element is not restricted to being a card, but can be any type supported by UIX Forge mold type</p>
+
+    
+</div>
+
+<h2 id="template-macros">Template macros</h2>
+
+<p>This guide relies heavily on <a href="https://uix.lf.technology/using/templates/#macros">template macros</a>. To first understand the macros and their output, a markdown card will be used as the forged element. This is a good way to check your macros are working as expected before proceeding to use in any final solution.</p>
+
+<p>Four macros are used in the final solution. They are:</p>
+
+<ol>
+  <li>
+<strong>feature_options()</strong>: Returns an array of lookup dicts to provide an icon and a feature. Uses <code class="language-plaintext highlighter-rouge">returns: true</code> <a href="https://uix.lf.technology/using/templates/#macros-with-returns">returns method</a> as the macro returns an array.</li>
+  <li>
+<strong>feature_max_index()</strong>: Returns the length of the array returned by feature_options() minus 1 to give a zero-based index. Also uses the returns method as the macro returns an integer.</li>
+  <li>
+<strong>feature_next_index(index)</strong>: Returns the next zero-based index available in the array, rolling over back to start of the array. Takes a param of <code class="language-plaintext highlighter-rouge">index</code> and uses returns method as the macro returns an integer.</li>
+  <li>
+<strong>feature_item(index, key)</strong>: Returns the item by key of the dict at the index in the feature_options() array. It takes params of <code class="language-plaintext highlighter-rouge">index</code> and <code class="language-plaintext highlighter-rouge">key</code>.</li>
+</ol>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{%- do returns(options) -%}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">markdown</span>
+  <span class="na">content</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">**feature_options()**: {{ feature_options() }}</span>
+
+    <span class="s">**feature_max_index()**: {{ feature_max_index() }}</span>
+
+    <span class="s">**feature_next_index(0)**: {{ feature_next_index(0) }}</span>
+    <span class="s">**feature_next_index(1)**: {{ feature_next_index(1) }}</span>
+
+    <span class="s">**feature_item(0, 'icon')**: {{ feature_item(0, 'icon') }}</span>
+    <span class="s">**feature_item(0, 'feature')**: {{ feature_item(0, 'feature') }}</span>
+
+    <span class="s">**feature_item(1, 'icon')**: {{ feature_item(1, 'icon') }}</span>
+    <span class="s">**feature_item(1, 'feature')**: {{ feature_item(1, 'feature') }}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Macro testing output</p>
+    <p>
+        </p>
+<p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-1.png" alt="macro-testing-example"></p>
+
+    
+</div>
+
+<h2 id="switch-to-tile-element">Switch to tile element</h2>
+
+<p>Now the macros are well defined and ready to be used we can start building the forged tile element. Here a static index is used for <strong>feature_item()</strong>. This will change once the event spark is added.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{% do returns(options) %}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
+  <span class="na">features</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">feature_item(0,</span><span class="nv"> </span><span class="s">'feature')</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Forged tile cards</p>
+    <p>
+        </p>
+<p>Output with two copies of the forge code, one as per above, and one changing the index from 0 to 1 <img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-2.png" alt="feature-example"></p>
+
+    
+</div>
+
+<h2 id="add-event-spark">Add event spark</h2>
+
+<p>Next we will use the <a href="https://uix.lf.technology/forge/sparks/event/">event spark</a> for the forged element to be able to use data received from <code class="language-plaintext highlighter-rouge">fire-dom-event</code>.</p>
+
+<p>The event spark needs a <code class="language-plaintext highlighter-rouge">forge_id</code>. Here the ID used is made up of a prefix and the entity from the element config.</p>
+
+<p>In the forged element we now use data from the event spark as input to <strong>feature_item()</strong>. As per event spark guidelines, our event data will not be available when first loaded, so <code class="language-plaintext highlighter-rouge">default(0)</code> is used. The data will also come as a string so we cast to <code class="language-plaintext highlighter-rouge">int</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{% do returns(options) %}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
+  <span class="na">features</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">feature_item(uixForge.event.index</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(0)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">int,</span><span class="nv"> </span><span class="s">'feature')</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
+</code></pre></div></div>
+
+<h2 id="use-buttons-to-test">Use buttons to test</h2>
+
+<p>First up, we will use two standard buttons to test the solution so far. We need to send <code class="language-plaintext highlighter-rouge">0</code> and <code class="language-plaintext highlighter-rouge">1</code> as <code class="language-plaintext highlighter-rouge">index</code> to the <code class="language-plaintext highlighter-rouge">forge_id</code> <code class="language-plaintext highlighter-rouge">light_tile_light.bed_light</code> with <code class="language-plaintext highlighter-rouge">uix_forge</code> <code class="language-plaintext highlighter-rouge">fire-dom-event</code>.</p>
+
+<p>Two buttons will be used using the YAML below.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">show_icon</span><span class="pi">:</span> <span class="kc">false</span>
+<span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+<span class="na">name</span><span class="pi">:</span> <span class="s">Feature Index </span><span class="m">0</span>
+<span class="na">grid_options</span><span class="pi">:</span>
+  <span class="na">columns</span><span class="pi">:</span> <span class="m">6</span>
+  <span class="na">rows</span><span class="pi">:</span> <span class="m">1</span>
+<span class="na">tap_action</span><span class="pi">:</span>
+  <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+  <span class="na">uix_forge</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_light.bed_light</span>
+      <span class="na">data</span><span class="pi">:</span>
+        <span class="na">index</span><span class="pi">:</span> <span class="m">0</span> <span class="c1"># one button with 0, one button with 1</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Using buttons to send spark event data</p>
+    <p>
+        </p>
+<p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-3.gif" alt="macro-testing-example"></p>
+
+    
+</div>
+
+<h2 id="full-solution">Full solution</h2>
+
+<p>Now that testing with external buttons show that the event spark is working, we can now use a button spark to add a button adjacent to the inline feature to change the inline feature.</p>
+
+<p>The button spark has the following specific config:</p>
+
+<ol>
+  <li>
+<strong>after</strong>: is set to <code class="language-plaintext highlighter-rouge">hui-tile-card $ hui-card-features</code>.</li>
+  <li>
+<strong>icon</strong>: is set to <code class="language-plaintext highlighter-rouge">{{ feature_item(feature_next_index(uixForge.event.index | default(0) | int), 'icon') }}</code>
+</li>
+  <li>
+<strong>forge_id</strong>: of the <code class="language-plaintext highlighter-rouge">fire-dom-event</code> for <code class="language-plaintext highlighter-rouge">uix_forge</code> is set to <code class="language-plaintext highlighter-rouge">light_tile_{{config.element.entity}}</code> to match the event spark’s <code class="language-plaintext highlighter-rouge">forge_id</code>.</li>
+</ol>
+
+<p>Finally we style the forged tile element to adjust the spacing of the tile to give the feature more room and have the tile icon and the button added to take minimal space.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{% do returns(options) %}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+      <span class="na">after</span><span class="pi">:</span> <span class="s">hui-tile-card $ hui-card-features</span>
+      <span class="na">icon</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+        <span class="s">{{ feature_item(feature_next_index(uixForge.event.index | default(0) |</span>
+        <span class="s">int), 'icon') }}</span>
+      <span class="na">color</span><span class="pi">:</span> <span class="s">grey</span>
+      <span class="na">tap_action</span><span class="pi">:</span>
+        <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+        <span class="na">uix_forge</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+            <span class="na">data</span><span class="pi">:</span>
+              <span class="na">index</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+                <span class="s">{{ feature_next_index(uixForge.event.index | default(0) | int)</span>
+                <span class="s">}}</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
+  <span class="na">features</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">feature_item(uixForge.event.index</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(0)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">int,</span><span class="nv"> </span><span class="s">'feature')</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
+  <span class="na">uix</span><span class="pi">:</span>
+    <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">ha-tile-icon {</span>
+        <span class="s">flex: 0;</span>
+      <span class="s">}</span>
+      <span class="s">ha-tile-info {</span>
+        <span class="s">flex: 1;</span>
+      <span class="s">}</span>
+      <span class="s">hui-card-features {</span>
+        <span class="s">flex: 2;</span>
+        <span class="s">padding-right: 0px !important;</span>
+      <span class="s">}</span>
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Full solution</p>
+    <p>
+        </p>
+<p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-4.gif" alt="full-solution"></p>
+
+    
+</div>
+
+<h2 id="extra---features-as-an-object">Extra - features as an object</h2>
+
+<p>Up until now we have used and set features as a string, assigning the output from <code class="language-plaintext highlighter-rouge">feature_item(index, 'feature')</code> to <code class="language-plaintext highlighter-rouge">- type:</code> under <code class="language-plaintext highlighter-rouge">features:</code>. To extend the solution we can use features as an object. Careful construction of the object is needed here as it is set as a Python dict.</p>
+
+<p>Changes required:</p>
+
+<ol>
+  <li>
+<code class="language-plaintext highlighter-rouge">feature</code> in the <code class="language-plaintext highlighter-rouge">options</code> array becomes an array with a single dict. For simple features the dict is <code class="language-plaintext highlighter-rouge">{ 'type': 'feature-string' }</code>
+</li>
+  <li>features requiring more than just <code class="language-plaintext highlighter-rouge">type</code> can be added as a dict as the sole member of the array. In the example here, a custom feature of a button is used.</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">feature_item()</code> now returns an object rather than a string and uses returns method.</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">features:</code> config uses the output from <code class="language-plaintext highlighter-rouge">feature_item()</code> macro directly.</li>
+</ol>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
+<span class="na">forge</span><span class="pi">:</span>
+  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
+  <span class="na">macros</span><span class="pi">:</span>
+    <span class="na">feature_options</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% set options = </span>
+          <span class="s">[ </span>
+            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': [ { 'type': 'light-brightness' } ] }, </span>
+            <span class="s">{'icon': 'mdi:invert-colors', 'feature': [ { 'type': 'light-color-favorites' } ] },</span>
+            <span class="s">{'icon': 'mdi:cog', 'feature': [ { 'type': 'custom:service-call', 'entries': [ { 'type': 'button', 'icon': 'mdi:cog', 'thumb': 'default', 'tap_action': { 'action': 'more-info', 'target': { 'entity_id': 'light.bed_light' }, 'data': {} } } ] } ] }</span>
+          <span class="s">] </span>
+        <span class="s">%}</span>
+        <span class="s">{% do returns(options) %}</span>
+    <span class="na">feature_max_index</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{% do returns(feature_options() | length - 1) %}</span>
+    <span class="na">feature_next_index</span><span class="pi">:</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
+        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
+        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
+    <span class="na">feature_item</span><span class="pi">:</span>
+      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">params</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">index</span>
+        <span class="pi">-</span> <span class="s">key</span>
+      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
+        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
+        <span class="s">options | length -%}  {%- set option = options[index][key] -%} {% do</span>
+        <span class="s">returns(option) %} {%- endif -%}</span>
+  <span class="na">sparks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+      <span class="na">after</span><span class="pi">:</span> <span class="s">hui-tile-card $ hui-card-features</span>
+      <span class="na">icon</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+        <span class="s">{{ feature_item(feature_next_index(uixForge.event.index | default(0) |</span>
+        <span class="s">int), 'icon') }}</span>
+      <span class="na">color</span><span class="pi">:</span> <span class="s">grey</span>
+      <span class="na">tap_action</span><span class="pi">:</span>
+        <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+        <span class="na">uix_forge</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
+            <span class="na">data</span><span class="pi">:</span>
+              <span class="na">index</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+                <span class="s">{{ feature_next_index(uixForge.event.index | default(0) | int)</span>
+                <span class="s">}}</span>
+<span class="na">element</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
+  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
+  <span class="na">features</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">{{ feature_item(uixForge.event.index | default(0) | int, 'feature') }}</span>
+  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
+  <span class="na">uix</span><span class="pi">:</span>
+    <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">ha-tile-icon {</span>
+        <span class="s">flex: 0;</span>
+      <span class="s">}</span>
+      <span class="s">ha-tile-info {</span>
+        <span class="s">flex: 1;</span>
+      <span class="s">}</span>
+      <span class="s">hui-card-features {</span>
+        <span class="s">flex: 2;</span>
+        <span class="s">padding-right: 0px !important;</span>
+      <span class="s">}</span>
+
+</code></pre></div></div>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Full solution</p>
+    <p>
+        </p>
+<p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-5.gif" alt="full-solution"></p>
+
+    
+</div>
+
+
+
+    </div>
+
+</article>
+<div class="post-nav">
+<a class="previous" href="/dialogs/2026/04/11/testing-dialogs-in-browser-console.html" title="Testing dialogs in the browser console">
+          <div>Testing dialogs in the browser console</div>
+        </a><a class="next" href="/forge/2026/04/12/forge-tooltip-spark.html" title="Using UIX Forge tooltip and attribute sparks for tooltips">
+          <div>Using UIX Forge tooltip and attribute sparks for tooltips</div>
+        </a>
+</div>
+<div class="post-related">
+      <div>Related Articles</div>
+      <ul>
+        <li class="">
+          <a class="post-link" href="/elements/2026/03/03/getting-shadowy-with-themes.html" title="Getting shadowy with themes - using templates">
+            Getting shadowy with themes - using templates<span class="post-badges">
+  <span class="post-badge badge-top">TOP</span>
+  <span class="post-badge badge-new">NEW</span>
+</span>
+</a>
+        </li>
+<li class="">
+          <a class="post-link" href="/forge/2026/07/15/forge-more-info-header.html" title="Using UIX Forge more-info spark combined with UIX actions">
+            Using UIX Forge more-info spark combined with UIX actions<span class="post-badges">
+  <span class="post-badge badge-top">TOP</span>
+  <span class="post-badge badge-new">NEW</span>
+</span>
+</a>
+        </li>
+<li class="">
+          <a class="post-link" href="/dialogs/2026/03/29/hide-more-info-header.html" title="Hide more-info dialog header">
+            Hide more-info dialog header<span class="post-badges">
+  <span class="post-badge badge-top">TOP</span>
+  <span class="post-badge badge-new">NEW</span>
+</span>
+</a>
+        </li>
+<li class="">
+          <a class="post-link" href="/broker/2026/09/06/broker-config-logs.html" title="Using UIX Broker to customize config/logs to open raw and focused standalone">
+            Using UIX Broker to customize config/logs to open raw and focused standalone...<span class="post-badges">
+  <span class="post-badge badge-top">TOP</span>
+  <span class="post-badge badge-new">NEW</span>
+</span>
+</a>
+        </li>
+</ul>
+    </div>
+<div class="post-comments"></div></section>
+</div>
+
+
+  </section>
+  <section class="sidebar" style="margin-left: 15px;">
+    <!-- Get sidebar items --><style type="text/css" media="screen">
+.post-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+</style>
+
+<div class="post-menu">
+  <div class="post-menu-title">TOC</div>
+  <div class="post-menu-content"></div>
+</div>
+
+<script>
+  function generateContent() {
+    var menu = document.querySelector(".post-menu");
+    var menuContent =  menu.querySelector(".post-menu-content");
+    var headings = document.querySelector(".post-content").querySelectorAll("h2, h3, h4, h5, h6");
+
+    // Hide menu when no headings
+    if (headings.length === 0) {
+      return menu.style.display = "none";
+    }
+
+    // Generate post menu
+    var menuHTML = '';
+    for (var i = 0; i < headings.length; i++) {
+      var h = headings[i];
+      menuHTML += (
+        '<li class="h-' + h.tagName.toLowerCase() + '">'
+        + '<a href="#h-' + h.getAttribute('id') + '">' + h.textContent + '</a></li>');
+    }
+
+    menuContent.innerHTML = '<ul>' + menuHTML + '</ul>';
+
+    // The header element
+    var header = document.querySelector('header.site-header');
+
+    function doMenuCollapse(index, over_items) {
+      var items = menuContent.firstChild.children;
+
+      if (over_items == undefined) {
+        over_items = 20;
+      }
+
+      if (items.length < over_items) {
+        return;
+      }
+
+      var activeItem = items[index];
+      var beginItem = activeItem
+      var endItem = activeItem
+      var beginIndex = index;
+      var endIndex = index + 1;
+      while (beginIndex >= 0
+        && !items[beginIndex].classList.contains('h-h2')) {
+        beginIndex -= 1;
+      }
+      while (endIndex < items.length
+        && !items[endIndex].classList.contains('h-h2')) {
+        endIndex += 1;
+      }
+      for (var i = 0; i < beginIndex; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+      for (var i = beginIndex + 1; i < endIndex; i++) {
+        item = items[i]
+        // if (!item.classList.contains('h-h2')) {
+          item.style.display = '';
+        // }
+      }
+      for (var i = endIndex; i < items.length; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+    }
+
+    // Init menu collapsed
+    doMenuCollapse(-1);
+
+    // Active the menu item
+    window.addEventListener('scroll', function (event) {
+      var lastActive = menuContent.querySelector('.active');
+      var changed = true;
+      var activeIndex = -1;
+      for (var i = headings.length - 1; i >= 0; i--) {
+        var h = headings[i];
+        var headingRect = h.getBoundingClientRect();
+        var headerRect = header.getBoundingClientRect();
+        var headerTop = Math.floor(headerRect.top);
+        var headerHeight = Math.floor(headerRect.height);
+        var headerHeight = headerTop + headerHeight + 20;
+        if (headingRect.top <= headerHeight) {
+          var id = 'h-' + h.getAttribute('id');
+          var a = menuContent.querySelector('a[href="#' + id  + '"]');
+          var curActive = a.parentNode;
+          if (curActive) {
+            curActive.classList.add('active');
+            activeIndex = i;
+          }
+          if (lastActive == curActive) {
+            changed = false;
+          }
+          break;
+        }
+      }
+      if (changed) {
+        if (lastActive) {
+          lastActive.classList.remove('active');
+        }
+        doMenuCollapse(activeIndex);
+      }
+      event.preventDefault();
+    });
+  }
+  generateContent();
+</script>
+</section>
+</div>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+    <div class="site-footer-inner">
+<div>Content on this site is licensed under a Creative Commons Attribution 4.0 International license.</div>
+      <div>Powered by <a title="Jekyll is a simple, blog-aware, static site
+      generator." href="https://jekyllrb.com/">Jekyll</a> &amp; <a title="Yat, yet
+      another theme." href="https://github.com/jeffreytse/jekyll-theme-yat">Yat Theme</a>.</div>
+      <div class="footer-col rss-subscribe">Subscribe <a href="/feed.xml">via RSS</a>
+</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
