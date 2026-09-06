@@ -1,6 +1,6 @@
 ---
-title: Using UIX Broker to customize config/logs to open raw and focussed stand alone
-description: A guide to using UIX Broker to open config/logs in a new page standalone, switching to focussed raw mode with wrap lines turned off.
+title: Using UIX Broker to customize config/logs to open raw and focused standalone
+description: A guide to using UIX Broker to open config/logs in a new page standalone, switching to focused raw mode with wrap lines turned off.
 excerpt_image: /assets/broker/2026-09-06-broker-config-logs.png
 tags:
   - broker
