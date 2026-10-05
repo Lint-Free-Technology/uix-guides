@@ -1,4 +1,98 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-10-05T03:54:57+00:00</updated><id>/feed.xml</id><title type="html">UI eXtension Guides</title><subtitle>Guides for UI eXtension (UIX).</subtitle><author><name>Lint-Free-Technology</name></author><entry><title type="html">Map color tokens</title><link href="/frontend/2026/10/04/map-tokens.html" rel="alternate" type="text/html" title="Map color tokens" /><published>2026-10-04T00:00:00+00:00</published><updated>2026-10-04T00:00:00+00:00</updated><id>/frontend/2026/10/04/map-tokens</id><content type="html" xml:base="/frontend/2026/10/04/map-tokens.html"><![CDATA[<p>Home Assistant 2026.10.0 adds theme tokens for the vector map. They let a theme recolor the map independently of the dashboard’s light or dark mode—useful when, for example, a light theme needs the higher contrast of a dark map.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-10-05T04:23:14+00:00</updated><id>/feed.xml</id><title type="html">UI eXtension Guides</title><subtitle>Guides for UI eXtension (UIX).</subtitle><author><name>Lint-Free-Technology</name></author><entry><title type="html">Create calendar events from anywhere with UIX Broker</title><link href="/broker/2026/10/05/create-calendar-event.html" rel="alternate" type="text/html" title="Create calendar events from anywhere with UIX Broker" /><published>2026-10-05T00:00:00+00:00</published><updated>2026-10-05T00:00:00+00:00</updated><id>/broker/2026/10/05/create-calendar-event</id><content type="html" xml:base="/broker/2026/10/05/create-calendar-event.html"><![CDATA[<p>Home Assistant’s calendar page is a natural place to create an event, but the action can be useful wherever the context happens: a dashboard, a room view, or a button UIX Broker has added to an existing page. This UIX Broker interaction opens Home Assistant’s own <strong>Create Event</strong> dialog in response to a custom action.</p>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">Home Assistant 2026.10.0</p>
+    <p>
+        <p>Home Assistant 2026.10.0 makes a <strong>Create Event</strong> button available on the Calendar page again. Use that built-in button when the Calendar page is where you want to work. This method is still useful when the action belongs elsewhere, including on UIX Broker UI directives.</p>
+
+    </p>
+</div>
+
+<h2 id="how-it-works">How it works</h2>
+
+<p><code class="language-plaintext highlighter-rouge">ha-full-calendar</code>, the element that supplies the dialog, is loaded only when Home Assistant needs it. The interaction below loads it on demand, retains one hidden instance below <code class="language-plaintext highlighter-rouge">home-assistant</code>, and calls its internal create-event action. Keeping the instance there is important: Home Assistant receives the resulting <code class="language-plaintext highlighter-rouge">show-dialog</code> event from that part of the DOM.</p>
+
+<p>The interaction listens for <code class="language-plaintext highlighter-rouge">ll-custom</code>, the event sent by a Lovelace <code class="language-plaintext highlighter-rouge">fire-dom-event</code> action. The <code class="language-plaintext highlighter-rouge">uix_create_event: true</code> value is the deliberately narrow flag that tells it to open the dialog.</p>
+
+<h2 id="add-the-uix-broker-interaction">Add the UIX Broker interaction</h2>
+
+<p>Add this under <code class="language-plaintext highlighter-rouge">uix_broker:</code> in the UIX Broker configuration, or put it in a registered UIX Broker YAML file.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">uix_broker</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">realm</span><span class="pi">:</span> <span class="s">browser</span>
+    <span class="na">listen</span><span class="pi">:</span> <span class="s">ll-custom</span>
+    <span class="na">anchor</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&amp;home-assistant</span><span class="nv"> </span><span class="s">$$</span><span class="nv"> </span><span class="s">partial-panel-resolver"</span>
+    <span class="na">rules</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">@captured.uix_create_event"</span><span class="err">:</span> <span class="kc">true</span>
+    <span class="na">directives</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">javascript</span>
+        <span class="na">id</span><span class="pi">:</span> <span class="s">uix-create-event-js</span>
+        <span class="na">code</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">if (!window.customElements.get('ha-full-calendar')) {</span>
+            <span class="s">window.loadCardHelpers().then(helpers =&gt; {</span>
+              <span class="s">helpers.createCardElement({ type: "calendar" });</span>
+            <span class="s">});</span>
+          <span class="s">}</span>
+
+          <span class="s">const haShadow = document.querySelector("home-assistant").shadowRoot;</span>
+          <span class="s">window.customElements.whenDefined("ha-full-calendar").then(() =&gt; {</span>
+            <span class="s">let fullCalendar = haShadow.getElementById("uix-full-calendar");</span>
+            <span class="s">if (!fullCalendar) {</span>
+              <span class="s">fullCalendar = document.createElement("ha-full-calendar");</span>
+              <span class="s">fullCalendar.id = "uix-full-calendar";</span>
+              <span class="s">fullCalendar.style.display = "none";</span>
+              <span class="s">haShadow.appendChild(fullCalendar);</span>
+            <span class="s">}</span>
+
+            <span class="s">fullCalendar.hass = anchor.hass;</span>
+            <span class="s">// Unset _activeView so _createEvent works outside the calendar panel.</span>
+            <span class="s">fullCalendar._activeView = undefined;</span>
+            <span class="s">fullCalendar._createEvent();</span>
+          <span class="s">});</span>
+</code></pre></div></div>
+
+<div class="admonition warning rounded">
+    <p class="admonition-title">This uses Home Assistant frontend internals</p>
+    <p>
+        <p>The interaction calls the private <code>_createEvent()</code> method on Home Assistant’s calendar element. If a future frontend release changes that element or method, inspect the Calendar panel and adjust this interaction.</p>
+
+    </p>
+</div>
+
+<h2 id="trigger-it-from-a-dashboard-card">Trigger it from a dashboard card</h2>
+
+<p>Any frontend element that accepts a Lovelace action can trigger the interaction. For example, add the following to a standard Button card:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+<span class="na">name</span><span class="pi">:</span> <span class="s">Create Event</span>
+<span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:calendar-plus</span>
+<span class="na">tap_action</span><span class="pi">:</span>
+  <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+  <span class="na">uix_create_event</span><span class="pi">:</span> <span class="kc">true</span>
+</code></pre></div></div>
+
+<p>The same <code class="language-plaintext highlighter-rouge">tap_action</code> can be placed on another card, a custom card, or a card feature that supports actions. It does not need to be on a page containing a Calendar card.</p>
+
+<h2 id="trigger-it-from-a-uix-broker-button">Trigger it from a UIX Broker button</h2>
+
+<p>UIX Broker’s UI directives can use the very same action. Add this <code class="language-plaintext highlighter-rouge">button</code> directive to an existing interaction that puts controls where you want them; replace the <code class="language-plaintext highlighter-rouge">after</code> anchor with the element after which the button should appear.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
+  <span class="na">after</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&lt;anchor</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">surrounding</span><span class="nv"> </span><span class="s">UI&gt;"</span>
+  <span class="na">label</span><span class="pi">:</span> <span class="s">Create Event</span>
+  <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:calendar-plus</span>
+  <span class="na">tap_action</span><span class="pi">:</span>
+    <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
+    <span class="na">uix_create_event</span><span class="pi">:</span> <span class="kc">true</span>
+</code></pre></div></div>
+
+<p>This is the advantage over relying solely on the Calendar page’s button: one reusable event handler can be called by any Home Assistant action surface, including UIX Broker UI directives.</p>
+
+<h2 id="result">Result</h2>
+
+<p>After reloading UIX Broker configuration, use the button or action. Home Assistant opens its native event form, where you select the target calendar and enter the event details.</p>
+
+<p><img src="/assets/broker/2026-10-05-create-calendar-event.gif" alt="The Create Event dialog opened from a dashboard action" /></p>]]></content><author><name>Lint-Free-Technology</name></author><category term="broker" /><category term="broker" /><category term="calendar" /><category term="javascript directive" /><category term="button directive" /><category term="fire-dom-event" /><summary type="html"><![CDATA[Open Home Assistant's native Create Event dialog from any card action or UIX Broker button.]]></summary></entry><entry><title type="html">Map color tokens</title><link href="/frontend/2026/10/04/map-tokens.html" rel="alternate" type="text/html" title="Map color tokens" /><published>2026-10-04T00:00:00+00:00</published><updated>2026-10-04T00:00:00+00:00</updated><id>/frontend/2026/10/04/map-tokens</id><content type="html" xml:base="/frontend/2026/10/04/map-tokens.html"><![CDATA[<p>Home Assistant 2026.10.0 adds theme tokens for the vector map. They let a theme recolor the map independently of the dashboard’s light or dark mode—useful when, for example, a light theme needs the higher contrast of a dark map.</p>
 
 <p>The tokens are based on the <a href="https://github.com/home-assistant/frontend/pull/54477">map-style feature</a>. The palettes below correspond to the bundled <code class="language-plaintext highlighter-rouge">default</code>, <code class="language-plaintext highlighter-rouge">colorful</code>, <code class="language-plaintext highlighter-rouge">natural</code>, <code class="language-plaintext highlighter-rouge">muted</code>, <code class="language-plaintext highlighter-rouge">gray</code>, and <code class="language-plaintext highlighter-rouge">toner</code> map styles in Home Assistant Frontend 2026.10.0.</p>
 
@@ -1577,99 +1671,4 @@
   <span class="na">type</span><span class="pi">:</span> <span class="s">picture-entity</span>
   <span class="na">entity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">camera_entity(uixForge)</span><span class="nv"> </span><span class="s">}}"</span>
   <span class="na">camera_image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">camera_entity(uixForge)</span><span class="nv"> </span><span class="s">}}"</span>
-</code></pre></div></div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="sparks" /><category term="event spark" /><category term="macros" /><summary type="html"><![CDATA[UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a picture view element which can be changed from section header badge buttons using the event spark.]]></summary></entry><entry><title type="html">Fullscreen media player dialog</title><link href="/dialogs/2026/03/29/fullscreen-media-player-dialog.html" rel="alternate" type="text/html" title="Fullscreen media player dialog" /><published>2026-03-29T00:00:00+00:00</published><updated>2026-03-29T00:00:00+00:00</updated><id>/dialogs/2026/03/29/fullscreen-media-player-dialog</id><content type="html" xml:base="/dialogs/2026/03/29/fullscreen-media-player-dialog.html"><![CDATA[<div class="admonition info rounded">
-    <p class="admonition-title">Host/element path selector</p>
-    <p>
-        <p>Applying this guide requires the <code class="language-plaintext highlighter-rouge">&amp;</code> <a href="https://uix.lf.technology/concepts/dom/#hostelement-path-selection">Host/element path selector</a></p>
-
-    </p>
-</div>
-
-<p>When viewing media in the Home Assistant Media panel, the dialog used is large in size. This guide shows how to make the dialog fullscreen, without title so you can focus on the media itself. Videos will fit by default and img styling is included to make sure they are contained.</p>
-
-<p>Styling dialogs is done using a theme. Check out <a href="/dialogs/2026/02/27/styling-dialogs.html">styling dialogs</a></p>
-
-<h2 id="style-dialog-size">Style dialog size</h2>
-
-<p>First the dialog needs to be set to full width and height. As the web browser media player uses dialog size large <code class="language-plaintext highlighter-rouge">--ha-dialog-width-lg</code>, the size used when dialogs have size set to large, is overridden. Also set is <code class="language-plaintext highlighter-rouge">--ha-dialog-width-full</code> which is the size used when the dialog is shown on a small device screen. Safe areas are not considered here as it is likely you would wish the dialog to cover all of a device’s screen.</p>
-
-<p>The web browser play media dialog will have a class of <code class="language-plaintext highlighter-rouge">.type-hui-dialog-web-browser-play-media</code>. This is used with a CSS selector to target the dialog only when it has class of <code class="language-plaintext highlighter-rouge">.type-hui-dialog-web-browser-play-media</code>.</p>
-
-<p>Yaml style selectors are used as they will be needed in the following steps.</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
-    <span class="s">.: |</span>
-      <span class="s">ha-dialog.type-hui-dialog-web-browser-play-media {</span>
-        <span class="s">--ha-dialog-width-lg: 100vw;</span>
-        <span class="s">--ha-dialog-width-full: 100vw;</span>
-        <span class="s">--ha-dialog-min-height: 100vh;</span>
-        <span class="s">--ha-dialog-border-radius: 0;</span>
-        <span class="s">--dialog-content-padding: 0;</span>
-      <span class="s">}</span>
-</code></pre></div></div>
-
-<h2 id="style-dialog-header-and-content---full-example">Style dialog header and content - full example</h2>
-
-<p>Since the styling is being applied in a theme for <code class="language-plaintext highlighter-rouge">uix-dialog-yaml</code> it will apply to all dialogs. So yaml selectors need to filter to the web browser dialog only using <code class="language-plaintext highlighter-rouge">&amp;</code> <a href="https://uix.lf.technology/concepts/dom/#hostelement-path-selection">Host/element selector</a>.</p>
-
-<p>The web browser play media dialog will have a class of <code class="language-plaintext highlighter-rouge">.type-hui-dialog-web-browser-play-media</code> A parent key selector of <code class="language-plaintext highlighter-rouge">"&amp;.type-hui-dialog-web-browser-play-media"</code> is used to target the dialog only when it has class type <code class="language-plaintext highlighter-rouge">.type-hui-dialog-web-browser-play-media</code>.</p>
-
-<p>Specific customizations:</p>
-
-<ul>
-  <li>The element itself <code class="language-plaintext highlighter-rouge">.:</code>
-    <ul>
-      <li><code class="language-plaintext highlighter-rouge">img</code> set to <code class="language-plaintext highlighter-rouge">object-fit: contain;</code> so when the media is an image it is not distorted.</li>
-    </ul>
-  </li>
-  <li><code class="language-plaintext highlighter-rouge">"$ ha-dialog-header $"</code> targeting the dialog header shadow root
-    <ul>
-      <li><code class="language-plaintext highlighter-rouge">section.header-content</code> display set to none to not show the title.</li>
-      <li><code class="language-plaintext highlighter-rouge">header.header</code>, the header bar, set to <code class="language-plaintext highlighter-rouge">position: absolute</code> with <code class="language-plaintext highlighter-rouge">z-index: 1</code> so it shows at the top overlaid on the media image/video and <code class="language-plaintext highlighter-rouge">color: white</code> so the close <code class="language-plaintext highlighter-rouge">X</code> is most visible. Safe areas may be considered here on <code class="language-plaintext highlighter-rouge">top</code> position if required.</li>
-    </ul>
-  </li>
-  <li><code class="language-plaintext highlighter-rouge">"$"</code>, the shadow root of the dialog.
-    <ul>
-      <li>Background is set to black</li>
-      <li>Display is set to flex to have image/media vertically aligned centrally.</li>
-    </ul>
-  </li>
-</ul>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">uix-dialog-yaml</span><span class="pi">:</span> <span class="pi">|</span>
-    <span class="s">.: |</span>
-      <span class="s">ha-dialog.type-hui-dialog-web-browser-play-media {</span>
-        <span class="s">--ha-dialog-width-lg: 100vw;</span>
-        <span class="s">--ha-dialog-width-full: 100vw;</span>
-        <span class="s">--ha-dialog-min-height: 100vh;</span>
-        <span class="s">--ha-dialog-border-radius: 0;</span>
-        <span class="s">--dialog-content-padding: 0;</span>
-      <span class="s">}</span>
-    <span class="s">"&amp;.type-hui-dialog-web-browser-play-media":</span>
-      <span class="s">.: |</span>
-        <span class="s">img {</span>
-          <span class="s">object-fit: contain;</span>
-        <span class="s">}</span>
-      <span class="s">"$ ha-dialog-header $": |</span>
-        <span class="s">section.header-content {</span>
-          <span class="s">display: none;</span>
-        <span class="s">}</span>
-        <span class="s">header.header {</span>
-          <span class="s">position: absolute;</span>
-          <span class="s">z-index: 1;</span>
-          <span class="s">color: white;</span>
-        <span class="s">}</span>
-      <span class="s">"$": |</span>
-        <span class="s">wa-dialog div.content-wrapper div.body {</span>
-          <span class="s">display: flex;</span>
-          <span class="s">background: black;</span>
-        <span class="s">}</span>
-</code></pre></div></div>
-
-<div class="admonition homeassistant rounded">
-    <p class="admonition-title">Media player web browser styled fullscreen</p>
-    <p>
-        <p><img src="/assets/dialogs/2026-03-29-fullscreen-media-player-dialog.png" alt="Screenshot of Home Assistant fullscreen web browser media player dialog" /></p>
-
-    </p>
-</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="dialogs" /><category term="dialogs" /><summary type="html"><![CDATA[How to make the built-in Home Assistant media player dialog fullscreen]]></summary></entry></feed>
+</code></pre></div></div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="sparks" /><category term="event spark" /><category term="macros" /><summary type="html"><![CDATA[UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a picture view element which can be changed from section header badge buttons using the event spark.]]></summary></entry></feed>
