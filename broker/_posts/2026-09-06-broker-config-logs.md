@@ -7,9 +7,9 @@ tags:
   - browser realm
   - button directive
   - broker panel rule
-  - broker property directive
-  - broker javascript directive
-  - broker call directive
+  - property directive
+  - javascript directive
+  - call directive
 ---
 
 With the archiving of the [Home Assistant Community Add-on: Log Viewer](https://github.com/hassio-addons/addon-log-viewer), Home Assistant may wish for a similar log viewing experience in a single focussed page using as much viewing space as possible for raw logs. This collection of UIX Broker interactions allows for just that by i. setting the System → Logs to open in a new page, ii. adding a button for secondary focussed log adjustable by input_select entity, iii. setting kiosk mode to the logs view and removing back button, and iv. setting raw more for core logs and turning off wrap lines by default.
