@@ -179,20 +179,20 @@ table {
   margin-bottom: 30px;
   width: 100%;
   text-align: left;
-  color: rgb(16.2058823529%, 16.2058823529%, 17.3235294118%);
+  color: rgb(41.325, 41.325, 44.175);
   border-collapse: collapse;
   overflow: auto;
 }
 table tr:nth-child(even) {
-  background-color: rgb(92.6666666667%, 92.6666666667%, 92.6666666667%);
+  background-color: rgb(236.3, 236.3, 236.3);
 }
 table th, table td {
   padding: 10px 15px;
 }
 table th {
-  background-color: rgb(89.6666666667%, 89.6666666667%, 89.6666666667%);
-  border: 1px solid rgb(82.6666666667%, 82.6666666667%, 82.6666666667%);
-  border-bottom-color: rgb(74.6666666667%, 74.6666666667%, 74.6666666667%);
+  background-color: rgb(228.65, 228.65, 228.65);
+  border: 1px solid rgb(210.8, 210.8, 210.8);
+  border-bottom-color: rgb(190.4, 190.4, 190.4);
 }
 table td {
   border: 1px solid #dddddd;
@@ -425,7 +425,7 @@ html[data-scroll-status=down] .framework .sidebar {
   color: #d3473c;
 }
 .site-footer a:hover {
-  color: rgb(86.4271064074%, 43.2406267947%, 39.8474033965%);
+  color: rgb(220.3891213389, 110.2635983264, 101.6108786611);
 }
 
 .copyleft {
@@ -1224,14 +1224,14 @@ html[data-theme=dark] a:visited .post-badges .post-badge.badge-new {
 .post-menu .post-menu-content ul a {
   display: flex;
   padding: 2px 8px;
-  color: rgb(1.7058823529%, 1.7058823529%, 1.8235294118%);
+  color: rgb(4.35, 4.35, 4.65);
 }
 .post-menu .post-menu-content ul a * {
   pointer-events: none;
 }
 .post-menu .post-menu-content ul a:hover {
   text-decoration: none;
-  color: rgb(40.3725490196%, 40.3725490196%, 43.1568627451%) !important;
+  color: rgb(102.95, 102.95, 110.05) !important;
 }
 .post-menu .post-menu-content ul .active {
   background-color: #ecebec;
@@ -1240,7 +1240,7 @@ html[data-theme=dark] a:visited .post-badges .post-badge.badge-new {
   margin-left: -2px;
 }
 .post-menu .post-menu-content ul .active:hover {
-  background-color: rgb(94.4977375566%, 94.2081447964%, 94.4977375566%);
+  background-color: rgb(240.9692307692, 240.2307692308, 240.9692307692);
 }
 .post-menu .post-menu-content ul .active a {
   color: #121416;
@@ -1273,7 +1273,7 @@ html[data-theme=dark] a:visited .post-badges .post-badge.badge-new {
   transition: background 0.2s;
 }
 .common-list li a:hover {
-  background-color: rgb(89.568627451%, 77.3333333333%, 76.3921568627%);
+  background-color: rgb(228.4, 197.2, 194.8);
 }
 .common-list li span {
   font-size: 11.2px;
@@ -1389,7 +1389,7 @@ body {
 
 /* OVERRIDE GOOGLE TRANSLATE WIDGET CSS END */
 .ct-language-selected, .ct-language-dropdown li:hover {
-  background-color: rgb(72.3416907747%, 17.5586628094%, 13.3445837351%) !important;
+  background-color: rgb(184.4713114754, 44.7745901639, 34.0286885246) !important;
 }
 
 .ct-language-dropdown {
@@ -1398,7 +1398,7 @@ body {
   position: absolute;
   top: 110%;
   right: -10px;
-  background-color: rgb(85.3117968499%, 25.0128576021%, 20.3744776599%);
+  background-color: rgb(217.5450819672, 63.7827868852, 51.9549180328);
   -webkit-transition: all 0.25s ease-in-out;
   transition: all 0.25s ease-in-out;
   width: 100px;
@@ -1522,14 +1522,14 @@ html[data-theme=dark] .click-to-top {
   overflow: hidden;
   color: #1d1d1f;
   page-break-inside: avoid;
-  background-color: rgb(98%, 98%, 98%);
+  background-color: rgb(249.9, 249.9, 249.9);
   border-left: 0.3rem solid #fc0;
   border-radius: 0.5rem;
 }
 
 html[data-theme=dark] .admonition {
   color: #b0b0b0;
-  background-color: rgb(15.4901960784%, 15.4901960784%, 15.4901960784%);
+  background-color: rgb(39.5, 39.5, 39.5);
 }
 
 .admonition p {
@@ -1538,7 +1538,7 @@ html[data-theme=dark] .admonition {
 
 .admonition .admonition-title {
   color: #ddd;
-  background-color: rgba(55.59%, 44.41%, 0%, 0.4);
+  background-color: rgba(141.7545, 113.2455, 0, 0.4);
   font-weight: 700;
   line-height: 3rem;
 }
