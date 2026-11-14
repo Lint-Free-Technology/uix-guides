@@ -146,8 +146,9 @@ We can achieve the same with a theme, as per below:
             
             ha-card {
                 --ha-card-border-width: 0px;
+                --ha-card-background-clip: padding-box;
+                --ha-card-background: var(--primary-background-color);
                 margin-left: -8px;
-            }
             
             ha-state-icon {
               --card-mod-icon: {% if lightisOn %} var(--lightOnIcon) {% else %} var(--lightOffIcon) {% endif %};
