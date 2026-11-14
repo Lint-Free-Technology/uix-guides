@@ -25,6 +25,8 @@ We can achieve this using uix styling at card level, which looks like below. The
 
 {% include admonition.html type="info" title="Notes" body="The templates in the uix section use `config.entity`, this is used to mimic the standard color changing behaviour depending on whether the light is on or off (and to retrieve the friendly name of the entity). Using config.entity means the entity needs to be changed only at the entity: key and code can easily be copied to another card. Note also we can refer to CSS variables such as `--primary-text-color` and we can get a different shade of a color with the `rgb function`." %}
 
+{% raw %}
+
 ```
 type: custom:mushroom-light-card
 entity: light.light_living_room
@@ -63,7 +65,7 @@ uix:
       ha-card {
         border-width: 0px;
         --ha-card-background-clip: padding-box;
-        --ha-card-background: --primary-background-color;
+        --ha-card-background: var(--primary-background-color);
         margin-left: -8px;
       }
       mushroom-light-brightness-control {
@@ -99,6 +101,8 @@ uix:
       }
 ```
 
+{% endraw %}
+
 We can achieve the same with a theme, as per below:
 - Begin with creating variables for the various colors and other styling elements we will use later, by grouping them at the beginning, even when used only once it is much easier to modify the theme later on
 - create a variable `MainThemeColor` for the base color (this will be used extensively in other styling elements)
@@ -117,6 +121,8 @@ We can achieve the same with a theme, as per below:
 - The slider block:
   - sets the three slider colors
   - uses the box-shadow variable created at host and applies that to the slider
+
+{% raw %}
 
 ```
   themes: 
@@ -193,6 +199,8 @@ We can achieve the same with a theme, as per below:
           }
 
 ```
+
+{% endraw %}
 
 {% include admonition.html type="info" title="Wrapping up" body="Now we can remove ALL of the styling at card level and only need to set the CSS class. The example below shows two minimalist light cards in a grid, how to modify the gap between them and change the row height from the standard 56px.
 " %}
