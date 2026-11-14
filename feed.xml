@@ -1,4 +1,256 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-10-05T04:25:40+00:00</updated><id>/feed.xml</id><title type="html">UI eXtension Guides</title><subtitle>Guides for UI eXtension (UIX).</subtitle><author><name>Lint-Free-Technology</name></author><entry><title type="html">Create calendar events from anywhere with UIX Broker</title><link href="/broker/2026/10/05/create-calendar-event.html" rel="alternate" type="text/html" title="Create calendar events from anywhere with UIX Broker" /><published>2026-10-05T00:00:00+00:00</published><updated>2026-10-05T00:00:00+00:00</updated><id>/broker/2026/10/05/create-calendar-event</id><content type="html" xml:base="/broker/2026/10/05/create-calendar-event.html"><![CDATA[<p>Home Assistant’s calendar page is a natural place to create an event, but the action can be useful wherever the context happens: a dashboard, a room view, or a button UIX Broker has added to an existing page. This UIX Broker interaction opens Home Assistant’s own <strong>Create Event</strong> dialog in response to a custom action.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-11-14T04:32:45+00:00</updated><id>/feed.xml</id><title type="html">UI eXtension Guides</title><subtitle>Guides for UI eXtension (UIX).</subtitle><author><name>Lint-Free-Technology</name></author><entry><title type="html">Max theming for minimalist light card</title><link href="/elements/2026/11/11/minimalist-light-card.html" rel="alternate" type="text/html" title="Max theming for minimalist light card" /><published>2026-11-11T00:00:00+00:00</published><updated>2026-11-11T00:00:00+00:00</updated><id>/elements/2026/11/11/minimalist-light-card</id><content type="html" xml:base="/elements/2026/11/11/minimalist-light-card.html"><![CDATA[<p>Smart lights, everybody has a lot of them and adding them all to a dashboard means they take up a lot of screen real estate. In this step-by-step guide we will create a minimalist light card and <strong>move ALL of its styling into themes</strong>. See <a href="https://uix-guides.lf.technology/forge/2026/04/11/tile-card-inline-feature-switch.html">tile-card-inline-feature-switch</a> to learn how to add additional controls (such as color control) to cards, and see <a href="https://uix-guides.lf.technology/elements/2026/03/29/getting-shadowy-with-themes-host-element-selector.html">getting-shadowy-with-themes-host-element-selector</a> for another example on how to use the host element selector.</p>
+
+<p>For this guide we will use the mushroom light card (which is smaller to start with) and use it to control a dimmable light. The screenshot shows a standard light card, a standard mushroom light card, a horizontal layout mushroom light card, a horizontal layout mushroom light card without any info / name and the minimalist light card we want to create (the minimalist card is duplicated to show we can also move them closer together and save more space):</p>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Various light cards in on and off state</p>
+    <p>
+        <p><img src="/assets/elements/2026-11-14-Various-light-cards.png" alt="Various light cards in on and off state" /></p>
+
+    </p>
+</div>
+
+<p>We can achieve this using uix styling at card level, which looks like below. The various styling blocks are needed for (in order):</p>
+<ul>
+  <li>changing the background and 3D effect of the circle around the icon</li>
+  <li>setting the colors of the brightness slider, its radius and 3D effect</li>
+  <li>removing the card border, card background and shifting the icon to where the left border used to be</li>
+  <li>removing the default grey background which is no longer needed as we are setting a 3D outline effect on the slider</li>
+  <li>changing the icon and its color</li>
+  <li>position the slider and allow it to expand to where the right border used to be</li>
+  <li>create a new CSS element with the name of the entity centred inside the slider</li>
+</ul>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">Notes</p>
+    <p>
+        <p>The templates in the uix section use <code class="language-plaintext highlighter-rouge">config.entity</code>, this is used to mimic the standard color changing behaviour depending on whether the light is on or off (and to retrieve the friendly name of the entity). Using config.entity means the entity needs to be changed only at the entity: key and code can easily be copied to another card. Note also we can refer to CSS variables such as <code class="language-plaintext highlighter-rouge">--primary-text-color</code> and we can get a different shade of a color with the <code class="language-plaintext highlighter-rouge">rgb function</code>.</p>
+
+    </p>
+</div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type: custom:mushroom-light-card
+entity: light.light_living_room
+name:
+  type: entity
+show_brightness_control: true
+primary_info: none
+secondary_info: none
+layout: horizontal
+icon_color: transparent
+uix:
+  style:
+    mushroom-shape-icon$: |
+      .shape {
+        {% if states(config.entity) == 'off' %}
+          box-shadow: inset 0px -1px 2px lightgrey, 0 3px 5px rgb(from var(--primary-text-color) r g b / 0.1) !important;
+          background: None !important;
+        {% else %}
+          box-shadow: inset 0px -2px 7px rgb(from cornflowerblue r g b / 0.9), 0 3px 5px rgb(from var(--primary-text-color) r g b / 0.25) !important;
+          background: rgb(from cornflowerblue r g b / 0.6) !important;
+        {% endif %}
+      }
+    mushroom-light-brightness-control$:
+      mushroom-slider$: |
+        .slider {
+          --main-color: rgb(from cornflowerblue r g b / 0.4) !important;
+          --bg-color: rgb(from cornflowerblue r g b / 0.2) !important;
+          border-radius: 21px !important;
+          {% if states(config.entity) == 'off' %}
+            box-shadow: inset 0px -1px 2px lightgrey, 0 3px 5px rgb(from var(--primary-text-color) r g b / 0.1) !important;
+          {% else %}
+            box-shadow: inset 0px -2px 7px rgb(from cornflowerblue r g b / 0.9), 0 3px 5px rgb(from var(--primary-text-color) r g b / 0.25) !important;
+          {% endif %}
+        }
+    .: |
+      ha-card {
+        border-width: 0px;
+        --ha-card-background-clip: padding-box;
+        --ha-card-background: var(--primary-background-color);
+        margin-left: -8px;
+      }
+      mushroom-light-brightness-control {
+        --rgb-disabled: 255, 255, 255 !important;
+      } 
+      ha-state-icon {
+        {% if states(config.entity) == 'off' %}
+          --card-mod-icon: local:mdi-light--lightbulb;
+          color: silver;
+        {% else %}
+          --card-mod-icon: local:mdi-light--lightbulb-on;
+          color: white;
+        {% endif %}
+      }
+      mushroom-light-brightness-control {
+        position: absolute;
+        width: calc(100% - 52px);
+        top: 10px;
+        right: 0px;
+      }
+      mushroom-light-brightness-control:after {
+        content: "{{ state_attr(config.entity, 'friendly_name') }}";
+        position: relative;
+        display: flex;
+        justify-content: center;
+        color: var(--primary-text-color);
+        font-weight: 500;
+        top: -28px;
+        width: 100%;
+        height: 16px;
+        font-size: 12px;
+        pointer-events: none;
+      }
+</code></pre></div></div>
+
+<p>We can achieve the same with a theme, as per below:</p>
+<ul>
+  <li>Begin with creating variables for the various colors and other styling elements we will use later, by grouping them at the beginning, even when used only once it is much easier to modify the theme later on</li>
+  <li>create a variable <code class="language-plaintext highlighter-rouge">MainThemeColor</code> for the base color (this will be used extensively in other styling elements)</li>
+  <li>create variables for different shades of <code class="language-plaintext highlighter-rouge">MainThemeColor</code>, which will be used to style various elements of the minimalist light card</li>
+  <li>create variables for the icons and their color, change to MDI icons if you only have those on your system</li>
+  <li>All elements under <code class="language-plaintext highlighter-rouge">uix-card-yaml:</code> will apply to the CSS class <code class="language-plaintext highlighter-rouge">minimalist-light-card-with-slider</code>, this ensures the styling is applied only to light cards with this CSS class (for example in case you also have normal light cards in your dashboard)</li>
+  <li>Next there are three blocks, each one starts with the host element path selector <code class="language-plaintext highlighter-rouge">&amp;</code>, followed by the name of our <strong>CSS class</strong> and optional elements to pierce the shadow DOM and target the host / card, the shape-icon or the slider.</li>
+  <li>The main block:
+    <ul>
+      <li>creates a variable <code class="language-plaintext highlighter-rouge">lightisOn</code> at host level using <code class="language-plaintext highlighter-rouge">config.entity</code> to dynamically style elements. This is used for the icon but also to create two more variables for the <code class="language-plaintext highlighter-rouge">background</code> and <code class="language-plaintext highlighter-rouge">box-shadow</code> which can be accessed in lower DOM levels, in this case to dynamically style the shape icon and the slider.</li>
+      <li>at <code class="language-plaintext highlighter-rouge">ha-card</code> level, removes the border and align left to where the border used to be</li>
+      <li>at <code class="language-plaintext highlighter-rouge">ha-state-icon</code>, uses templates based on <code class="language-plaintext highlighter-rouge">lightisOn</code> to set the icon and its color to variables defined at the beginning of the theme</li>
+      <li>positions the brightness control and removes the default grey background when the light is off</li>
+      <li>adds a new CSS element centred in the slider</li>
+    </ul>
+  </li>
+  <li>The shape icon block:
+    <ul>
+      <li>uses the background and box-shadow variables created at host and applies those to the shape icon</li>
+    </ul>
+  </li>
+  <li>The slider block:
+    <ul>
+      <li>sets the three slider colors</li>
+      <li>uses the box-shadow variable created at host and applies that to the slider</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  themes: 
+    MyAwesomeTheme:
+      uix-theme: MyAwesomeTheme
+
+      MainThemeColor: "#6495ED"   #cornflowerblue, all colors in the block below depend on this
+
+      primary-text-color: rgb(from var(--MainThemeColor) calc(r * 0.3) calc(g * 0.3) calc(b * 0.3) )
+      mythemebackground: rgb(from var(--MainThemeColor) r g b / 0.6)
+      mysliderbackground: rgb(from var(--MainThemeColor) r g b / 0.2)
+      myfillsliderbackground: rgb(from var(--MainThemeColor) r g b / 0.4)
+      mygreyboxshadow: inset 0px -1px 2px lightgrey, 0 3px 5px rgb(from var(--primary-text-color) r g b / 0.1)
+      mythemeboxshadow: inset 0px -2px 7px rgb(from var(--MainThemeColor) r g b / 0.9), 0 3px 5px rgb(from var(--primary-text-color) r g b / 0.25)
+
+      OniconColor: "white"
+      OfficonColor: "silver"
+      lightOffIcon: "local:mdi-light--lightbulb"
+      lightOnIcon: "local:mdi-light--lightbulb-on"
+
+      uix-card-yaml: |
+        "&amp;.minimalist-light-card-with-slider": |
+          :host {
+            {% set lightisOn = is_state(config.entity, 'on')  %}
+            --mythemebackground-if-isOn: {% if lightisOn %} var(--mythemebackground) {% else %} None {% endif %};
+            --mythemeboxshadow-if-isOn: {% if lightisOn %} var(--mythemeboxshadow) {% else %} var(--mygreyboxshadow) {% endif %};
+            
+            ha-card {
+                --ha-card-border-width: 0px;
+                --ha-card-background-clip: padding-box;
+                --ha-card-background: var(--primary-background-color);
+                margin-left: -8px;
+            
+            ha-state-icon {
+              --card-mod-icon: {% if lightisOn %} var(--lightOnIcon) {% else %} var(--lightOffIcon) {% endif %};
+              color: {% if lightisOn %} var(--OniconColor) {% else %} var(--OfficonColor) {% endif %};
+            }
+
+            mushroom-light-brightness-control {
+              position: absolute;
+              width: calc(100% - 52px);
+              top: 10px;
+              right: 0px;
+              --rgb-disabled: 255, 255, 255 !important;
+            }
+            
+            mushroom-light-brightness-control::after {
+              content: "{{ state_attr(config.entity, 'friendly_name') }}";
+              position: relative;
+              display: flex;
+              justify-content: center;
+              color: var(--primary-text-color);
+              font-weight: 500;
+              top: -28px;
+              width: 100%;
+              height: 16px;
+              font-size: 12px;
+              pointer-events: none;
+            }
+          }
+        }
+
+        "&amp;.minimalist-light-card-with-slider mushroom-shape-icon$": |
+          .shape {
+            background: var(--mythemebackground-if-isOn) !important;
+            box-shadow: var(--mythemeboxshadow-if-isOn) !important;
+          }
+
+        "&amp;.minimalist-light-card-with-slider mushroom-light-brightness-control$ mushroom-slider$": |
+          .slider {
+            border-radius: 21px !important;
+            --main-color: var(--myfillsliderbackground) !important;
+            --bg-color: var(--mysliderbackground) !important;
+            box-shadow: var(--mythemeboxshadow-if-isOn) !important;
+          }
+
+</code></pre></div></div>
+
+<div class="admonition info rounded">
+    <p class="admonition-title">Wrapping up</p>
+    <p>
+        <p>Now we can remove ALL of the styling at card level and only need to set the CSS class. The example below shows two minimalist light cards in a grid, how to modify the gap between them and change the row height from the standard 56px.</p>
+
+    </p>
+</div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type: grid
+columns: 1
+square: false
+uix:
+  style: |
+    #root { 
+      gap: 0px !important;
+      grid-auto-rows: 52px !important;
+    }
+cards:
+  - type: custom:mushroom-light-card
+    entity: light.light_living_room
+    name:
+      type: entity
+    show_brightness_control: true
+    primary_info: none
+    secondary_info: none
+    layout: horizontal
+    icon_color: transparent
+    uix:
+      class: minimalist-light-card-with-slider
+  - type: custom:mushroom-light-card
+    entity: light.light_living_room
+    name:
+      type: entity
+    show_brightness_control: true
+    primary_info: none
+    secondary_info: none
+    layout: horizontal
+    icon_color: transparent
+    grid_options:
+      columns: 6
+    uix:
+      class: minimalist-light-card-with-slider
+</code></pre></div></div>]]></content><author><name>Lint-Free-Technology</name></author><category term="elements" /><category term="themes" /><category term="classes" /><category term="config.entity" /><category term="host/element path selector" /><summary type="html"><![CDATA[How to use CSS classes, the host/element selector and config.entity in themes to dynamically style a light card without any styling at card level]]></summary></entry><entry><title type="html">Create calendar events from anywhere with UIX Broker</title><link href="/broker/2026/10/05/create-calendar-event.html" rel="alternate" type="text/html" title="Create calendar events from anywhere with UIX Broker" /><published>2026-10-05T00:00:00+00:00</published><updated>2026-10-05T00:00:00+00:00</updated><id>/broker/2026/10/05/create-calendar-event</id><content type="html" xml:base="/broker/2026/10/05/create-calendar-event.html"><![CDATA[<p>Home Assistant’s calendar page is a natural place to create an event, but the action can be useful wherever the context happens: a dashboard, a room view, or a button UIX Broker has added to an existing page. This UIX Broker interaction opens Home Assistant’s own <strong>Create Event</strong> dialog in response to a custom action.</p>
 
 <div class="admonition tip rounded">
     <p class="admonition-title">Home Assistant 2026.10.0</p>
@@ -1492,183 +1744,4 @@
         <p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-5.gif" alt="full-solution" /></p>
 
     </p>
-</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="sparks" /><category term="event spark" /><category term="button spark" /><category term="macros" /><summary type="html"><![CDATA[UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the event spark and button spark.]]></summary></entry><entry><title type="html">Using UIX Forge event spark to change a camera view</title><link href="/forge/2026/04/06/forge-camera-views.html" rel="alternate" type="text/html" title="Using UIX Forge event spark to change a camera view" /><published>2026-04-06T00:00:00+00:00</published><updated>2026-04-06T00:00:00+00:00</updated><id>/forge/2026/04/06/forge-camera-views</id><content type="html" xml:base="/forge/2026/04/06/forge-camera-views.html"><![CDATA[<p><a href="https://uix.lf.technology/forge">UIX Forge</a> allows you to forge an element and apply various features with <a href="https://uix.lf.technology/forge/sparks">forge sparks</a>. This guide uses UIX Forge to forge a picture view element which can be changed from section header badge buttons using the <a href="https://uix.lf.technology/forge/sparks/event">event spark</a>.</p>
-
-<div class="admonition info rounded">
-    <p class="admonition-title">Forge elements</p>
-    <p>
-        <p>All UIX Forge documentation will describe the card, row, badge, section, picture-element as <strong>element</strong> as indeed, a forged element is not restricted to being a card, but can be any type supported by UIX Forge mold type</p>
-
-    </p>
-</div>
-
-<h2 id="template-entities-in-picture-entity-cards">Template entities in picture-entity cards</h2>
-
-<p>With UIX Forge, all forged element configs accept templates. This includes using a template for the element’s entity. To show this in the most basic form, we can include a simple string template for the <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code> in a <code class="language-plaintext highlighter-rouge">picture-entity</code> card.</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
-<span class="na">forge</span><span class="pi">:</span>
-  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
-  <span class="na">grid_options</span><span class="pi">:</span>
-    <span class="na">columns</span><span class="pi">:</span> <span class="s">full</span>
-  <span class="na">sparks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
-      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
-<span class="na">element</span><span class="pi">:</span>
-  <span class="na">show_state</span><span class="pi">:</span> <span class="kc">true</span>
-  <span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
-  <span class="na">camera_view</span><span class="pi">:</span> <span class="s">auto</span>
-  <span class="na">fit_mode</span><span class="pi">:</span> <span class="s">cover</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">picture-entity</span>
-  <span class="na">entity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">'camera.camera_1'</span><span class="nv"> </span><span class="s">}}"</span>
-  <span class="na">camera_image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">'camera.camera_1'</span><span class="nv"> </span><span class="s">}}"</span>
-</code></pre></div></div>
-
-<div class="admonition info rounded">
-    <p class="admonition-title">picture-entity - Camera 1</p>
-    <p>
-        <p><img src="/assets/forge/2026-04-06-forge-camera-views.png" alt="picture-entity example" /></p>
-
-    </p>
-</div>
-
-<p>Now change to another camera by adjusting the string template. This is to show how we will build up to using the event spark to change this using an event.</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
-<span class="na">forge</span><span class="pi">:</span>
-  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
-  <span class="na">grid_options</span><span class="pi">:</span>
-    <span class="na">columns</span><span class="pi">:</span> <span class="s">full</span>
-  <span class="na">sparks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
-      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
-<span class="na">element</span><span class="pi">:</span>
-  <span class="na">show_state</span><span class="pi">:</span> <span class="kc">true</span>
-  <span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
-  <span class="na">camera_view</span><span class="pi">:</span> <span class="s">auto</span>
-  <span class="na">fit_mode</span><span class="pi">:</span> <span class="s">cover</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">picture-entity</span>
-  <span class="na">entity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">'camera.camera_2'</span><span class="nv"> </span><span class="s">}}"</span>
-  <span class="na">camera_image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">'camera.camera_2'</span><span class="nv"> </span><span class="s">}}"</span>
-</code></pre></div></div>
-
-<div class="admonition info rounded">
-    <p class="admonition-title">picture-entity - Camera 2</p>
-    <p>
-        <p><img src="/assets/forge/2026-04-06-forge-camera-views-1.png" alt="picture-entity example" /></p>
-
-    </p>
-</div>
-
-<h2 id="add-event-spark">Add event spark</h2>
-
-<p>The <a href="https://uix.lf.technology/forge/sparks/event">event spark</a> config includes a <code class="language-plaintext highlighter-rouge">forge_id</code>. This allows the event spark to receive event data sent by Home Assistant Frontend events using <code class="language-plaintext highlighter-rouge">fire-dom-event</code>.</p>
-
-<p>After adding an event spark, the forged element’s <code class="language-plaintext highlighter-rouge">uixForge</code> variable will include an <code class="language-plaintext highlighter-rouge">event</code> dictionary which will include the event data sent by a Home Assistant Frontend event. By default the event dictionary will be empty so any templates will need to handle this with either <code class="language-plaintext highlighter-rouge">default()</code> handling or using similar logic to handle data not being in the dictionary on first view.</p>
-
-<p>For the picture-element the following is updated to implement the event spark:</p>
-
-<ol>
-  <li>Add event spark with <code class="language-plaintext highlighter-rouge">forge_id: picture_camera</code>.</li>
-  <li>Add templates with defaults for <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code>.</li>
-</ol>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
-<span class="na">forge</span><span class="pi">:</span>
-  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
-  <span class="na">grid_options</span><span class="pi">:</span>
-    <span class="na">columns</span><span class="pi">:</span> <span class="s">full</span>
-  <span class="na">sparks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span> <span class="c1"># event spark</span>
-      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
-<span class="na">element</span><span class="pi">:</span>
-  <span class="na">show_state</span><span class="pi">:</span> <span class="kc">true</span>
-  <span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
-  <span class="na">camera_view</span><span class="pi">:</span> <span class="s">auto</span>
-  <span class="na">fit_mode</span><span class="pi">:</span> <span class="s">cover</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">picture-entity</span>
-  <span class="c1"># entity and camera_image use template with default to camera.camera_1</span>
-  <span class="na">entity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">uixForge.event.entity</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default('camera.camera_1')</span><span class="nv"> </span><span class="s">}}"</span>
-  <span class="na">camera_image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">uixForge.event.entity</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default('camera.camera_1')</span><span class="nv"> </span><span class="s">}}"</span>
-</code></pre></div></div>
-
-<h2 id="add-button-badges">Add button badges</h2>
-
-<p>Now the <code class="language-plaintext highlighter-rouge">picture-entity</code> is ready to update its <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code> from Home Assistant Frontend event using <code class="language-plaintext highlighter-rouge">action: fire-dom-event</code> from any Home Assistant element or any custom element that supports <code class="language-plaintext highlighter-rouge">fire-dom-event</code> actions which is the majority of custom elements.</p>
-
-<p>For the <code class="language-plaintext highlighter-rouge">picture-entity</code> example, we add some button badges to a heading card inserted before the <code class="language-plaintext highlighter-rouge">picture-element</code>. We use three badges with different icons, and different <code class="language-plaintext highlighter-rouge">data</code> for our <code class="language-plaintext highlighter-rouge">forge_id</code> in the <code class="language-plaintext highlighter-rouge">uix_forge</code> config for <code class="language-plaintext highlighter-rouge">fire-dom-event</code> action. Once this done, the button badges can be used to control the camera entity and image.</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">heading</span>
-<span class="na">heading</span><span class="pi">:</span> <span class="s">Cameras</span>
-<span class="na">heading_style</span><span class="pi">:</span> <span class="s">title</span>
-<span class="na">badges</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
-    <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:numeric-1-circle</span>
-    <span class="na">tap_action</span><span class="pi">:</span>
-      <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
-      <span class="na">uix_forge</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
-          <span class="na">data</span><span class="pi">:</span>
-            <span class="na">entity</span><span class="pi">:</span> <span class="s">camera.camera_1</span>
-  <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
-    <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:numeric-2-circle</span>
-    <span class="na">tap_action</span><span class="pi">:</span>
-      <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
-      <span class="na">uix_forge</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
-          <span class="na">data</span><span class="pi">:</span>
-            <span class="na">entity</span><span class="pi">:</span> <span class="s">camera.camera_2</span>
-  <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
-    <span class="na">icon</span><span class="pi">:</span> <span class="s">mdi:numeric-3-circle</span>
-    <span class="na">tap_action</span><span class="pi">:</span>
-      <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
-      <span class="na">uix_forge</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
-          <span class="na">data</span><span class="pi">:</span>
-            <span class="na">entity</span><span class="pi">:</span> <span class="s">camera.camera_3</span>
-</code></pre></div></div>
-
-<div class="admonition homeassistant rounded">
-    <p class="admonition-title">picture-entity - dynamic camera views</p>
-    <p>
-        <p><img src="/assets/forge/2026-04-06-forge-camera-views-ani.gif" alt="picture-entity example" /></p>
-
-    </p>
-</div>
-
-<h2 id="update-to-use-a-macro">Update to use a macro</h2>
-
-<p>As the same template is used for <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code> a macro can be used to save having the default in multiple places. While this actually extends the number of lines of yaml config, it moves the default cameras image to one place in the config.</p>
-
-<div class="admonition tip rounded">
-    <p class="admonition-title">Macros and variables</p>
-    <p>
-        <p>Jinja macros are isolated from the where they are used so any variables you wish to use need to be a param of the macro</p>
-
-    </p>
-</div>
-
-<p>The macro added uses a param of <code class="language-plaintext highlighter-rouge">uixForge</code> which will be passed through from the updated template used for <code class="language-plaintext highlighter-rouge">entity</code> and <code class="language-plaintext highlighter-rouge">camera_image</code>.</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
-<span class="na">forge</span><span class="pi">:</span>
-  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
-  <span class="na">macros</span><span class="pi">:</span>
-    <span class="na">camera_entity</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">uixForge</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">uixForge.event.entity</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default('camera.camera_1')</span><span class="nv"> </span><span class="s">}}"</span>
-  <span class="na">grid_options</span><span class="pi">:</span>
-    <span class="na">columns</span><span class="pi">:</span> <span class="s">full</span>
-  <span class="na">sparks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
-      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">picture_camera</span>
-<span class="na">element</span><span class="pi">:</span>
-  <span class="na">show_state</span><span class="pi">:</span> <span class="kc">true</span>
-  <span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
-  <span class="na">camera_view</span><span class="pi">:</span> <span class="s">auto</span>
-  <span class="na">fit_mode</span><span class="pi">:</span> <span class="s">cover</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">picture-entity</span>
-  <span class="na">entity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">camera_entity(uixForge)</span><span class="nv"> </span><span class="s">}}"</span>
-  <span class="na">camera_image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">camera_entity(uixForge)</span><span class="nv"> </span><span class="s">}}"</span>
-</code></pre></div></div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="sparks" /><category term="event spark" /><category term="macros" /><summary type="html"><![CDATA[UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a picture view element which can be changed from section header badge buttons using the event spark.]]></summary></entry></feed>
+</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="sparks" /><category term="event spark" /><category term="button spark" /><category term="macros" /><summary type="html"><![CDATA[UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the event spark and button spark.]]></summary></entry></feed>
