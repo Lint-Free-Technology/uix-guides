@@ -183,6 +183,7 @@ We can achieve the same with a theme, as per below:
               pointer-events: none;
             }
           }
+        }
 
         "&.minimalist-light-card-with-slider mushroom-shape-icon$": |
           .shape {
