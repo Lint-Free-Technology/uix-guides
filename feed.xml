@@ -1,4 +1,145 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-11-14T04:33:24+00:00</updated><id>/feed.xml</id><title type="html">UI eXtension Guides</title><subtitle>Guides for UI eXtension (UIX).</subtitle><author><name>Lint-Free-Technology</name></author><entry><title type="html">Max theming for minimalist light card</title><link href="/elements/2026/11/11/minimalist-light-card.html" rel="alternate" type="text/html" title="Max theming for minimalist light card" /><published>2026-11-11T00:00:00+00:00</published><updated>2026-11-11T00:00:00+00:00</updated><id>/elements/2026/11/11/minimalist-light-card</id><content type="html" xml:base="/elements/2026/11/11/minimalist-light-card.html"><![CDATA[<p>Smart lights, everybody has a lot of them and adding them all to a dashboard means they take up a lot of screen real estate. In this step-by-step guide we will create a minimalist light card and <strong>move ALL of its styling into themes</strong>. See <a href="https://uix-guides.lf.technology/forge/2026/04/11/tile-card-inline-feature-switch.html">tile-card-inline-feature-switch</a> to learn how to add additional controls (such as color control) to cards, and see <a href="https://uix-guides.lf.technology/elements/2026/03/29/getting-shadowy-with-themes-host-element-selector.html">getting-shadowy-with-themes-host-element-selector</a> for another example on how to use the host element selector.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-11-16T21:55:27+00:00</updated><id>/feed.xml</id><title type="html">UI eXtension Guides</title><subtitle>Guides for UI eXtension (UIX).</subtitle><author><name>Lint-Free-Technology</name></author><entry><title type="html">Power to the badges</title><link href="/elements/2026/11/15/power-to-the-badges.html" rel="alternate" type="text/html" title="Power to the badges" /><published>2026-11-15T00:00:00+00:00</published><updated>2026-11-15T00:00:00+00:00</updated><id>/elements/2026/11/15/power-to-the-badges</id><content type="html" xml:base="/elements/2026/11/15/power-to-the-badges.html"><![CDATA[<p>The heading badge only has three elements but can show key information in very little space. As standard however it allows little customisation, we can override <code class="language-plaintext highlighter-rouge">name</code>, choose an <code class="language-plaintext highlighter-rouge">icon</code> and choose the icon <code class="language-plaintext highlighter-rouge">color</code>. We cannot change the state and we cannot use templates. In this guide we will show how to add templating capability to all three elements (icon, name and state).</p>
+
+<p>The badges below show the current temperature as reported by a weather service, the first one is a standard badge.</p>
+
+<div class="admonition homeassistant rounded">
+    <p class="admonition-title">Standard and modified heading badges</p>
+    <p>
+        <p><img src="/assets/elements/2026-11-15-badges.png" alt="Standard and modified weather badges" /></p>
+
+    </p>
+</div>
+
+<p>UIX can forge <code class="language-plaintext highlighter-rouge">name</code> and <code class="language-plaintext highlighter-rouge">icon</code> and add template capability to both, but not the state because the badge has no entry key for the state. We can get around this limitation by using the search spark, which can look for a specific text and change it into a different text (which can be a template). For this to work the state needs to be a fixed string so the search spark knows what to look for. The only way to achieve this is by setting <code class="language-plaintext highlighter-rouge">state_content: name</code> and setting this to a fixed string <code class="language-plaintext highlighter-rouge">name: LookForThis</code>. Take a look at the second badge to see what this achieves.</p>
+
+<p>Now we can add two sparks to change both the state and the name to something else, in this example:</p>
+<ul>
+  <li>The state shows the current temperature, unless current wind speed is 40 or higher, in which case we show wind speed</li>
+  <li>We show the (abbreviated) name of the weather institute, unless it issued a warning for severe weather, in which case we show the warning</li>
+</ul>
+
+<pre><code class="language-YAML">type: custom:uix-forge
+forge:
+  mold: badge
+  sparks:
+    - type: search
+      for: hui-entity-badge $
+      query: state-display
+      actions:
+        replace_text:
+          find: LookForThis
+          replace: &gt;
+            {% if not states('sensor.tulpenlaan_current_temperature') in
+            ['unavailable', 'unknown'] %}
+              {% if states('sensor.tulpenlaan_current_wind_speed') | float(0) &lt; 40 %}          
+                {{ states('sensor.tulpenlaan_current_temperature', with_unit=true) }}
+              {% else %}
+                {{ states('sensor.tulpenlaan_current_wind_speed') | float(0) | round(0) ~ ' kph'}}
+              {% endif %}
+            {% else %}
+              {{ ' °C' }}      
+            {% endif %}
+    - type: search
+      for: hui-entity-badge $ ha-badge $
+      query: span.label
+      actions:
+        replace_text:
+          find: LookForThis
+          replace: &gt;
+            {% set warnings =
+            state_attr('binary_sensor.weather_warning_tulpenlaan',
+              'active_warnings_friendly_names') | lower %}
+            {% if warnings == "" %}  {{ 'KMI' }}   {% else %}    {{
+            warnings[0:9] }} {% endif %}
+element:
+  type: entity
+  entity: sensor.tulpenlaan_current_temperature
+  state_content: name
+  show_name: true
+  name: LookForThis
+</code></pre>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">DOM navigation</p>
+    <p>
+        <p>To learn more on how to find where the spark should search refer UIX documentation.</p>
+
+    </p>
+</div>
+
+<p>Next, we will dynamically change the icon based on the current weather (this requires a template sensor which gets its data from your favourite weather integration using <code class="language-plaintext highlighter-rouge">action: weather.get_forecasts</code>). This does not require a spark, we can template <code class="language-plaintext highlighter-rouge">icon</code> directly and add the following</p>
+
+<pre><code class="language-YAML">  icon: |-
+    {%
+     set condition = state_attr('sensor.tulpenlaan_forecast_hourly', 'forecast') | selectattr('datetime', '&gt;', (now() - timedelta(hours=0.5)).isoformat()) | 
+    selectattr('datetime', '&lt;=',  (now() + timedelta(hours=0.5)).isoformat()) | 
+    map(attribute='condition') | list %}
+    {%
+     set day = state_attr('sensor.tulpenlaan_forecast_hourly', 'forecast') | selectattr('datetime', '&gt;', now().isoformat()) | 
+    selectattr('datetime', '&lt;=',  (now() + timedelta(hours=1)).isoformat()) | 
+    map(attribute='is_daytime') | list %}
+    {% if condition == ['cloudy'] %}
+    {{ 'local:material-symbols-light--cloud-outline-rounded' }}
+    {% elif condition == ['partlycloudy'] and day == [true] %}
+    {{ 'local:material-symbols-light--partly-cloudy-day-outline-rounded' }}
+    {% elif condition == ['partlycloudy'] and day == [false] %}
+    {{ 'local:material-symbols-light--partly-cloudy-night-outline-rounded' }}
+    {% elif condition == ['sunny'] %}
+    {{ 'local:material-symbols-light--wb-sunny-outline-rounded' }}
+    {% elif condition == ['partly-rainy'] %}
+    {{ 'local:material-symbols-light--rainy-light-outline-rounded' }}
+    {% elif condition == ['rainy'] %}
+    {{ 'local:material-symbols-light--rainy-outline-rounded' }}
+    {% elif condition == ['pouring'] %}
+    {{ 'local:material-symbols-light--rainy-heavy-outline-rounded' }}
+    {% elif condition == ['clear-night'] %}
+    {{ 'local:material-symbols-light--moon-stars-outline-rounded' }}
+    {% elif condition == ['partly-snowy'] %}
+    {{ 'local:material-symbols-light--sunny-snowing-outline-rounded' }}
+    {% elif condition == ['snowy'] %}
+    {{ 'local:material-symbols-light--weather-snowy-outline-rounded' }}
+    {% elif condition == ['fog'] %}
+    {{ 'local:material-symbols-light--mist-outline-rounded' }}
+    {% elif condition == ['hail'] %}
+    {{ 'local:material-symbols-light--weather-hail-outline-rounded' }}
+    {% elif condition == ['lightning'] %}
+    {{ 'local:material-symbols-light--thunderstorm-outline-rounded' }}
+    {% elif condition == ['lightning-rainy'] %}
+    {{ 'local:material-symbols-light--thunderstorm-outline-rounded' }}
+    {% elif condition == ['snowy-rainy'] %}
+    {{ 'local:material-symbols-light--weather-snowy-outline-rounded' }}
+    {% elif condition == ['windy'] %}
+    {{ 'local:material-symbols-light--air-outline-rounded' }}
+    {% elif condition == ['windy-variant'] %}
+    {{ 'local:material-symbols-light--air-outline-rounded' }}
+    {% elif condition == ['exceptional'] %}
+    {{ 'local:material-symbols-light--cyclone-outline-rounded' }}
+    {% else %}
+    {{ 'local:material-symbols-light--partly-cloudy-day-outline-rounded' }}
+    {% endif %}
+</code></pre>
+
+<div class="admonition tip rounded">
+    <p class="admonition-title">Icons</p>
+    <p>
+        <p>The example above uses material-symbols-light icons, but you can use whatever you prefer; the default MDI icon set also includes all weather symbols.</p>
+
+    </p>
+</div>
+
+<p>With this the badge looks like the third one above, and all three elements change dynamically. To get to the fourth, which changes the text color for warnings to orangered, we need to add one more thing</p>
+
+<pre><code class="language-YAML">  uix:
+    style:
+      ha-badge $: &gt;
+
+        {% if  states('binary_sensor.weather_warning_tulpenlaan') not in ['off',
+        'unavailable', 'unknown'] %}
+          .label, slot[name="name"] {
+            color: orangered !important;
+          }
+        {% endif %}
+</code></pre>]]></content><author><name>Lint-Free-Technology</name></author><category term="elements" /><category term="badge" /><category term="forge" /><category term="sparks" /><summary type="html"><![CDATA[How to use forge and sparks to modify all three elements of a heading badge]]></summary></entry><entry><title type="html">Max theming for minimalist light card</title><link href="/elements/2026/11/11/minimalist-light-card.html" rel="alternate" type="text/html" title="Max theming for minimalist light card" /><published>2026-11-11T00:00:00+00:00</published><updated>2026-11-11T00:00:00+00:00</updated><id>/elements/2026/11/11/minimalist-light-card</id><content type="html" xml:base="/elements/2026/11/11/minimalist-light-card.html"><![CDATA[<p>Smart lights, everybody has a lot of them and adding them all to a dashboard means they take up a lot of screen real estate. In this step-by-step guide we will create a minimalist light card and <strong>move ALL of its styling into themes</strong>. See <a href="https://uix-guides.lf.technology/forge/2026/04/11/tile-card-inline-feature-switch.html">tile-card-inline-feature-switch</a> to learn how to add additional controls (such as color control) to cards, and see <a href="https://uix-guides.lf.technology/elements/2026/03/29/getting-shadowy-with-themes-host-element-selector.html">getting-shadowy-with-themes-host-element-selector</a> for another example on how to use the host element selector.</p>
 
 <p>For this guide we will use the mushroom light card (which is smaller to start with) and use it to control a dimmable light. The screenshot shows a standard light card, a standard mushroom light card, a horizontal layout mushroom light card, a horizontal layout mushroom light card without any info / name and the minimalist light card we want to create (the minimalist card is duplicated to show we can also move them closer together and save more space):</p>
 
@@ -1341,407 +1482,4 @@ cards:
 
 <h2 id="styling-the-dialogs-you-are-testing">Styling the dialogs you are testing</h2>
 
-<p>For a complete guide on how to style dialogs using UIX themes — including template examples and shadow DOM targeting — see <a href="/dialogs/2026/02/27/styling-dialogs.html">Styling dialogs with UI eXtension</a>.</p>]]></content><author><name>Lint-Free-Technology</name></author><category term="dialogs" /><category term="dialogs" /><category term="testing" /><summary type="html"><![CDATA[A one-stop reference for triggering and testing Home Assistant dialogs and UIX notifications from the browser developer console]]></summary></entry><entry><title type="html">Using UIX Forge event and button sparks to change inline tile card feature</title><link href="/forge/2026/04/11/tile-card-inline-feature-switch.html" rel="alternate" type="text/html" title="Using UIX Forge event and button sparks to change inline tile card feature" /><published>2026-04-11T00:00:00+00:00</published><updated>2026-04-11T00:00:00+00:00</updated><id>/forge/2026/04/11/tile-card-inline-feature-switch</id><content type="html" xml:base="/forge/2026/04/11/tile-card-inline-feature-switch.html"><![CDATA[<p><a href="https://uix.lf.technology/forge">UIX Forge</a> allows you to forge an element and apply various features with <a href="https://uix.lf.technology/forge/sparks">forge sparks</a>. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the <a href="https://uix.lf.technology/forge/sparks/event">event spark</a> and <a href="https://uix.lf.technology/forge/sparks/button">button spark</a>.</p>
-
-<div class="admonition info rounded">
-    <p class="admonition-title">Forge elements</p>
-    <p>
-        <p>All UIX Forge documentation will describe the card, row, badge, section, picture-element as <strong>element</strong> as indeed, a forged element is not restricted to being a card, but can be any type supported by UIX Forge mold type</p>
-
-    </p>
-</div>
-
-<h2 id="template-macros">Template macros</h2>
-
-<p>This guide relies heavily on <a href="https://uix.lf.technology/using/templates/#macros">template macros</a>. To first understand the macros and their output, a markdown card will be used as the forged element. This is a good way to check your macros are working as expected before proceeding to use in any final solution.</p>
-
-<p>Four macros are used in the final solution. They are:</p>
-
-<ol>
-  <li><strong>feature_options()</strong>: Returns an array of lookup dicts to provide an icon and a feature. Uses <code class="language-plaintext highlighter-rouge">returns: true</code> <a href="https://uix.lf.technology/using/templates/#macros-with-returns">returns method</a> as the macro returns an array.</li>
-  <li><strong>feature_max_index()</strong>: Returns the length of the array returned by feature_options() minus 1 to give a zero-based index. Also uses the returns method as the macro returns an integer.</li>
-  <li><strong>feature_next_index(index)</strong>: Returns the next zero-based index available in the array, rolling over back to start of the array. Takes a param of <code class="language-plaintext highlighter-rouge">index</code> and uses returns method as the macro returns an integer.</li>
-  <li><strong>feature_item(index, key)</strong>: Returns the item by key of the dict at the index in the feature_options() array. It takes params of <code class="language-plaintext highlighter-rouge">index</code> and <code class="language-plaintext highlighter-rouge">key</code>.</li>
-</ol>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
-<span class="na">forge</span><span class="pi">:</span>
-  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
-  <span class="na">macros</span><span class="pi">:</span>
-    <span class="na">feature_options</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{% set options = </span>
-          <span class="s">[ </span>
-            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
-            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
-          <span class="s">] </span>
-        <span class="s">%}</span>
-        <span class="s">{%- do returns(options) -%}</span>
-    <span class="na">feature_max_index</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
-    <span class="na">feature_next_index</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
-        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
-        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
-    <span class="na">feature_item</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-        <span class="pi">-</span> <span class="s">key</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
-        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
-        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
-  <span class="na">sparks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
-      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
-<span class="na">element</span><span class="pi">:</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">markdown</span>
-  <span class="na">content</span><span class="pi">:</span> <span class="pi">|</span>
-    <span class="s">**feature_options()**: {{ feature_options() }}</span>
-
-    <span class="s">**feature_max_index()**: {{ feature_max_index() }}</span>
-
-    <span class="s">**feature_next_index(0)**: {{ feature_next_index(0) }}</span>
-    <span class="s">**feature_next_index(1)**: {{ feature_next_index(1) }}</span>
-
-    <span class="s">**feature_item(0, 'icon')**: {{ feature_item(0, 'icon') }}</span>
-    <span class="s">**feature_item(0, 'feature')**: {{ feature_item(0, 'feature') }}</span>
-
-    <span class="s">**feature_item(1, 'icon')**: {{ feature_item(1, 'icon') }}</span>
-    <span class="s">**feature_item(1, 'feature')**: {{ feature_item(1, 'feature') }}</span>
-</code></pre></div></div>
-
-<div class="admonition homeassistant rounded">
-    <p class="admonition-title">Macro testing output</p>
-    <p>
-        <p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-1.png" alt="macro-testing-example" /></p>
-
-    </p>
-</div>
-
-<h2 id="switch-to-tile-element">Switch to tile element</h2>
-
-<p>Now the macros are well defined and ready to be used we can start building the forged tile element. Here a static index is used for <strong>feature_item()</strong>. This will change once the event spark is added.</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
-<span class="na">forge</span><span class="pi">:</span>
-  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
-  <span class="na">macros</span><span class="pi">:</span>
-    <span class="na">feature_options</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{% set options = </span>
-          <span class="s">[ </span>
-            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
-            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
-          <span class="s">] </span>
-        <span class="s">%}</span>
-        <span class="s">{% do returns(options) %}</span>
-    <span class="na">feature_max_index</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
-    <span class="na">feature_next_index</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
-        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
-        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
-    <span class="na">feature_item</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-        <span class="pi">-</span> <span class="s">key</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
-        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
-        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
-<span class="na">element</span><span class="pi">:</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
-  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
-  <span class="na">features</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">feature_item(0,</span><span class="nv"> </span><span class="s">'feature')</span><span class="nv"> </span><span class="s">}}"</span>
-  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
-</code></pre></div></div>
-
-<div class="admonition homeassistant rounded">
-    <p class="admonition-title">Forged tile cards</p>
-    <p>
-        <p>Output with two copies of the forge code, one as per above, and one changing the index from 0 to 1 <img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-2.png" alt="feature-example" /></p>
-
-    </p>
-</div>
-
-<h2 id="add-event-spark">Add event spark</h2>
-
-<p>Next we will use the <a href="https://uix.lf.technology/forge/sparks/event/">event spark</a> for the forged element to be able to use data received from <code class="language-plaintext highlighter-rouge">fire-dom-event</code>.</p>
-
-<p>The event spark needs a <code class="language-plaintext highlighter-rouge">forge_id</code>. Here the ID used is made up of a prefix and the entity from the element config.</p>
-
-<p>In the forged element we now use data from the event spark as input to <strong>feature_item()</strong>. As per event spark guidelines, our event data will not be available when first loaded, so <code class="language-plaintext highlighter-rouge">default(0)</code> is used. The data will also come as a string so we cast to <code class="language-plaintext highlighter-rouge">int</code>.</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
-<span class="na">forge</span><span class="pi">:</span>
-  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
-  <span class="na">macros</span><span class="pi">:</span>
-    <span class="na">feature_options</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{% set options = </span>
-          <span class="s">[ </span>
-            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
-            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
-          <span class="s">] </span>
-        <span class="s">%}</span>
-        <span class="s">{% do returns(options) %}</span>
-    <span class="na">feature_max_index</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
-    <span class="na">feature_next_index</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
-        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
-        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
-    <span class="na">feature_item</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-        <span class="pi">-</span> <span class="s">key</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
-        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
-        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
-  <span class="na">sparks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
-      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
-<span class="na">element</span><span class="pi">:</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
-  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
-  <span class="na">features</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">feature_item(uixForge.event.index</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(0)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">int,</span><span class="nv"> </span><span class="s">'feature')</span><span class="nv"> </span><span class="s">}}"</span>
-  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
-</code></pre></div></div>
-
-<h2 id="use-buttons-to-test">Use buttons to test</h2>
-
-<p>First up, we will use two standard buttons to test the solution so far. We need to send <code class="language-plaintext highlighter-rouge">0</code> and <code class="language-plaintext highlighter-rouge">1</code> as <code class="language-plaintext highlighter-rouge">index</code> to the <code class="language-plaintext highlighter-rouge">forge_id</code> <code class="language-plaintext highlighter-rouge">light_tile_light.bed_light</code> with <code class="language-plaintext highlighter-rouge">uix_forge</code> <code class="language-plaintext highlighter-rouge">fire-dom-event</code>.</p>
-
-<p>Two buttons will be used using the YAML below.</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">show_name</span><span class="pi">:</span> <span class="kc">true</span>
-<span class="na">show_icon</span><span class="pi">:</span> <span class="kc">false</span>
-<span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
-<span class="na">name</span><span class="pi">:</span> <span class="s">Feature Index </span><span class="m">0</span>
-<span class="na">grid_options</span><span class="pi">:</span>
-  <span class="na">columns</span><span class="pi">:</span> <span class="m">6</span>
-  <span class="na">rows</span><span class="pi">:</span> <span class="m">1</span>
-<span class="na">tap_action</span><span class="pi">:</span>
-  <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
-  <span class="na">uix_forge</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_light.bed_light</span>
-      <span class="na">data</span><span class="pi">:</span>
-        <span class="na">index</span><span class="pi">:</span> <span class="m">0</span> <span class="c1"># one button with 0, one button with 1</span>
-</code></pre></div></div>
-
-<div class="admonition homeassistant rounded">
-    <p class="admonition-title">Using buttons to send spark event data</p>
-    <p>
-        <p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-3.gif" alt="macro-testing-example" /></p>
-
-    </p>
-</div>
-
-<h2 id="full-solution">Full solution</h2>
-
-<p>Now that testing with external buttons show that the event spark is working, we can now use a button spark to add a button adjacent to the inline feature to change the inline feature.</p>
-
-<p>The button spark has the following specific config:</p>
-
-<ol>
-  <li><strong>after</strong>: is set to <code class="language-plaintext highlighter-rouge">hui-tile-card $ hui-card-features</code>.</li>
-  <li><strong>icon</strong>: is set to <code class="language-plaintext highlighter-rouge">{{ feature_item(feature_next_index(uixForge.event.index | default(0) | int), 'icon') }}</code></li>
-  <li><strong>forge_id</strong>: of the <code class="language-plaintext highlighter-rouge">fire-dom-event</code> for <code class="language-plaintext highlighter-rouge">uix_forge</code> is set to <code class="language-plaintext highlighter-rouge">light_tile_{{config.element.entity}}</code> to match the event spark’s <code class="language-plaintext highlighter-rouge">forge_id</code>.</li>
-</ol>
-
-<p>Finally we style the forged tile element to adjust the spacing of the tile to give the feature more room and have the tile icon and the button added to take minimal space.</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
-<span class="na">forge</span><span class="pi">:</span>
-  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
-  <span class="na">macros</span><span class="pi">:</span>
-    <span class="na">feature_options</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{% set options = </span>
-          <span class="s">[ </span>
-            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': 'light-brightness' }, </span>
-            <span class="s">{'icon': 'mdi:invert-colors', 'feature': 'light-color-favorites' } </span>
-          <span class="s">] </span>
-        <span class="s">%}</span>
-        <span class="s">{% do returns(options) %}</span>
-    <span class="na">feature_max_index</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{%- do returns(feature_options() | length - 1) -%}</span>
-    <span class="na">feature_next_index</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
-        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
-        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
-    <span class="na">feature_item</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-        <span class="pi">-</span> <span class="s">key</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
-        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
-        <span class="s">options | length -%} {{ options[index][key] }} {%- endif -%}  </span>
-  <span class="na">sparks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
-      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
-      <span class="na">after</span><span class="pi">:</span> <span class="s">hui-tile-card $ hui-card-features</span>
-      <span class="na">icon</span><span class="pi">:</span> <span class="pi">&gt;-</span>
-        <span class="s">{{ feature_item(feature_next_index(uixForge.event.index | default(0) |</span>
-        <span class="s">int), 'icon') }}</span>
-      <span class="na">color</span><span class="pi">:</span> <span class="s">grey</span>
-      <span class="na">tap_action</span><span class="pi">:</span>
-        <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
-        <span class="na">uix_forge</span><span class="pi">:</span>
-          <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
-            <span class="na">data</span><span class="pi">:</span>
-              <span class="na">index</span><span class="pi">:</span> <span class="pi">&gt;-</span>
-                <span class="s">{{ feature_next_index(uixForge.event.index | default(0) | int)</span>
-                <span class="s">}}</span>
-<span class="na">element</span><span class="pi">:</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
-  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
-  <span class="na">features</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">feature_item(uixForge.event.index</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(0)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">int,</span><span class="nv"> </span><span class="s">'feature')</span><span class="nv"> </span><span class="s">}}"</span>
-  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
-  <span class="na">uix</span><span class="pi">:</span>
-    <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
-      <span class="s">ha-tile-icon {</span>
-        <span class="s">flex: 0;</span>
-      <span class="s">}</span>
-      <span class="s">ha-tile-info {</span>
-        <span class="s">flex: 1;</span>
-      <span class="s">}</span>
-      <span class="s">hui-card-features {</span>
-        <span class="s">flex: 2;</span>
-        <span class="s">padding-right: 0px !important;</span>
-      <span class="s">}</span>
-</code></pre></div></div>
-
-<div class="admonition homeassistant rounded">
-    <p class="admonition-title">Full solution</p>
-    <p>
-        <p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-4.gif" alt="full-solution" /></p>
-
-    </p>
-</div>
-
-<h2 id="extra---features-as-an-object">Extra - features as an object</h2>
-
-<p>Up until now we have used and set features as a string, assigning the output from <code class="language-plaintext highlighter-rouge">feature_item(index, 'feature')</code> to <code class="language-plaintext highlighter-rouge">- type:</code> under <code class="language-plaintext highlighter-rouge">features:</code>. To extend the solution we can use features as an object. Careful construction of the object is needed here as it is set as a Python dict.</p>
-
-<p>Changes required:</p>
-
-<ol>
-  <li><code class="language-plaintext highlighter-rouge">feature</code> in the <code class="language-plaintext highlighter-rouge">options</code> array becomes an array with a single dict. For simple features the dict is <code class="language-plaintext highlighter-rouge">{ 'type': 'feature-string' }</code></li>
-  <li>features requiring more than just <code class="language-plaintext highlighter-rouge">type</code> can be added as a dict as the sole member of the array. In the example here, a custom feature of a button is used.</li>
-  <li><code class="language-plaintext highlighter-rouge">feature_item()</code> now returns an object rather than a string and uses returns method.</li>
-  <li><code class="language-plaintext highlighter-rouge">features:</code> config uses the output from <code class="language-plaintext highlighter-rouge">feature_item()</code> macro directly.</li>
-</ol>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">type</span><span class="pi">:</span> <span class="s">custom:uix-forge</span>
-<span class="na">forge</span><span class="pi">:</span>
-  <span class="na">mold</span><span class="pi">:</span> <span class="s">card</span>
-  <span class="na">macros</span><span class="pi">:</span>
-    <span class="na">feature_options</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{% set options = </span>
-          <span class="s">[ </span>
-            <span class="s">{'icon': 'mdi:lightbulb-on-50', 'feature': [ { 'type': 'light-brightness' } ] }, </span>
-            <span class="s">{'icon': 'mdi:invert-colors', 'feature': [ { 'type': 'light-color-favorites' } ] },</span>
-            <span class="s">{'icon': 'mdi:cog', 'feature': [ { 'type': 'custom:service-call', 'entries': [ { 'type': 'button', 'icon': 'mdi:cog', 'thumb': 'default', 'tap_action': { 'action': 'more-info', 'target': { 'entity_id': 'light.bed_light' }, 'data': {} } } ] } ] }</span>
-          <span class="s">] </span>
-        <span class="s">%}</span>
-        <span class="s">{% do returns(options) %}</span>
-    <span class="na">feature_max_index</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{% do returns(feature_options() | length - 1) %}</span>
-    <span class="na">feature_next_index</span><span class="pi">:</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">|</span>
-        <span class="s">{%- set nextIndex = index | int + 1 -%}</span>
-        <span class="s">{%- set maxIndex = feature_max_index() | int -%}</span>
-        <span class="s">{%- do returns(nextIndex if nextIndex &lt;= maxIndex else 0) -%}</span>
-    <span class="na">feature_item</span><span class="pi">:</span>
-      <span class="na">returns</span><span class="pi">:</span> <span class="kc">true</span>
-      <span class="na">params</span><span class="pi">:</span>
-        <span class="pi">-</span> <span class="s">index</span>
-        <span class="pi">-</span> <span class="s">key</span>
-      <span class="na">template</span><span class="pi">:</span> <span class="pi">&gt;</span>
-        <span class="s">{%- set options = feature_options() -%} {%- if index &gt;= 0 and index &lt;</span>
-        <span class="s">options | length -%}  {%- set option = options[index][key] -%} {% do</span>
-        <span class="s">returns(option) %} {%- endif -%}</span>
-  <span class="na">sparks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">event</span>
-      <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
-    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">button</span>
-      <span class="na">after</span><span class="pi">:</span> <span class="s">hui-tile-card $ hui-card-features</span>
-      <span class="na">icon</span><span class="pi">:</span> <span class="pi">&gt;-</span>
-        <span class="s">{{ feature_item(feature_next_index(uixForge.event.index | default(0) |</span>
-        <span class="s">int), 'icon') }}</span>
-      <span class="na">color</span><span class="pi">:</span> <span class="s">grey</span>
-      <span class="na">tap_action</span><span class="pi">:</span>
-        <span class="na">action</span><span class="pi">:</span> <span class="s">fire-dom-event</span>
-        <span class="na">uix_forge</span><span class="pi">:</span>
-          <span class="pi">-</span> <span class="na">forge_id</span><span class="pi">:</span> <span class="s">light_tile_{{config.element.entity}}</span>
-            <span class="na">data</span><span class="pi">:</span>
-              <span class="na">index</span><span class="pi">:</span> <span class="pi">&gt;-</span>
-                <span class="s">{{ feature_next_index(uixForge.event.index | default(0) | int)</span>
-                <span class="s">}}</span>
-<span class="na">element</span><span class="pi">:</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">tile</span>
-  <span class="na">entity</span><span class="pi">:</span> <span class="s">light.bed_light</span>
-  <span class="na">features</span><span class="pi">:</span> <span class="pi">|</span>
-    <span class="s">{{ feature_item(uixForge.event.index | default(0) | int, 'feature') }}</span>
-  <span class="na">features_position</span><span class="pi">:</span> <span class="s">inline</span>
-  <span class="na">uix</span><span class="pi">:</span>
-    <span class="na">style</span><span class="pi">:</span> <span class="pi">|</span>
-      <span class="s">ha-tile-icon {</span>
-        <span class="s">flex: 0;</span>
-      <span class="s">}</span>
-      <span class="s">ha-tile-info {</span>
-        <span class="s">flex: 1;</span>
-      <span class="s">}</span>
-      <span class="s">hui-card-features {</span>
-        <span class="s">flex: 2;</span>
-        <span class="s">padding-right: 0px !important;</span>
-      <span class="s">}</span>
-
-</code></pre></div></div>
-
-<div class="admonition homeassistant rounded">
-    <p class="admonition-title">Full solution</p>
-    <p>
-        <p><img src="/assets/forge/2026-04-11-tile-card-inline-feature-switch-5.gif" alt="full-solution" /></p>
-
-    </p>
-</div>]]></content><author><name>Lint-Free-Technology</name></author><category term="forge" /><category term="forge" /><category term="sparks" /><category term="event spark" /><category term="button spark" /><category term="macros" /><summary type="html"><![CDATA[UIX Forge allows you to forge an element and apply various features with forge sparks. This guide uses UIX Forge to forge a tile element with inline feature which can be changed using the event spark and button spark.]]></summary></entry></feed>
+<p>For a complete guide on how to style dialogs using UIX themes — including template examples and shadow DOM targeting — see <a href="/dialogs/2026/02/27/styling-dialogs.html">Styling dialogs with UI eXtension</a>.</p>]]></content><author><name>Lint-Free-Technology</name></author><category term="dialogs" /><category term="dialogs" /><category term="testing" /><summary type="html"><![CDATA[A one-stop reference for triggering and testing Home Assistant dialogs and UIX notifications from the browser developer console]]></summary></entry></feed>
