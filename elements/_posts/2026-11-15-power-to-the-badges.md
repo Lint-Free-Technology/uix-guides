@@ -1,7 +1,7 @@
 ---
 title: Power to the badges
 description: How to use forge and sparks to modify all three elements of a heading badge
-excerpt_image: /assets/elements/2026-11-1-badges.png
+excerpt_image: /assets/elements/2026-11-15-badges.png
 tags: 
   - badge
   - forge
@@ -70,6 +70,8 @@ element:
 
 Next, we will dynamically change the icon based on the current weather (this requires a template sensor which gets its data from your favourite weather integration using `action: weather.get_forecasts`). This does not require a spark, we can template `icon` directly and add the following
 
+{% raw %}
+
 ```YAML
   icon: |-
     {%
@@ -123,7 +125,7 @@ Next, we will dynamically change the icon based on the current weather (this req
 
 {% endraw %}
 
-{% include admonition.html type="tip" title="Icons" body="The example above use material-symbols-light icons but you can use whatever you prefer, the default MDI icon set also includes all weather symbols. %}
+{% include admonition.html type="tip" title="Icons" body="The example above uses material-symbols-light icons, but you can use whatever you prefer; the default MDI icon set also includes all weather symbols." %}
 
 With this the badge looks like the third one above, and all three elements change dynamically. To get to the fourth, which changes the text color for warnings to orangered, we need to add one more thing
 
@@ -134,7 +136,7 @@ With this the badge looks like the third one above, and all three elements chang
     style:
       ha-badge $: >
 
-        {% if  states('binary_sensor.weather_warning_tulpenlaan') in ['off',
+        {% if  states('binary_sensor.weather_warning_tulpenlaan') not in ['off',
         'unavailable', 'unknown'] %}
           .label, slot[name="name"] {
             color: orangered !important;
