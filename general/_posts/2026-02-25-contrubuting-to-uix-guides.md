@@ -23,11 +23,11 @@ Submit a PR against the `contrib` branch.
 
 ### Prerequisites
 
-- Ruby (3.4.8)
+- Ruby (3.4.12)
 - Bundler
 - Git
 
-   *GitHub action uses Ruby 3.4.8. If you use MacOS/Linux you can use rbenv to manage your ruby installs. Repo has `.ruby-version` file set to 3.4.8*
+   *GitHub action uses Ruby 3.4.12. If you use MacOS/Linux you can use rbenv to manage your ruby installs. Repo has `.ruby-version` file set to 3.4.12*
 
 ### Build steps
 
