@@ -66,7 +66,7 @@ element:
 
 {% endraw %}
 
-{% include admonition.html type="tip" title="DOM navigation" body="To learn more on how to find where the spark should search refer UIX documentation." %}
+{% include admonition.html type="tip" title="DOM navigation" body="To learn more on how to find where the spark should search refer see https://uix.lf.technology/concepts/dom/%23uix_style_path0-specific-helper." %}
 
 Next, we will dynamically change the icon based on the current weather (this requires a template sensor which gets its data from your favourite weather integration using `action: weather.get_forecasts`). This does not require a spark, we can template `icon` directly and add the following
 
